@@ -5,6 +5,10 @@ and machine-actionable ecosystems.
 
 This repository provides the architecture overview for several related projects.
 
+## Architecture Diagram
+
+![Digital Biosphere Architecture](diagrams/digital-biosphere-architecture.svg)
+
 ## Architecture Layers
 
 Digital Biosphere
@@ -23,6 +27,10 @@ ARO-Audit
 
 Proof Kernel  
 MVK - Minimal Verification Kernel
+
+## Narrative Spine
+
+`Digital Biosphere -> Verifiable Digital Objects -> Execution Integrity`
 
 ## Core Repositories
 

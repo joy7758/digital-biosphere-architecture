@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="920" viewBox="0 0 1400 920" role="img" aria-labelledby="title desc">
+  <title id="title">Digital Biosphere Architecture</title>
+  <desc id="desc">A layered architecture diagram for the Digital Biosphere ecosystem showing Persona, Agent, Data Space, Audit, and Proof Kernel layers.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8f5ef"/>
+      <stop offset="100%" stop-color="#edf3f1"/>
+    </linearGradient>
+    <linearGradient id="header" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#16343b"/>
+      <stop offset="100%" stop-color="#254d56"/>
+    </linearGradient>
+    <style>
+      .title { font: 700 48px Georgia, "Times New Roman", serif; fill: #f8f5ef; }
+      .subtitle { font: 400 22px Georgia, "Times New Roman", serif; fill: #d7e4df; }
+      .heading { font: 700 26px Georgia, "Times New Roman", serif; fill: #16343b; }
+      .body { font: 400 20px Georgia, "Times New Roman", serif; fill: #2c3f43; }
+      .layer { font: 700 28px Georgia, "Times New Roman", serif; fill: #16343b; }
+      .repo { font: 400 22px Georgia, "Times New Roman", serif; fill: #2c3f43; }
+      .caption { font: 400 18px Georgia, "Times New Roman", serif; fill: #4a5e62; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="920" fill="url(#bg)"/>
+  <rect x="72" y="56" width="1256" height="140" rx="28" fill="url(#header)"/>
+
+  <text x="112" y="128" class="title">Digital Biosphere Architecture</text>
+  <text x="112" y="168" class="subtitle">Digital Biosphere - Verifiable Digital Objects - Execution Integrity</text>
+
+  <text x="96" y="252" class="heading">Core narrative</text>
+  <text x="96" y="288" class="body">A layered architecture for verifiable digital objects and machine-actionable ecosystems.</text>
+  <text x="96" y="320" class="body">Each repository keeps its own scope, while the architecture explains how the components fit together.</text>
+
+  <g transform="translate(120 372)">
+    <rect x="0" y="0" width="1160" height="112" rx="24" fill="#f2d8c5" stroke="#b46f46" stroke-width="2"/>
+    <text x="36" y="48" class="layer">Persona Layer</text>
+    <text x="36" y="84" class="repo">POP - Persona Object Protocol</text>
+
+    <rect x="0" y="136" width="1160" height="112" rx="24" fill="#f6e8c8" stroke="#bc9650" stroke-width="2"/>
+    <text x="36" y="184" class="layer">Agent Layer</text>
+    <text x="36" y="220" class="repo">AOP - Agent Object Protocol</text>
+
+    <rect x="0" y="272" width="1160" height="112" rx="24" fill="#dce9d1" stroke="#76945d" stroke-width="2"/>
+    <text x="36" y="320" class="layer">Data Space Layer</text>
+    <text x="36" y="356" class="repo">RedRock OpenDPP</text>
+
+    <rect x="0" y="408" width="1160" height="112" rx="24" fill="#d3e8ea" stroke="#467983" stroke-width="2"/>
+    <text x="36" y="456" class="layer">Audit Layer</text>
+    <text x="36" y="492" class="repo">ARO-Audit</text>
+
+    <rect x="0" y="544" width="1160" height="112" rx="24" fill="#d8d9f0" stroke="#5d6699" stroke-width="2"/>
+    <text x="36" y="592" class="layer">Proof Kernel</text>
+    <text x="36" y="628" class="repo">MVK - Minimal Verification Kernel</text>
+
+    <path d="M580 112 L580 136 M580 248 L580 272 M580 384 L580 408 M580 520 L580 544" fill="none" stroke="#254d56" stroke-width="6" stroke-linecap="round"/>
+    <path d="M580 128 l-12 -14 h24 z M580 264 l-12 -14 h24 z M580 400 l-12 -14 h24 z M580 536 l-12 -14 h24 z" fill="#254d56"/>
+  </g>
+
+  <text x="96" y="874" class="caption">Repository overview: https://github.com/joy7758/digital-biosphere-architecture</text>
+</svg>
