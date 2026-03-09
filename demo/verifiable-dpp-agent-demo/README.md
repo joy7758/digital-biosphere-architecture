@@ -27,3 +27,4 @@ VERIFY_PASS
 Screenshot-ready pages:
 - [Demo Results Snapshot](docs/results.md)
 - [Poster And QR Sync Copy](docs/poster-sync.md)
+- [Print Copy](docs/print-copy.md)
