@@ -1,0 +1,11 @@
+{
+  "carbon_record": {
+    "unit": "kgCO2e",
+    "value": 12.4
+  },
+  "compliance_status": "REVIEW_READY",
+  "object_id": "DPP-DEMO-0001",
+  "product_name": "Demo Battery Module",
+  "summary": "Object DPP-DEMO-0001 for Demo Battery Module records 12.4 kgCO2e and is REVIEW_READY.",
+  "task": "generate_audit_ready_summary"
+}

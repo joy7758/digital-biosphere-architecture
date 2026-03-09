@@ -1,0 +1,6 @@
+{
+  "agent_result_sha256": "7c3705f213505dc3e144b2a998dbfab9b34627b9167a51d546a0cc6bc2b160dc",
+  "audit_record_sha256": "441b34d0722148db8fad913a4b2cd392cb81fe9ee650dc03f72fa740d800e8c6",
+  "input_object_sha256": "152d8606cb75241044c7231728e2d1d7a64deaa0470d6f22e7eaa608a9d1ef7a",
+  "proof_mode": "deterministic-demo"
+}

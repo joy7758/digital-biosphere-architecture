@@ -1,0 +1,13 @@
+{
+  "batch_id": "BATCH-2026-001",
+  "carbon_record": {
+    "unit": "kgCO2e",
+    "value": 12.4
+  },
+  "compliance_task": "generate_audit_ready_summary",
+  "manufacturer": "RedRock Demo Factory",
+  "material": "LFP",
+  "object_id": "DPP-DEMO-0001",
+  "origin_country": "CN",
+  "product_name": "Demo Battery Module"
+}

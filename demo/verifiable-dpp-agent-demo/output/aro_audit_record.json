@@ -1,0 +1,8 @@
+{
+  "demo_handle": "21.T11966/aro-audit-demo-do-1",
+  "journal_sha256": "7c3705f213505dc3e144b2a998dbfab9b34627b9167a51d546a0cc6bc2b160dc",
+  "manifest_handle": "demo://verifiable-dpp-agent-demo/manifest-v1",
+  "profile_handle": "21.T11966/aro-audit-profile-v1",
+  "public_key_fingerprint": "demo-fingerprint-static",
+  "spec_url": "https://github.com/joy7758/aro-audit/blob/main/docs/aroaudit-profile-v1.md"
+}

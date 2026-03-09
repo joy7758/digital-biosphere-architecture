@@ -48,3 +48,11 @@ https://github.com/joy7758/persona-object-protocol
 
 Agent Object Protocol  
 https://github.com/joy7758/agent-object-protocol
+
+## Demo
+
+Verifiable DPP Agent Demo  
+`demo/verifiable-dpp-agent-demo`
+
+A minimal end-to-end example connecting:  
+RedRock-style DPP object -> ARO-style audit evidence -> MVK-style verification proof.

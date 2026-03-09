@@ -1,0 +1,22 @@
+{
+  "architecture_repo": "https://github.com/joy7758/digital-biosphere-architecture",
+  "demo_handle": "21.T11966/aro-audit-demo-do-1",
+  "generated_files": [
+    {
+      "path": "output/agent_result.json",
+      "sha256": "7c3705f213505dc3e144b2a998dbfab9b34627b9167a51d546a0cc6bc2b160dc"
+    },
+    {
+      "path": "output/aro_audit_record.json",
+      "sha256": "441b34d0722148db8fad913a4b2cd392cb81fe9ee650dc03f72fa740d800e8c6"
+    },
+    {
+      "path": "output/mvk_input.json",
+      "sha256": "f62a495d35536811b472a07a9a903f3c751859db7da3bb59ce0c7c95742e1720"
+    }
+  ],
+  "mvk_repo": "https://github.com/joy7758/fdo-kernel-mvk",
+  "paper_doi": "10.5281/zenodo.18501430",
+  "profile_handle": "21.T11966/aro-audit-profile-v1",
+  "spec_url": "https://github.com/joy7758/aro-audit/blob/main/docs/aroaudit-profile-v1.md"
+}
