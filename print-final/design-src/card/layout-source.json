@@ -1,0 +1,12 @@
+{
+  "pages": 2,
+  "pagesize_points": [
+    595.28,
+    841.89
+  ],
+  "qr_labels": [
+    "GitHub",
+    "Registry"
+  ],
+  "source": "source-of-truth/print-copy.md"
+}

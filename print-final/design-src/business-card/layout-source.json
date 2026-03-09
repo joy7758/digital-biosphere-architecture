@@ -1,0 +1,16 @@
+{
+  "pages": 1,
+  "pagesize_points": [
+    255.12,
+    155.91
+  ],
+  "qr_labels": [
+    "GitHub"
+  ],
+  "sheet_pages": 1,
+  "sheet_pagesize_points": [
+    595.28,
+    841.89
+  ],
+  "source": "source-of-truth/print-copy.md"
+}
