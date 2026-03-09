@@ -28,9 +28,12 @@ Paper:
 - DOI: `https://doi.org/10.5281/zenodo.18501430`
 
 Registry:
-- ARO profile: `https://github.com/joy7758/aro-audit/blob/main/docs/aroaudit-profile-v1.md`
+- ARO profile: `https://typeregistry.testbed.pid.gwdg.de/#objects/21.T11966/aro-audit-profile-v1`
 
 Demo Object:
+- ARO demo object: `https://typeregistry.testbed.pid.gwdg.de/#objects/21.T11966/aro-audit-demo-do-1`
+
+Optional screenshot/result landing:
 - Public evidence summary: `https://github.com/joy7758/digital-biosphere-architecture/blob/main/demo/verifiable-dpp-agent-demo/output/public_evidence_summary.json`
 
 Runnable Demo:
@@ -41,3 +44,9 @@ MVK:
 
 GitHub:
 - Architecture repo: `https://github.com/joy7758/digital-biosphere-architecture`
+
+## Labeling Rule
+
+If the QR slot is labeled `Demo Object`, point it to the Typeregistry demo object.
+
+If the QR slot points to the GitHub JSON result page, relabel that slot as `Public Evidence Summary`.
