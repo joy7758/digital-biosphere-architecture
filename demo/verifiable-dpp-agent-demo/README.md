@@ -23,3 +23,7 @@ make all
 Expected output:
 DEMO_BUILD_OK
 VERIFY_PASS
+
+Screenshot-ready pages:
+- [Demo Results Snapshot](docs/results.md)
+- [Poster And QR Sync Copy](docs/poster-sync.md)
