@@ -2,62 +2,103 @@
 
 ## Why This Architecture
 
-Digital Biosphere Architecture exists to solve a framing problem: projects such
-as POP, Token Governor, MVK, and ARO-Audit are easier to understand when they
-are read as one stack rather than as four unrelated repositories.
+Digital Biosphere Architecture exists to solve a framing problem. POP, Token
+Governor, MVK, and ARO-Audit can each be understood on their own, but the
+ecosystem becomes much clearer when they are read as one governance-oriented
+stack for autonomous AI systems.
 
-The architecture hub gives outside readers, collaborators, and reviewers a
-single entry point. Its job is to clarify system shape, layer boundaries, and
-the relationship between repositories before they dive into implementation
-details.
+This repository gives readers a single entry point for system shape, layer
+boundaries, and repository relationships. Its purpose is to explain how the
+parts fit together without collapsing them into one large framework.
+
+## Scope
+
+This repository defines architectural framing, core layer language, and the
+relationship between the main repositories in the ecosystem.
+
+It does not define a universal runtime, replace the component repositories, or
+attempt to become a single all-in-one agent platform. The focus here is the
+upper-level governance architecture around identity, control, integrity, and
+evidence.
 
 ## The Four-Layer Stack
 
 ### Persona Layer
 
-POP defines the identity-facing surface of the system. It is where agent or
-persona continuity, representation, and persona-level interfaces are modeled.
+The Persona Layer provides portable persona objects and identity attachment.
+Its role is to give autonomous systems a stable identity-facing object that can
+be referenced across tools, runtimes, and interaction contexts.
+
+In the current ecosystem, POP is the main repository associated with this
+layer.
 
 ### Governance Layer
 
-Token Governor defines how policies, permissions, and governance constraints
-are attached to autonomous behavior. This layer determines what is allowed
-before execution claims are trusted.
+The Governance Layer provides policy, permissions, budget control, and runtime
+constraints. It decides what an autonomous system is authorized to do before
+execution behavior is accepted as valid.
+
+In the current ecosystem, Token Governor is the main repository associated
+with this layer.
 
 ### Execution Integrity Layer
 
-MVK provides the minimal verification surface for integrity-critical execution.
-It is responsible for checking whether an execution path or claim satisfies the
-system's required verification conditions.
+The Execution Integrity Layer focuses on what actually happened during
+execution. It establishes the minimal verification surface needed to inspect
+execution claims, constraint adherence, and integrity-relevant runtime facts.
+
+In the current ecosystem, MVK is the main repository associated with this
+layer.
 
 ### Audit Evidence Layer
 
-ARO-Audit captures the evidence trail that makes actions inspectable after the
-fact. It turns system behavior into audit artifacts that can be reviewed,
-replayed, or referenced in governance workflows.
+The Audit Evidence Layer packages evidence bundles, exportable records, and
+verifiable audit trails. It preserves the artifacts needed for later review,
+external reporting, and governance-linked verification workflows.
+
+In the current ecosystem, ARO-Audit is the main repository associated with
+this layer.
 
 ## Design Principles
 
 - Keep layer boundaries explicit.
 - Separate persona, governance, execution integrity, and audit concerns.
-- Treat governance as a first-class control surface rather than a later add-on.
-- Prefer verifiable evidence over informal claims.
-- Keep the architecture open to future repositories without rewriting the core
-  story.
+- Favor composable repositories over one opaque framework.
+- Treat verifiable operation as an architectural requirement, not a later
+  add-on.
+- Keep the stack extensible so future repositories can align without changing
+  the core story.
+
+## How the Layers Work Together
+
+The intended reading order is:
+
+1. Persona establishes what identity-bearing object is acting.
+2. Governance constrains what that actor is allowed to do.
+3. Execution integrity checks what actually happened during execution.
+4. Audit evidence preserves the resulting records in reviewable form.
+
+This sequence is not a claim that all systems must run as a strict pipeline.
+It is an architectural model for reasoning about responsibility, trust, and
+evidence across the ecosystem.
 
 ## Relationship Between Existing Repositories
 
 | Repository | Primary role | Relationship to the stack |
 | --- | --- | --- |
-| POP | Persona representation and continuity | Persona Layer |
-| Token Governor | Policy and governance enforcement | Governance Layer |
-| MVK | Verification kernel for execution integrity | Execution Integrity Layer |
-| ARO-Audit | Audit evidence and review trail | Audit Evidence Layer |
+| [POP](https://github.com/joy7758/persona-object-protocol) | Persona representation and identity attachment | Persona Layer |
+| [Token Governor](https://github.com/joy7758/token-governor) | Governance controls, permissions, and runtime limits | Governance Layer |
+| [MVK](https://github.com/joy7758/fdo-kernel-mvk) | Verification kernel for execution integrity | Execution Integrity Layer |
+| [ARO-Audit](https://github.com/joy7758/aro-audit) | Audit evidence, exports, and verification support | Audit Evidence Layer |
 
-This repository is the architecture hub above those repositories. It explains
-how they connect, what each layer is responsible for, and how they can be read
-as a coherent system.
+This repository sits above those repositories as the architecture hub. Its job
+is to keep the stack readable, preserve consistent language, and provide a
+shared reference point for ecosystem alignment.
 
-Additional repositories may sit beside or below this stack over time. The goal
-is not to freeze the ecosystem, but to keep a stable architectural spine as the
-ecosystem grows.
+## Current Status
+
+The repository is currently an early architecture hub and working draft.
+
+The core layer model is established, but ecosystem alignment is still in
+progress. Likely next steps include tighter terminology, clearer cross-repo
+references, and more explicit shared models where interoperability matters.

@@ -2,37 +2,67 @@
 
 A governance-oriented architecture for autonomous AI systems
 
-Digital Biosphere Architecture is the parent architecture repository for a
-small ecosystem of projects that together describe how autonomous AI systems
-present identity, accept governance constraints, preserve execution integrity,
-and emit audit evidence.
+## Overview
 
-This repository exists as the narrative and structural hub for four layers of
-capability. It does not replace the component repositories; it makes their
-relationship legible as one architecture.
+Digital Biosphere Architecture is the parent architecture repository for a set
+of core components that describe how autonomous AI systems carry identity,
+accept governance constraints, preserve execution integrity, and emit audit
+evidence.
 
-## Four-Layer Architecture
+It is not a monolithic agent framework. It exists as a narrative hub and
+architecture hub that makes identity, governance, execution integrity, and
+audit evidence legible as one coordinated stack.
 
-- Persona Layer -> POP
-- Governance Layer -> Token Governor
-- Execution Integrity Layer -> MVK
-- Audit Evidence Layer -> ARO-Audit
+Narrative spine: persona -> governance -> execution integrity -> audit evidence.
 
-## Repository Scope
+## Architecture at a Glance
 
-This hub unifies four concerns:
+```mermaid
+flowchart TD
+    P["Persona Layer<br/>POP"] --> G["Governance Layer<br/>Token Governor"]
+    G --> E["Execution Integrity Layer<br/>MVK"]
+    E --> A["Audit Evidence Layer<br/>ARO-Audit"]
+```
 
-- Persona
-- Governance
-- Execution Integrity
-- Audit
+## Core Layers
+
+### Persona Layer
+
+Portable persona objects and identity attachment.
+This layer defines how a system carries a stable identity-facing object across
+tools, runtimes, and interactions.
+
+### Governance Layer
+
+Policy, permissions, budget, and runtime constraints.
+This layer decides what an autonomous system is allowed to do before behavior
+is treated as acceptable or trusted.
+
+### Execution Integrity Layer
+
+What actually happened during execution.
+This layer focuses on runtime truth, integrity checks, and minimal
+verification surfaces for execution claims.
+
+### Audit Evidence Layer
+
+Evidence bundles, exportable records, and verifiable audit trails.
+This layer turns execution-relevant activity into artifacts that can be
+reviewed, exported, and referenced in governance workflows.
 
 ## Ecosystem Repositories
 
-- POP: repo placeholder
-- Token Governor: repo placeholder
-- MVK: repo placeholder
-- ARO-Audit: repo placeholder
+- POP — Persona Object Protocol ([joy7758/persona-object-protocol](https://github.com/joy7758/persona-object-protocol))
+- Token Governor — runtime governance and token control ([joy7758/token-governor](https://github.com/joy7758/token-governor))
+- MVK — execution integrity layer ([joy7758/fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk))
+- ARO-Audit — audit evidence and verification pipeline ([joy7758/aro-audit](https://github.com/joy7758/aro-audit))
+
+## Design Intent
+
+- separation of concerns
+- composability
+- verifiable operation
+- architecture-first ecosystem alignment
 
 ## Documents
 
@@ -41,6 +71,6 @@ This hub unifies four concerns:
 
 ## Status
 
-Early architecture hub.
-
-Working draft.
+- early architecture hub
+- working draft
+- ecosystem alignment in progress
