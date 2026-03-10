@@ -1,58 +1,46 @@
 # Digital Biosphere Architecture
 
-The Digital Biosphere is a layered architecture for verifiable digital objects
-and machine-actionable ecosystems.
+A governance-oriented architecture for autonomous AI systems
 
-This repository provides the architecture overview for several related projects.
+Digital Biosphere Architecture is the parent architecture repository for a
+small ecosystem of projects that together describe how autonomous AI systems
+present identity, accept governance constraints, preserve execution integrity,
+and emit audit evidence.
 
-## Architecture Diagram
+This repository exists as the narrative and structural hub for four layers of
+capability. It does not replace the component repositories; it makes their
+relationship legible as one architecture.
 
-![Digital Biosphere Architecture](diagrams/digital-biosphere-architecture.svg)
+## Four-Layer Architecture
 
-## Architecture Layers
+- Persona Layer -> POP
+- Governance Layer -> Token Governor
+- Execution Integrity Layer -> MVK
+- Audit Evidence Layer -> ARO-Audit
 
-Digital Biosphere
+## Repository Scope
 
-Persona Layer  
-POP - Persona Object Protocol
+This hub unifies four concerns:
 
-Agent Layer  
-AOP - Agent Object Protocol
+- Persona
+- Governance
+- Execution Integrity
+- Audit
 
-Data Space Layer  
-RedRock OpenDPP
+## Ecosystem Repositories
 
-Audit Layer  
-ARO-Audit
+- POP: repo placeholder
+- Token Governor: repo placeholder
+- MVK: repo placeholder
+- ARO-Audit: repo placeholder
 
-Proof Kernel  
-MVK - Minimal Verification Kernel
+## Documents
 
-## Narrative Spine
+- [Architecture](docs/architecture.md)
+- [Ecosystem Map](docs/ecosystem-map.md)
 
-`Digital Biosphere -> Verifiable Digital Objects -> Execution Integrity`
+## Status
 
-## Core Repositories
+Early architecture hub.
 
-ARO-Audit  
-https://github.com/joy7758/aro-audit
-
-MVK  
-https://github.com/joy7758/fdo-kernel-mvk
-
-RedRock OpenDPP  
-https://github.com/joy7758/redrock-opendpp-core
-
-Persona Object Protocol  
-https://github.com/joy7758/persona-object-protocol
-
-Agent Object Protocol  
-https://github.com/joy7758/agent-object-protocol
-
-## Demo
-
-Verifiable DPP Agent Demo  
-`demo/verifiable-dpp-agent-demo`
-
-A minimal end-to-end example connecting:  
-RedRock-style DPP object -> ARO-style audit evidence -> MVK-style verification proof.
+Working draft.
