@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1450" viewBox="0 0 1600 1450" role="img" aria-labelledby="title subtitle">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="6" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#4B5563"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="1450" fill="#FFFFFF"/>
+  <title id="title">Digital Biosphere Architecture</title>
+  <desc id="subtitle">A governance-oriented architecture for autonomous AI systems</desc>
+  <text x="800" y="130" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="54" font-weight="700" fill="#1F2933">Digital Biosphere Architecture</text>
+  <text x="800" y="190" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="27" fill="#52606D">A governance-oriented architecture for autonomous AI systems</text>
+  <rect x="370" y="300" width="860" height="150" rx="18" ry="18" fill="#FAFBFC" stroke="#364152" stroke-width="2"/>
+  <text x="800.0" y="358" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#1F2933">Persona Layer</text>
+  <text x="800.0" y="412" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#52606D">POP</text>
+  <line x1="800.0" y1="470" x2="800.0" y2="518" stroke="#4B5563" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="370" y="540" width="860" height="150" rx="18" ry="18" fill="#FAFBFC" stroke="#364152" stroke-width="2"/>
+  <text x="800.0" y="598" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#1F2933">Governance Layer</text>
+  <text x="800.0" y="652" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#52606D">Token Governor</text>
+  <line x1="800.0" y1="710" x2="800.0" y2="758" stroke="#4B5563" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="370" y="780" width="860" height="150" rx="18" ry="18" fill="#FAFBFC" stroke="#364152" stroke-width="2"/>
+  <text x="800.0" y="838" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#1F2933">Execution Integrity Layer</text>
+  <text x="800.0" y="892" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#52606D">MVK</text>
+  <line x1="800.0" y1="950" x2="800.0" y2="998" stroke="#4B5563" stroke-width="4" marker-end="url(#arrow)"/>
+  <rect x="370" y="1020" width="860" height="150" rx="18" ry="18" fill="#FAFBFC" stroke="#364152" stroke-width="2"/>
+  <text x="800.0" y="1078" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#1F2933">Audit Evidence Layer</text>
+  <text x="800.0" y="1132" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#52606D">ARO-Audit</text>
+  <text x="800" y="1340" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="24" fill="#52606D">A layered model for identity, control, runtime truth, and evidence.</text>
+</svg>
