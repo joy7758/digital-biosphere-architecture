@@ -15,6 +15,12 @@ audit evidence legible as one coordinated stack.
 
 Narrative spine: persona -> governance -> execution integrity -> audit evidence.
 
+## Architecture Diagram
+
+![Digital Biosphere Architecture stack](assets/architecture/digital-biosphere-architecture-stack.png)
+
+Static reference diagram for the four-layer architecture.
+
 ## Architecture at a Glance
 
 ```mermaid
