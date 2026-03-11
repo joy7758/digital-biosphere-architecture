@@ -57,15 +57,6 @@ Static reference diagram for the four-layer architecture.
 - [Token Governor](https://github.com/joy7758/token-governor) for runtime governance and budget-policy control.
 - [ARO-Audit quick demo](https://github.com/joy7758/aro-audit/blob/main/docs/demos/execution-receipt-demo.md) for evidence-oriented outputs.
 
-## Architecture at a Glance
-
-```mermaid
-flowchart TD
-    P["Persona Layer<br/>POP"] --> G["Governance Layer<br/>Token Governor"]
-    G --> E["Execution Integrity Layer<br/>MVK"]
-    E --> A["Audit Evidence Layer<br/>ARO-Audit"]
-```
-
 ## Layer Notes
 
 ### Persona Layer
