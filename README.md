@@ -87,12 +87,21 @@ reviewed, exported, and referenced in governance workflows.
 - verifiable operation
 - architecture-first ecosystem alignment
 
+## Current Hardening Priorities
+
+- [Threat model](https://github.com/joy7758/aro-audit/blob/main/docs/threat-model.md)
+- [Conformance vectors](https://github.com/joy7758/aro-audit/blob/main/docs/conformance-vectors-rc1-plus.md)
+- [Shortest validation loop](https://github.com/joy7758/verifiable-agent-demo/blob/main/docs/shortest-validation-loop.md)
+- [Layer positioning](docs/runtime-positioning.md)
+
 ## Documents
 
 - [Architecture](docs/architecture.md)
 - [Ecosystem Map](docs/ecosystem-map.md)
 - [Architecture Map](docs/architecture-map.md)
 - [Core Objects](docs/core-objects.md)
+- [Runtime Positioning](docs/runtime-positioning.md)
+- [Standards Hardening Roadmap](docs/standards-hardening-roadmap.md)
 - [One-Page Brief](docs/one-page-brief.md)
 
 ## Status
