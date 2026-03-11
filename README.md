@@ -37,6 +37,12 @@ Static reference diagram for the four-layer architecture.
 - [Canonical Stack Order](#canonical-stack-order), [Repository Roles](#repository-roles), and [Layer Notes](#layer-notes) in this README for the main architecture overview.
 - [Verifiable Agent Demo](https://github.com/joy7758/verifiable-agent-demo) for the smallest guided walkthrough across layers.
 
+## Where to Start
+
+- For the system view -> stay in this repository.
+- For the persona-layer entry point -> go to [persona-object-protocol](https://github.com/joy7758/persona-object-protocol).
+- For the smallest cross-layer walkthrough -> go to [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo).
+
 ## Why this stack exists
 
 - Persona alone is not enough because identity without control boundaries does not make system behavior inspectable.
