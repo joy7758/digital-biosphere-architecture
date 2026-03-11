@@ -127,3 +127,4 @@ Evidence bundles, exportable records, and reviewable audit artifacts for governa
 - narrative hub for the canonical five-layer architecture stack
 - working draft
 - ecosystem alignment in progress
+<!-- render-refresh: 20260311T205242Z -->
