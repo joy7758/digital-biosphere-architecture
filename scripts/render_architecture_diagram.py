@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 WIDTH = 1600
-HEIGHT = 1450
+HEIGHT = 1700
 BACKGROUND = "#FFFFFF"
 TEXT = "#1F2933"
 SUBTLE = "#52606D"
@@ -18,7 +18,7 @@ LINE = "#4B5563"
 
 TITLE = "Digital Biosphere Architecture"
 SUBTITLE = "A governance-oriented architecture for autonomous AI systems"
-FOOTER = "A layered model for identity, control, runtime truth, and evidence."
+FOOTER = "A layered model for identity, interaction, control, runtime truth, and evidence."
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = REPO_ROOT / "assets/architecture"
@@ -34,6 +34,7 @@ class Layer:
 
 LAYERS = [
     Layer("Persona Layer", "POP"),
+    Layer("Interaction Layer", "Agent Intent Protocol"),
     Layer("Governance Layer", "Token Governor"),
     Layer("Execution Integrity Layer", "MVK"),
     Layer("Audit Evidence Layer", "ARO-Audit"),
@@ -65,9 +66,9 @@ def load_font(size: int, *, bold: bool = False) -> ImageFont.ImageFont:
 
 def layout():
     box_width = 860
-    box_height = 150
-    top = 300
-    gap = 90
+    box_height = 140
+    top = 260
+    gap = 70
     left = (WIDTH - box_width) // 2
     right = left + box_width
     boxes = []
@@ -149,7 +150,7 @@ def render_png():
             ]
             draw.polygon(arrow, fill=LINE)
 
-    center_text(draw, FOOTER, footer_font, 1320, SUBTLE)
+    center_text(draw, FOOTER, footer_font, 1580, SUBTLE)
     image.save(PNG_PATH, format="PNG", optimize=True)
 
 
@@ -224,7 +225,7 @@ def render_svg():
 
     parts.append(
         (
-            '  <text x="800" y="1340" text-anchor="middle" '
+            '  <text x="800" y="1600" text-anchor="middle" '
             'font-family="Helvetica, Arial, sans-serif" font-size="24" '
             f'fill="{SUBTLE}">{escape(FOOTER)}</text>'
         )

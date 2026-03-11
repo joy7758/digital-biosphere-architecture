@@ -1,14 +1,18 @@
 # Architecture Map
 
-Digital Biosphere Architecture is a layered model for verifiable AI systems.
-Each repository has a focused job. The architecture becomes legible when the
-layers are read together instead of collapsed into one framework.
+Digital Biosphere Architecture is a layered model for verifiable AI systems. Each repository has a focused job. The architecture becomes legible when the layers are read together instead of collapsed into one framework.
 
 ## Persona Layer
 
 - Purpose: define the identity-bearing object that can travel across runtimes.
 - Output: a portable persona object that can be attached to an agent context.
 - Linked repo: [joy7758/persona-object-protocol](https://github.com/joy7758/persona-object-protocol)
+
+## Interaction Layer
+
+- Purpose: define machine-readable intent, action, and result objects.
+- Output: semantic interaction objects that can be evaluated before execution and referenced after execution.
+- Linked repo: [joy7758/agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)
 
 ## Governance Layer
 
@@ -30,7 +34,4 @@ layers are read together instead of collapsed into one framework.
 
 ## What this is not
 
-Digital Biosphere Architecture is not a monolithic agent framework.
-It does not replace the component repositories with one runtime or one API
-surface. It is an architecture-first ecosystem model for identity, governance,
-execution integrity, and audit evidence.
+Digital Biosphere Architecture is not a monolithic agent framework. It does not replace the component repositories with one runtime or one API surface. It is an architecture-first ecosystem model for identity, interaction, governance, execution integrity, and audit evidence.
