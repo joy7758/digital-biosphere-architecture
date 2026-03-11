@@ -1,6 +1,10 @@
 # Digital Biosphere Architecture
 
-A governance-oriented architecture for autonomous AI systems
+A governance-oriented architecture for autonomous AI systems.
+
+## One-Line Definition
+
+Digital Biosphere Architecture is a research architecture for verifiable AI systems.
 
 ## Overview
 
@@ -17,9 +21,22 @@ Narrative spine: persona -> governance -> execution integrity -> audit evidence.
 
 ## Architecture Diagram
 
-![Digital Biosphere Architecture stack](assets/architecture/digital-biosphere-architecture-stack.png)
+![Digital Biosphere Architecture stack](assets/architecture/digital-biosphere-architecture-stack.svg)
 
 Static reference diagram for the four-layer architecture.
+
+## Why this stack exists
+
+- Persona alone is not enough because identity without control boundaries does not make system behavior trustworthy.
+- Governance must precede trust because acceptable behavior needs explicit policy before outputs can be treated as reliable.
+- Execution integrity matters because runtime claims need verifiable facts about what actually happened.
+- Audit evidence must be exportable because outside reviewers need portable artifacts instead of internal-only assertions.
+
+## Start in 5 Minutes
+
+- [Verifiable Agent Demo](https://github.com/joy7758/verifiable-agent-demo) for a compact end-to-end walkthrough.
+- [POP quick trial](https://github.com/joy7758/persona-object-protocol/blob/main/TRY_POP.md) for a minimal persona-layer entry point.
+- [ARO-Audit quick demo](https://github.com/joy7758/aro-audit/blob/main/docs/demos/execution-receipt-demo.md) for evidence-oriented outputs.
 
 ## Architecture at a Glance
 
@@ -74,6 +91,9 @@ reviewed, exported, and referenced in governance workflows.
 
 - [Architecture](docs/architecture.md)
 - [Ecosystem Map](docs/ecosystem-map.md)
+- [Architecture Map](docs/architecture-map.md)
+- [Core Objects](docs/core-objects.md)
+- [One-Page Brief](docs/one-page-brief.md)
 
 ## Status
 
