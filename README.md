@@ -4,6 +4,8 @@ Digital Biosphere Architecture is a governance-oriented architecture for increas
 
 This repository is not a standalone agent framework. It is the narrative hub for a layered architecture that organizes the ecosystem into four canonical layers: Persona Layer, Governance Layer, Execution Integrity Layer, and Audit Evidence Layer.
 
+For terminology and repository roles, use this repository as the canonical interpretive entry point for the broader ecosystem.
+
 ## Canonical Stack Order
 
 1. **Persona Layer** -- how an AI system appears as a portable persona object.
@@ -27,6 +29,13 @@ Static reference diagram for the four-layer architecture.
 | [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) | execution integrity reference for verifiable runtime evidence |
 | [aro-audit](https://github.com/joy7758/aro-audit) | audit evidence layer |
 | [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo) | end-to-end demonstration |
+
+## Canonical Navigation
+
+- [Canonical terms](docs/canonical-terms.md) for architecture vocabulary and repository-name distinctions.
+- [Repository map](docs/repository-map.md) for repository roles, layer placement, and entry guidance.
+- [Canonical Stack Order](#canonical-stack-order), [Repository Roles](#repository-roles), and [Layer Notes](#layer-notes) in this README for the main architecture overview.
+- [Verifiable Agent Demo](https://github.com/joy7758/verifiable-agent-demo) for the smallest guided walkthrough across layers.
 
 ## Why this stack exists
 
