@@ -6,6 +6,23 @@ This repository is not a standalone agent framework. It is the narrative hub for
 
 For terminology and repository roles, use this repository as the canonical interpretive entry point for the broader ecosystem.
 
+## Canonical Stack
+
+Digital Biosphere Architecture
+
+Layers:
+
+1. **Persona Layer**
+   Implementation: POP (persona-object-protocol)
+2. **Interaction Layer**
+   Implementation: AIP
+3. **Governance Layer**
+   Implementation: Token Governor
+4. **Execution Integrity Layer**
+   Implementation: MVK
+5. **Audit Evidence Layer**
+   Implementation: ARO-Audit
+
 ## Overview
 
 The five-layer stack explains how autonomous AI systems can be read through:
@@ -16,26 +33,38 @@ The five-layer stack explains how autonomous AI systems can be read through:
 - execution integrity
 - audit evidence
 
-## Canonical Stack Order
-
-1. **Persona Layer** - how an AI system appears as a portable persona object.
-2. **Interaction Layer** - how machine-readable intent, action, and result objects are exchanged.
-3. **Governance Layer** - what an AI system is allowed to do under runtime constraints.
-4. **Execution Integrity Layer** - what actually happened during execution and whether it can be checked.
-5. **Audit Evidence Layer** - what evidence can be exported, reviewed, replayed, and audited.
-
 ## Architecture Diagram
 
 ```mermaid
 flowchart TB
-    Persona["Persona Layer<br>POP"]
-    Interaction["Interaction Layer<br>Agent Intent Protocol"]
+    DBA["Digital Biosphere Architecture"]
+
+    Persona["Persona Layer<br>POP / persona-object-protocol"]
+    Interaction["Interaction Layer<br>AIP"]
     Governance["Governance Layer<br>Token Governor"]
     Execution["Execution Integrity Layer<br>MVK"]
     Audit["Audit Evidence Layer<br>ARO-Audit"]
 
-    Persona --> Interaction --> Governance --> Execution --> Audit
+    DBA --> Persona --> Interaction --> Governance --> Execution --> Audit
 ```
+
+## Reference Implementations
+
+### Persona Layer
+
+https://github.com/joy7758/persona-object-protocol
+
+### Governance Layer
+
+https://github.com/joy7758/token-governor
+
+### Execution Integrity Layer
+
+https://github.com/joy7758/fdo-kernel-mvk
+
+### Audit Evidence Layer
+
+https://github.com/joy7758/aro-audit
 
 ## Repository Roles
 
@@ -55,7 +84,7 @@ flowchart TB
 - [Repository map](docs/repository-map.md) for repository roles, layer placement, and entry guidance.
 - [Interaction Layer](docs/interaction-layer.md) for the interaction-layer rationale and boundaries.
 - [Five-Layer Stack](docs/five-layer-stack.md) for the one-page stack summary.
-- [Canonical Stack Order](#canonical-stack-order), [Repository Roles](#repository-roles), and [Layer Notes](#layer-notes) in this README for the main architecture overview.
+- [Canonical Stack](#canonical-stack), [Repository Roles](#repository-roles), and [Layer Notes](#layer-notes) in this README for the main architecture overview.
 - [Verifiable Agent Demo](https://github.com/joy7758/verifiable-agent-demo) for the smallest guided walkthrough across layers.
 
 ## Where to Start
