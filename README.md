@@ -139,6 +139,17 @@ Evidence bundles, exportable records, and reviewable audit artifacts for governa
 - [Shortest validation loop](https://github.com/joy7758/verifiable-agent-demo/blob/main/docs/shortest-validation-loop.md)
 - [Layer positioning](docs/runtime-positioning.md)
 
+## Architecture Whitepaper
+
+Download:
+[docs/governance_architecture_whitepaper.pdf](docs/governance_architecture_whitepaper.pdf)
+
+## Citation
+
+Suggested citation:
+
+`joy7758. Governance Architecture for Autonomous AI Agents: Digital Biosphere Architecture Whitepaper. GitHub, 2026.`
+
 ## Documents
 
 - [Architecture](docs/architecture.md)

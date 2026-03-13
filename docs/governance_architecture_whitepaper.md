@@ -1,5 +1,13 @@
 # Governance Architecture Whitepaper
 
+## Abstract
+
+This whitepaper presents Digital Biosphere Architecture as a governance
+architecture for autonomous AI agents. The proposal separates persona,
+interaction, governance, execution integrity, and audit evidence into a
+composable stack so policy control and post-run accountability can be discussed
+as architecture concerns rather than afterthoughts.
+
 ## 1. Introduction
 
 Digital Biosphere Architecture is a governance-oriented reference architecture
@@ -38,16 +46,7 @@ may still be difficult to explain:
 
 Digital Biosphere Architecture addresses this gap with five linked layers:
 
-```mermaid
-flowchart TB
-    Persona["Persona Layer<br>POP"]
-    Interaction["Interaction Layer<br>AIP"]
-    Governance["Governance Layer<br>Token Governor"]
-    Execution["Execution Integrity Layer<br>MVK"]
-    Audit["Audit Evidence Layer<br>ARO-Audit"]
-
-    Persona --> Interaction --> Governance --> Execution --> Audit
-```
+![Five Layer Architecture](assets/whitepaper_five_layer_architecture.png)
 
 This order is architectural, not mandatory deployment order. The point is to
 separate concerns clearly enough that each layer can be discussed, tested, and
@@ -106,6 +105,8 @@ enough to support audit reconstruction. The schema is defined in
 `aro-audit/schema/evidence.schema.json`, and the narrative specification is
 documented in `aro-audit/docs/evidence-object-spec.md`.
 
+![Evidence Object Lifecycle](assets/whitepaper_evidence_lifecycle.png)
+
 The design principle is that evidence must be:
 
 - portable across runtimes
@@ -140,6 +141,18 @@ These numbers show the intended tradeoff clearly:
 This is a more credible discussion artifact than a perfect benchmark because it
 preserves an engineering cost for governance while still showing meaningful
 control gains.
+
+## Governance Decision Flow
+
+The governance path in this stack follows a narrow decision sequence:
+
+1. inspect incoming prompt or task object
+2. compare requested tools and budget against policy
+3. allow, deny, or flag the action boundary
+4. execute with constrained tools
+5. export evidence for later audit
+
+![Governance Decision Flow](assets/whitepaper_governance_decision_flow.png)
 
 ## 7. Future Standardization
 
