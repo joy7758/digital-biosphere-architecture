@@ -156,6 +156,7 @@ Suggested citation:
 - [Interaction Layer](docs/interaction-layer.md)
 - [Five-Layer Stack](docs/five-layer-stack.md)
 - [Governance Architecture Whitepaper](docs/governance_architecture_whitepaper.md)
+- [Community Discussion Summary](docs/community_discussion_summary.md)
 - [Ecosystem Map](docs/ecosystem-map.md)
 - [Architecture Map](docs/architecture-map.md)
 - [Core Objects](docs/core-objects.md)
