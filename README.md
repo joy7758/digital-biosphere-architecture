@@ -48,6 +48,10 @@ flowchart TB
     DBA --> Persona --> Interaction --> Governance --> Execution --> Audit
 ```
 
+## Standard Entry Matrix
+
+[docs/standard-entry-matrix.md](docs/standard-entry-matrix.md)
+
 ## Reference Implementations
 
 ### Persona Layer
