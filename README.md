@@ -64,6 +64,10 @@ See [docs/fdo-terminology-alignment.md](docs/fdo-terminology-alignment.md)
 
 See [docs/minimal-fdo-crosswalk.md](docs/minimal-fdo-crosswalk.md)
 
+## Execution Evidence Layer Position
+
+See [docs/execution-evidence-layer-position.md](docs/execution-evidence-layer-position.md)
+
 ## Vienna Poster Talking Points
 
 See [docs/vienna-poster-talking-points.md](docs/vienna-poster-talking-points.md)
