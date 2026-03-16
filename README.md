@@ -68,6 +68,12 @@ See [docs/minimal-fdo-crosswalk.md](docs/minimal-fdo-crosswalk.md)
 
 See [docs/vienna-poster-talking-points.md](docs/vienna-poster-talking-points.md)
 
+## Vienna Scripts
+
+- [60-Second Triple Script](docs/vienna/fdo-vienna-60s-triple-script.md)
+- [3-Minute Triple Script](docs/vienna/fdo-vienna-3min-triple-script.md)
+- [Rapid Q&A Triple](docs/vienna/fdo-vienna-rapid-qa-triple.md)
+
 ## Reference Implementations
 
 ### Persona Layer
