@@ -64,6 +64,10 @@ See [docs/fdo-terminology-alignment.md](docs/fdo-terminology-alignment.md)
 
 See [docs/minimal-fdo-crosswalk.md](docs/minimal-fdo-crosswalk.md)
 
+## Vienna Poster Talking Points
+
+See [docs/vienna-poster-talking-points.md](docs/vienna-poster-talking-points.md)
+
 ## Reference Implementations
 
 ### Persona Layer
