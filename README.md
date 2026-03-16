@@ -60,6 +60,10 @@ See [docs/fdo-profile-proposal-entry.md](docs/fdo-profile-proposal-entry.md)
 
 See [docs/fdo-terminology-alignment.md](docs/fdo-terminology-alignment.md)
 
+## Minimal FDO Crosswalk
+
+See [docs/minimal-fdo-crosswalk.md](docs/minimal-fdo-crosswalk.md)
+
 ## Reference Implementations
 
 ### Persona Layer
