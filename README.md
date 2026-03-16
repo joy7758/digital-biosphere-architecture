@@ -52,6 +52,10 @@ flowchart TB
 
 [docs/standard-entry-matrix.md](docs/standard-entry-matrix.md)
 
+## FDO Proposal Entry
+
+See [docs/fdo-profile-proposal-entry.md](docs/fdo-profile-proposal-entry.md)
+
 ## Reference Implementations
 
 ### Persona Layer
