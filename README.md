@@ -56,6 +56,10 @@ flowchart TB
 
 See [docs/fdo-profile-proposal-entry.md](docs/fdo-profile-proposal-entry.md)
 
+## Terminology Alignment
+
+See [docs/fdo-terminology-alignment.md](docs/fdo-terminology-alignment.md)
+
 ## Reference Implementations
 
 ### Persona Layer
