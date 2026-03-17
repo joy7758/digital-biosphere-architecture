@@ -36,7 +36,7 @@ Out of scope for RC1:
 - distributed finality
 - external anchoring guarantees
 
-Entry placeholders:
+Links:
 
 - AOP RC1: `https://github.com/joy7758/agent-object-protocol/releases/tag/lifecycle-profile-v0.1-rc1`
 - ARO RC1: `https://github.com/joy7758/aro-audit/releases/tag/aro-lifecycle-conformance-rc1`

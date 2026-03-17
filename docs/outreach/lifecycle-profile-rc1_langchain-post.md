@@ -36,7 +36,7 @@ shared cross-repo verifier library. Those can come later. The current point is
 to make lifecycle governance enforceable enough that exported branches and
 receipts can be reviewed consistently.
 
-Entry placeholders:
+Links:
 
 - AOP RC1: `https://github.com/joy7758/agent-object-protocol/releases/tag/lifecycle-profile-v0.1-rc1`
 - ARO RC1: `https://github.com/joy7758/aro-audit/releases/tag/aro-lifecycle-conformance-rc1`
