@@ -68,6 +68,10 @@ See [docs/minimal-fdo-crosswalk.md](docs/minimal-fdo-crosswalk.md)
 
 See [docs/execution-evidence-layer-position.md](docs/execution-evidence-layer-position.md)
 
+## Lifecycle Profile Positioning
+
+See [docs/architecture/canonical-stack-and-lifecycle-profile.md](docs/architecture/canonical-stack-and-lifecycle-profile.md)
+
 ## Vienna Poster Talking Points
 
 See [docs/vienna-poster-talking-points.md](docs/vienna-poster-talking-points.md)
@@ -114,6 +118,7 @@ https://github.com/joy7758/aro-audit
 - [Repository map](docs/repository-map.md) for repository roles, layer placement, and entry guidance.
 - [Interaction Layer](docs/interaction-layer.md) for the interaction-layer rationale and boundaries.
 - [Five-Layer Stack](docs/five-layer-stack.md) for the one-page stack summary.
+- [Lifecycle Profile Positioning](docs/architecture/canonical-stack-and-lifecycle-profile.md) for continuity, lineage, fork, merge, and terminate semantics above the five-layer stack.
 - [Canonical Stack](#canonical-stack), [Repository Roles](#repository-roles), and [Layer Notes](#layer-notes) in this README for the main architecture overview.
 - [Verifiable Agent Demo](https://github.com/joy7758/verifiable-agent-demo) for the smallest guided walkthrough across layers.
 
@@ -191,6 +196,7 @@ Suggested citation:
 - [Architecture Map](docs/architecture-map.md)
 - [Core Objects](docs/core-objects.md)
 - [Runtime Positioning](docs/runtime-positioning.md)
+- [Lifecycle Profile Positioning](docs/architecture/canonical-stack-and-lifecycle-profile.md)
 - [Standards Hardening Roadmap](docs/standards-hardening-roadmap.md)
 - [One-Page Brief](docs/one-page-brief.md)
 
