@@ -71,6 +71,7 @@ See [docs/execution-evidence-layer-position.md](docs/execution-evidence-layer-po
 ## Lifecycle Profile Positioning
 
 See [docs/architecture/canonical-stack-and-lifecycle-profile.md](docs/architecture/canonical-stack-and-lifecycle-profile.md)
+Current implementation focus is enforceable lifecycle governance, not ontology.
 
 ## Vienna Poster Talking Points
 
