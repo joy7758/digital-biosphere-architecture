@@ -38,6 +38,6 @@ Out of scope for RC1:
 
 Links:
 
-- AOP RC1: `https://github.com/joy7758/agent-object-protocol/releases/tag/lifecycle-profile-v0.1-rc1`
-- ARO RC1: `https://github.com/joy7758/aro-audit/releases/tag/aro-lifecycle-conformance-rc1`
-- Demo walkthrough: `https://github.com/joy7758/verifiable-agent-demo/blob/feat/lifecycle-profile-v0.1/docs/minimal-lifecycle-demo.md`
+- AOP RC1: https://github.com/joy7758/agent-object-protocol/releases/tag/lifecycle-profile-v0.1-rc1
+- ARO RC1: https://github.com/joy7758/aro-audit/releases/tag/aro-lifecycle-conformance-rc1
+- Demo walkthrough: https://github.com/joy7758/verifiable-agent-demo/blob/feat/lifecycle-profile-v0.1/docs/minimal-lifecycle-demo.md
