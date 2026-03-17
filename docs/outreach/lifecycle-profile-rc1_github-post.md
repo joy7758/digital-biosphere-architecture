@@ -38,6 +38,6 @@ If you want the smallest reading order:
 
 Entry placeholders:
 
-- AOP RC1: `{AOP_RC1_ENTRY}`
-- ARO RC1: `{ARO_RC1_ENTRY}`
-- Demo walkthrough: `{DEMO_ENTRY}`
+- AOP RC1: `https://github.com/joy7758/agent-object-protocol/releases/tag/lifecycle-profile-v0.1-rc1`
+- ARO RC1: `https://github.com/joy7758/aro-audit/releases/tag/aro-lifecycle-conformance-rc1`
+- Demo walkthrough: `https://github.com/joy7758/verifiable-agent-demo/blob/feat/lifecycle-profile-v0.1/docs/minimal-lifecycle-demo.md`
