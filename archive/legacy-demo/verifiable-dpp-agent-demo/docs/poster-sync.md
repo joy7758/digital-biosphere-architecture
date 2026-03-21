@@ -49,7 +49,7 @@ Demo Object:
 
 Runnable Demo:
 - label: `Runnable Demo`
-- target: `https://github.com/joy7758/digital-biosphere-architecture/tree/main/demo/verifiable-dpp-agent-demo`
+- target: `https://github.com/joy7758/digital-biosphere-architecture/tree/main/archive/legacy-demo/verifiable-dpp-agent-demo`
 - display: `Verifiable DPP Agent Demo`
 
 MVK:
@@ -64,7 +64,7 @@ GitHub:
 
 Optional screenshot/result landing:
 - label: `Public Evidence Summary`
-- target: `https://github.com/joy7758/digital-biosphere-architecture/blob/main/demo/verifiable-dpp-agent-demo/output/public_evidence_summary.json`
+- target: `https://github.com/joy7758/digital-biosphere-architecture/blob/main/archive/legacy-demo/verifiable-dpp-agent-demo/output/public_evidence_summary.json`
 
 ## Scan Order Copy
 

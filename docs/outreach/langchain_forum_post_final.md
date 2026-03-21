@@ -33,8 +33,8 @@ paired with evidence export through ARO-Audit.
 
 Whitepaper:
 
-- `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/governance_architecture_whitepaper.md`
-- `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/governance_architecture_whitepaper.pdf`
+- `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/whitepaper/governance_architecture_whitepaper.md`
+- `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/whitepaper/governance_architecture_whitepaper.pdf`
 
 ## 3. Evidence Object
 

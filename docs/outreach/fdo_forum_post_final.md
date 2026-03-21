@@ -62,7 +62,7 @@ boundary.
 Related architecture context:
 
 - `https://github.com/joy7758/digital-biosphere-architecture`
-- `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/governance_architecture_whitepaper.pdf`
+- `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/whitepaper/governance_architecture_whitepaper.pdf`
 
 Questions for feedback:
 

@@ -1,5 +1,7 @@
 # Verifiable DPP Agent Demo
 
+This directory is an archived demo snapshot retained after `digital-biosphere-architecture` was narrowed to a docs-first narrative hub. For the canonical walkthrough demo, use `https://github.com/joy7758/verifiable-agent-demo`.
+
 A minimal end-to-end demo connecting DPP-style objects, ARO-style audit evidence, and MVK-style deterministic verification.
 
 Workflow:

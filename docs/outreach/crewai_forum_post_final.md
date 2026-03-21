@@ -19,7 +19,7 @@ systems rather than optional observability features.
 
 Architecture whitepaper:
 
-- `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/governance_architecture_whitepaper.pdf`
+- `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/whitepaper/governance_architecture_whitepaper.pdf`
 
 Architecture overview repo:
 

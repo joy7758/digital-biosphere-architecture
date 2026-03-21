@@ -27,4 +27,4 @@ QR assets:
 - `business-card/qr/`
 
 Build command:
-- `python3 print-final/design-src/build_print_assets.py`
+- `python3 archive/legacy-event-materials/print-final/design-src/build_print_assets.py`

@@ -20,7 +20,8 @@ TITLE = "Digital Biosphere Architecture"
 SUBTITLE = "A governance-oriented architecture for autonomous AI systems"
 FOOTER = "A layered model for identity, interaction, control, runtime truth, and evidence."
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+# This tool now lives under diagrams/tools/ instead of the root scripts/ directory.
+REPO_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = REPO_ROOT / "assets/architecture"
 SVG_PATH = OUTPUT_DIR / "digital-biosphere-architecture-stack.svg"
 PNG_PATH = OUTPUT_DIR / "digital-biosphere-architecture-stack.png"
