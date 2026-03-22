@@ -1,3 +1,14 @@
+<!-- language-switch:start -->
+<p>
+  <a href="./README.md">
+    <img src="https://img.shields.io/badge/English-Current-1f883d?style=for-the-badge" alt="English">
+  </a>
+  <a href="./README.zh-CN.md">
+    <img src="https://img.shields.io/badge/Chinese-Switch-0f172a?style=for-the-badge" alt="Chinese">
+  </a>
+</p>
+<!-- language-switch:end -->
+
 # Digital Biosphere Architecture
 
 This repository is the explanation hub for a five-layer verifiable autonomous systems stack.
