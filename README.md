@@ -16,7 +16,7 @@ It explains how increasingly autonomous AI systems fit together across the Perso
 - not the walkthrough demo
 - not the audit control plane
 
-## Three ways to enter
+## Four ways to enter
 
 - system view -> [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture)
 - concrete execution-evidence entry -> [agent-evidence](https://github.com/joy7758/agent-evidence)
@@ -148,7 +148,7 @@ https://github.com/joy7758/aro-audit
 
 - [Canonical terms](docs/canonical-terms.md) for architecture vocabulary and repository-name distinctions.
 - [Repository map](docs/repository-map.md) for repository roles, layer placement, and entry guidance.
-- [Standard Entry Matrix](docs/standard-entry-matrix.md) for the canonical hub, evidence, demo, audit, and layer-entry surfaces.
+- [Entry Surface Matrix](docs/standard-entry-matrix.md) for the canonical hub, evidence, demo, audit, and layer-repo surfaces.
 - [Interaction Layer](docs/interaction-layer.md) for the interaction-layer rationale and boundaries.
 - [Five-Layer Stack](docs/five-layer-stack.md) for the one-page stack summary.
 - [Canonical Stack](#canonical-stack), [Repository Roles](#repository-roles), and [Layer Notes](#layer-notes) in this README for the main architecture overview.

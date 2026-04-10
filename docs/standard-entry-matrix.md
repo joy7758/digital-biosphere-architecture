@@ -1,10 +1,19 @@
-# Standard Entry Matrix
+# Entry Surface Matrix
 
-This repository defines the canonical entry structure for the Digital Biosphere Architecture.
+This repository maps the main public entry surfaces and layer repositories for the Digital Biosphere Architecture.
 
-## Primary Entry Points
+## Ecosystem Entry Surfaces
 
-| Layer | Standard Entry | Repository |
+| Need | Entry surface | Repository |
+| --- | --- | --- |
+| system view | Digital Biosphere Architecture | digital-biosphere-architecture |
+| concrete execution-evidence entry | Agent Evidence | agent-evidence |
+| shortest walkthrough | Verifiable Agent Demo | verifiable-agent-demo |
+| post-execution audit control plane | ARO-Audit | aro-audit |
+
+## Layer Repos
+
+| Layer | Layer repo | Repository |
 |------|------|------|
 | Persona Object | POP | persona-object-protocol |
 | Interaction Protocol | AIP | agent-intent-protocol |
@@ -12,19 +21,19 @@ This repository defines the canonical entry structure for the Digital Biosphere 
 | Execution Integrity | MVK | fdo-kernel-mvk |
 | Audit Evidence | ARO-Audit | aro-audit |
 
-## Roles
+## Role Notes
 
-POP  
-Defines the canonical persona object structure.
+- Digital Biosphere Architecture  
+  Canonical architecture hub and interpretive entry for the whole ecosystem.
 
-AIP  
-Defines interaction semantics between agents.
+- Agent Evidence  
+  Concrete execution-evidence entry for packaging runtime execution into offline-verifiable evidence bundles.
 
-Token Governor  
-Defines runtime governance policies.
+- Verifiable Agent Demo  
+  Walkthrough demo for the shortest cross-layer path.
 
-MVK  
-Provides deterministic execution verification.
+- ARO-Audit  
+  Post-execution audit control plane for receipts, replay-oriented review, and conformance.
 
-ARO-Audit  
-Defines exportable and reviewable audit evidence artifacts.
+- POP / AIP / Token Governor / MVK  
+  Layer repos for persona, interaction, governance, and execution integrity.
