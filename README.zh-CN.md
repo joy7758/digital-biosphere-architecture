@@ -16,7 +16,7 @@
 - 不是 walkthrough demo
 - 不是 audit control plane
 
-## 三种进入方式
+## 四种进入方式
 
 - system view -> [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture)
 - concrete execution-evidence entry -> [agent-evidence](https://github.com/joy7758/agent-evidence)
@@ -146,7 +146,7 @@ https://github.com/joy7758/aro-audit
 
 - [规范术语](docs/canonical-terms.md) 用于架构词汇和仓库名称区别。
 - [仓库地图](docs/repository-map.md) 用于仓库角色、图层放置和条目指导。
-- [标准入口矩阵](docs/standard-entry-matrix.md) 用于查看 canonical hub、evidence、demo、audit 与 layer-entry 的总导航。
+- [入口表面矩阵](docs/standard-entry-matrix.md) 用于查看 canonical hub、evidence、demo、audit 与各分层仓库的总导航。
 - [交互层](docs/interaction-layer.md) 交互层的基本原理和边界。
 - [五层堆栈](docs/five-layer-stack.md) 用于一页堆栈摘要。
 - 本 README 中的 [规范堆栈](#规范堆栈)、[仓库角色](#仓库角色) 和 [图层注释](#图层注释) 提供主架构视图。
