@@ -2,13 +2,20 @@
 
 We have recently tightened the public entry structure of the Digital Biosphere Architecture.
 
-The current architecture is now presented as a standard entry matrix across five layers:
+The public route now starts from `digital-biosphere-architecture` as the
+canonical architecture hub, then branches to:
+
+- `agent-evidence` as the concrete execution-evidence entry
+- `verifiable-agent-demo` as the shortest walkthrough
+- `aro-audit` as the post-execution audit control plane
+
+Within that routing, the architecture still spans five coordinated layers:
 
 - POP as the persona object entry
 - AIP as the interaction protocol entry
 - Token Governor as the runtime governance entry
 - MVK as the execution integrity verification entry
-- ARO-Audit as the audit evidence profile entry
+- ARO-Audit as the audit-layer control plane and profile-discussion surface
 
 We are not presenting this as a finalized FDO standard.
 

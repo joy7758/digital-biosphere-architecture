@@ -23,7 +23,13 @@ The architecture is currently organized into five coordinated layers:
 - AIP: interaction protocol standard entry
 - Token Governor: governance runtime entry
 - MVK: execution integrity verification entry
-- ARO-Audit: audit evidence profile entry
+- ARO-Audit: audit-layer control plane and profile-discussion surface
+
+Publicly, readers should start with
+`digital-biosphere-architecture` as the canonical architecture hub. From there,
+`agent-evidence` is the concrete execution-evidence entry,
+`verifiable-agent-demo` is the shortest walkthrough, and `aro-audit` is the
+post-execution audit control plane.
 
 Our current working interpretation is:
 

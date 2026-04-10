@@ -30,7 +30,11 @@ This is why the architecture is split into POP, AIP, Token Governor, MVK, and AR
 
 We are not claiming a full FDO standard.
 
-We are identifying candidate FDO-facing entry artifacts:
+Publicly, readers should enter through the architecture hub first, then branch
+to Agent Evidence for the concrete execution-evidence package, Verifiable Agent
+Demo for the shortest walkthrough, and ARO-Audit for post-execution review.
+
+Within that routing, we are identifying candidate FDO-facing layer artifacts:
 - POP as persona object profile candidate
 - AIP as interaction semantics profile candidate
 - ARO-Audit as audit evidence profile candidate
@@ -55,7 +59,8 @@ ARO-Audit defines bounded and reviewable audit evidence artifacts with integrity
 
 The contribution to FDO discussion is not that we already have a finalized standard.
 
-The contribution is that we now have a minimal candidate entry matrix for discussing autonomous AI systems in terms of:
+The contribution is that we now have a minimal architecture matrix for
+discussing autonomous AI systems in terms of:
 - object
 - profile
 - conformance

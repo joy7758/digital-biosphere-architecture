@@ -32,21 +32,24 @@ Benchmark report with charts:
 - `https://github.com/joy7758/agent-governance-benchmark/blob/main/docs/figures/audit_reconstruction_time.png`
 - `https://github.com/joy7758/agent-governance-benchmark/blob/main/docs/figures/decision_latency.png`
 
-Evidence Object spec:
+Concrete execution-evidence package:
 
-- `https://github.com/joy7758/aro-audit/blob/main/docs/evidence-object-spec.md`
+- `https://github.com/joy7758/agent-evidence`
 
-## CrewAI entry point
+## CrewAI routing
 
-The two practical integration surfaces are:
+Public routing starts from the architecture hub. From there, the practical
+CrewAI surfaces are:
 
 1. governance middleware before high-risk tool execution
-2. audit evidence generation after multi-agent execution
+2. concrete evidence packaging through Agent Evidence
+3. post-execution review through ARO-Audit
 
 CrewAI-style demo:
 
 - `https://github.com/joy7758/token-governor/blob/main/examples/crewai_demo.py`
-- `https://github.com/joy7758/aro-audit/blob/main/examples/crewai_audit_demo.py`
+- `https://github.com/joy7758/agent-evidence`
+- `https://github.com/joy7758/aro-audit`
 
 The demo prints:
 
@@ -54,7 +57,7 @@ The demo prints:
 - governed agent output
 - policy decisions
 - token usage
-- generated evidence object
+- generated evidence package
 
 ## Discussion question
 
@@ -65,4 +68,4 @@ More specifically:
 
 1. Where should governance attach in a CrewAI workflow?
 2. Which post-run evidence fields are actually useful for operators?
-3. What would make a CrewAI audit artifact portable across runtimes?
+3. What would make a CrewAI evidence package and audit artifact portable across runtimes?

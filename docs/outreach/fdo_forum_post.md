@@ -1,8 +1,8 @@
 # FDO Forum Post Draft
 
-I am preparing an Evidence Object profile for AI runtime governance and would
-like feedback from the FDO community on whether this is a useful object class
-for discussion.
+I am preparing a discussion-ready architecture surface for AI runtime
+governance and would like feedback from the FDO community on whether this is a
+useful object-facing direction.
 
 Architecture overview:
 
@@ -12,8 +12,13 @@ Architecture overview:
 - Execution Integrity Layer
 - Audit Evidence Layer
 
-The key artifact for FDO discussion is the Evidence Object defined in
-`aro-audit`, which captures:
+Public routing starts from the architecture hub. From there, `agent-evidence`
+is the concrete execution-evidence entry, `verifiable-agent-demo` is the
+shortest walkthrough, and `aro-audit` is the post-execution audit control
+plane.
+
+For FDO-facing discussion, the current concrete execution-evidence package
+centers:
 
 - agent identity
 - persona identity
@@ -28,11 +33,11 @@ Public links:
 
 - Architecture repo: `https://github.com/joy7758/digital-biosphere-architecture`
 - Benchmark repo: `https://github.com/joy7758/agent-governance-benchmark`
-- Evidence Object spec: `https://github.com/joy7758/aro-audit/blob/main/docs/evidence-object-spec.md`
-- FDO profile draft: `https://github.com/joy7758/aro-audit/tree/main/fdo-profile`
+- Agent Evidence repo: `https://github.com/joy7758/agent-evidence`
+- ARO-Audit repo: `https://github.com/joy7758/aro-audit`
 
 The immediate goal is not to claim a finalized standard, but to offer a
-portable governance evidence object that can be discussed in terms of PID,
+portable governance evidence package that can be discussed in terms of PID,
 metadata, provenance, and integrity reference.
 
 Questions for feedback:
