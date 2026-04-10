@@ -23,16 +23,6 @@
 - shortest walkthrough -> [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
 - post-execution audit control plane -> [aro-audit](https://github.com/joy7758/aro-audit)
 
-## 五层地图
-
-1. **角色层** -> [persona-object-protocol](https://github.com/joy7758/persona-object-protocol)
-2. **交互层** -> [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)
-3. **治理层** -> [token-governor](https://github.com/joy7758/token-governor)
-4. **执行完整性层** -> [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk)
-5. **审计证据层** -> [aro-audit](https://github.com/joy7758/aro-audit)
-
-[agent-evidence](https://github.com/joy7758/agent-evidence) 是具体的 execution-evidence 入口，用来把运行时执行打包成可离线验证的证据 bundle，并承接执行到审计之间的交付面。
-
 ## 仓库角色
 
 | 仓库 | 角色 |
@@ -93,6 +83,16 @@ flowchart TB
 
     DBA --> Persona --> Interaction --> Governance --> Execution --> Audit
 ```
+
+## 五层地图
+
+1. **角色层** -> [persona-object-protocol](https://github.com/joy7758/persona-object-protocol)
+2. **交互层** -> [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)
+3. **治理层** -> [token-governor](https://github.com/joy7758/token-governor)
+4. **执行完整性层** -> [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk)
+5. **审计证据层** -> [aro-audit](https://github.com/joy7758/aro-audit)
+
+[agent-evidence](https://github.com/joy7758/agent-evidence) 是具体的 execution-evidence 入口，用来把运行时执行打包成可离线验证的证据 bundle，并承接执行到审计之间的交付面。
 
 ## FDO提案输入
 

@@ -23,16 +23,6 @@ It explains how increasingly autonomous AI systems fit together across the Perso
 - shortest walkthrough -> [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
 - post-execution audit control plane -> [aro-audit](https://github.com/joy7758/aro-audit)
 
-## Five-layer map
-
-1. **Persona Layer** -> [persona-object-protocol](https://github.com/joy7758/persona-object-protocol)
-2. **Interaction Layer** -> [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)
-3. **Governance Layer** -> [token-governor](https://github.com/joy7758/token-governor)
-4. **Execution Integrity Layer** -> [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk)
-5. **Audit Evidence Layer** -> [aro-audit](https://github.com/joy7758/aro-audit)
-
-[agent-evidence](https://github.com/joy7758/agent-evidence) is the concrete execution-evidence entry for packaging runtime execution into offline-verifiable evidence bundles across the execution-to-audit handoff.
-
 ## Repository roles
 
 | Repository | Role |
@@ -95,6 +85,16 @@ flowchart TB
 
     DBA --> Persona --> Interaction --> Governance --> Execution --> Audit
 ```
+
+## Five-layer map
+
+1. **Persona Layer** -> [persona-object-protocol](https://github.com/joy7758/persona-object-protocol)
+2. **Interaction Layer** -> [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)
+3. **Governance Layer** -> [token-governor](https://github.com/joy7758/token-governor)
+4. **Execution Integrity Layer** -> [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk)
+5. **Audit Evidence Layer** -> [aro-audit](https://github.com/joy7758/aro-audit)
+
+[agent-evidence](https://github.com/joy7758/agent-evidence) is the concrete execution-evidence entry for packaging runtime execution into offline-verifiable evidence bundles across the execution-to-audit handoff.
 
 ## FDO Proposal Entry
 
