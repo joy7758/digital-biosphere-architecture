@@ -29,11 +29,24 @@ Reference implementations:
 - AIP for interaction
 - Token Governor for runtime governance
 - MVK for execution integrity
-- ARO-Audit for evidence export
+- Agent Evidence for concrete execution-evidence packaging
+- ARO-Audit for post-execution review and evidence export
 
-## Evidence Object
+## Public routing
 
-ARO-Audit defines a portable Evidence Object with these core fields:
+Start with `digital-biosphere-architecture` as the canonical architecture hub.
+From there:
+
+- use `agent-evidence` for the concrete execution-evidence entry
+- use `verifiable-agent-demo` for the shortest walkthrough
+- use `aro-audit` for post-execution review
+
+## Concrete execution-evidence package
+
+Agent Evidence provides the current concrete execution-evidence package surface.
+ARO-Audit remains the downstream audit control plane for review and conformance.
+
+The current package centers these core fields:
 
 - `agent_id`
 - `persona_id`
@@ -44,7 +57,7 @@ ARO-Audit defines a portable Evidence Object with these core fields:
 - `tool_calls`
 - `result_summary`
 
-This object is meant to be small enough to move across systems while still
+This package is meant to stay small enough to move across systems while still
 supporting audit reconstruction and external review.
 
 ## Benchmark results
@@ -70,14 +83,16 @@ violations and audit reconstruction time substantially.
 
 ## Integration examples
 
-Two external integration entry points are now documented:
+Two external integration surfaces are now documented:
 
 - LangChain integration via Token Governor middleware
-- CrewAI integration via audit capture and evidence object export
+- CrewAI integration via Agent Evidence packaging and ARO-Audit review
 
 Relevant repositories:
 
 - `digital-biosphere-architecture`
+- `agent-evidence`
+- `verifiable-agent-demo`
 - `token-governor`
 - `aro-audit`
 - `agent-governance-benchmark`
