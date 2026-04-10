@@ -8,9 +8,15 @@ It is a discussion-ready architecture with candidate FDO-facing entry artifacts.
 
 ## Q2. What is the strongest candidate artifact?
 
-ARO-Audit is currently the strongest FDO-facing profile candidate.
+For public routing, start with the architecture hub.
 
-POP and AIP are also strong candidates in object and interaction semantics terms.
+From there, Agent Evidence is the concrete execution-evidence entry,
+Verifiable Agent Demo is the shortest walkthrough, and ARO-Audit is the
+post-execution audit control plane.
+
+Within the current FDO-facing discussion, POP and AIP remain strong object and
+interaction-semantics candidates, while ARO-Audit remains an audit-layer
+candidate.
 
 ## Q3. Why not present this as one big profile?
 

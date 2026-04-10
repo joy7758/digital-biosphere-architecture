@@ -28,18 +28,23 @@ The architecture is organized as a five-layer stack:
 4. Execution Integrity Layer
 5. Audit Evidence Layer
 
-The LangChain-facing entry point is the Governance Layer via Token Governor,
-paired with evidence export through ARO-Audit.
+Public routing starts from the architecture hub. For the concrete
+execution-evidence package, use Agent Evidence. For LangChain-specific layer
+surfaces, Token Governor remains the governance layer and ARO-Audit remains the
+post-execution audit control plane.
 
 Whitepaper:
 
 - `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/governance_architecture_whitepaper.md`
 - `https://github.com/joy7758/digital-biosphere-architecture/blob/main/docs/governance_architecture_whitepaper.pdf`
 
-## 3. Evidence Object
+## 3. Concrete execution-evidence package
 
-The Evidence Object is a portable audit artifact for agent runtime actions. It
-captures:
+Agent Evidence packages agent/runtime execution into portable evidence bundles
+for offline verification.
+
+The current package centers the v0.1 operation-accountability path rather than
+an older Evidence Object top-line surface. It captures:
 
 - `agent_id`
 - `persona_id`
@@ -50,10 +55,9 @@ captures:
 - `tool_calls`
 - `result_summary`
 
-Spec:
+Repository:
 
-- `https://github.com/joy7758/aro-audit/blob/main/docs/evidence-object-spec.md`
-- `https://github.com/joy7758/aro-audit/blob/main/schema/evidence.schema.json`
+- `https://github.com/joy7758/agent-evidence`
 
 ## 4. Benchmark
 
@@ -89,6 +93,7 @@ LangChain demo:
 Core repositories:
 
 - Architecture: `https://github.com/joy7758/digital-biosphere-architecture`
+- Agent Evidence: `https://github.com/joy7758/agent-evidence`
 - Benchmark: `https://github.com/joy7758/agent-governance-benchmark`
 - Token Governor: `https://github.com/joy7758/token-governor`
 - ARO-Audit: `https://github.com/joy7758/aro-audit`
@@ -97,4 +102,4 @@ I am interested in feedback on three specific points:
 
 1. Which LangChain integration surface is most useful for governance middleware?
 2. Are these benchmark scenarios credible enough for community review?
-3. What would make the Evidence Object practical in production LangChain workflows?
+3. What would make Agent Evidence / AEP v0.1 practical in production LangChain workflows?

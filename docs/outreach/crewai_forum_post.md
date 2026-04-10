@@ -12,22 +12,23 @@ Architecture overview:
 - Execution Integrity Layer
 - Audit Evidence Layer
 
-For CrewAI, the practical entry points are:
+Public routing starts from the architecture hub. For CrewAI, the practical
+surfaces are:
 
 - governance middleware before high-risk tool execution
-- audit capture after multi-agent execution
-- portable Evidence Object export for post-run review
+- concrete evidence packaging through Agent Evidence
+- post-execution review through ARO-Audit
 
 Public links:
 
 - Architecture repo: `https://github.com/joy7758/digital-biosphere-architecture`
 - Benchmark repo: `https://github.com/joy7758/agent-governance-benchmark`
-- Evidence Object spec: `https://github.com/joy7758/aro-audit/blob/main/docs/evidence-object-spec.md`
+- Agent Evidence repo: `https://github.com/joy7758/agent-evidence`
 - ARO-Audit repo: `https://github.com/joy7758/aro-audit`
 - Token Governor repo: `https://github.com/joy7758/token-governor`
 
 I included a CrewAI-style demo showing baseline vs governed behavior, policy
-decisions, token usage, and generated evidence object output.
+decisions, token usage, and generated evidence output.
 
 The main discussion question is:
 
