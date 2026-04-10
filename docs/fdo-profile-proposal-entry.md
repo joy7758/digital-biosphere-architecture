@@ -1,6 +1,13 @@
 # FDO Profile Proposal Entry
 
-This document defines how the Digital Biosphere Architecture should be read as a set of candidate FDO-facing entry artifacts.
+This document defines how the Digital Biosphere Architecture should be read as a
+set of candidate FDO-facing layer artifacts.
+
+For public routing, start with
+`digital-biosphere-architecture` as the architecture hub. From there, route to
+`agent-evidence` for the concrete execution-evidence entry,
+`verifiable-agent-demo` for the shortest walkthrough, and `aro-audit` for the
+post-execution audit control plane.
 
 ## Purpose
 
@@ -13,7 +20,7 @@ The goal is not to claim a full FDO standard, but to identify which parts of the
 - integrity reference
 - validation fixture
 
-## Candidate Entry Artifacts
+## Candidate Layer Artifacts
 
 | Architecture Layer | Repository | Candidate FDO-facing Role |
 |---|---|---|
@@ -27,14 +34,13 @@ The goal is not to claim a full FDO standard, but to identify which parts of the
 
 These repositories should be interpreted as a coordinated architecture rather than isolated projects.
 
-The standard entry sequence is:
+The public entry sequence is:
 
 1. Digital Biosphere Architecture
-2. POP
-3. AIP
+2. Agent Evidence
+3. Verifiable Agent Demo
 4. ARO-Audit
-5. MVK
-6. Token Governor
+5. layer repositories such as POP, AIP, Token Governor, and MVK
 
 ## Scope Boundary
 

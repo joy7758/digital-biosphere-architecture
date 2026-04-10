@@ -4,11 +4,55 @@
 
 # Digital Biosphere Architecture
 
-Digital Biosphere Architecture is a governance-oriented architecture for increasingly autonomous AI systems.
+This repository is the canonical architecture hub for the Digital Biosphere ecosystem.
 
-This repository is not a standalone agent framework. It is the narrative hub for a layered architecture that organizes the ecosystem into five canonical layers: Persona Layer, Interaction Layer, Governance Layer, Execution Integrity Layer, and Audit Evidence Layer.
+It explains how increasingly autonomous AI systems fit together across the Persona Layer, Interaction Layer, Governance Layer, Execution Integrity Layer, and Audit Evidence Layer. Use this repository for the system view, repository boundaries, and cross-repo navigation.
 
-For terminology and repository roles, use this repository as the canonical interpretive entry point for the broader ecosystem.
+## What this repo is
+
+- the canonical architecture hub for system context and layer boundaries
+- the interpretive entry for repository roles and cross-repo navigation
+- not the concrete evidence package
+- not the walkthrough demo
+- not the audit control plane
+
+## Three ways to enter
+
+- system view -> [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture)
+- concrete execution-evidence entry -> [agent-evidence](https://github.com/joy7758/agent-evidence)
+- shortest walkthrough -> [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
+- post-execution audit control plane -> [aro-audit](https://github.com/joy7758/aro-audit)
+
+## Five-layer map
+
+1. **Persona Layer** -> [persona-object-protocol](https://github.com/joy7758/persona-object-protocol)
+2. **Interaction Layer** -> [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)
+3. **Governance Layer** -> [token-governor](https://github.com/joy7758/token-governor)
+4. **Execution Integrity Layer** -> [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk)
+5. **Audit Evidence Layer** -> [aro-audit](https://github.com/joy7758/aro-audit)
+
+[agent-evidence](https://github.com/joy7758/agent-evidence) is the concrete execution-evidence entry for packaging runtime execution into offline-verifiable evidence bundles across the execution-to-audit handoff.
+
+## Repository roles
+
+| Repository | Role |
+| --- | --- |
+| [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture) | canonical architecture hub |
+| [agent-evidence](https://github.com/joy7758/agent-evidence) | concrete execution-evidence entry |
+| [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo) | walkthrough demo |
+| [aro-audit](https://github.com/joy7758/aro-audit) | post-execution audit control plane |
+| [persona-object-protocol](https://github.com/joy7758/persona-object-protocol) | layer repo for the Persona Layer |
+| [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol) | layer repo for the Interaction Layer |
+| [token-governor](https://github.com/joy7758/token-governor) | layer repo for the Governance Layer |
+| [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) | layer repo for the Execution Integrity Layer |
+
+## Where to start
+
+- For the canonical system view, stay in this repository and read [Canonical Stack](#canonical-stack), [Repository Roles](#repository-roles), and [Canonical Navigation](#canonical-navigation).
+- For the concrete execution-evidence package, go to [agent-evidence](https://github.com/joy7758/agent-evidence).
+- For the shortest guided walkthrough, go to [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo).
+- For post-execution review, receipts, replay-oriented audit, and conformance, go to [aro-audit](https://github.com/joy7758/aro-audit).
+- For layer-specific work, use [persona-object-protocol](https://github.com/joy7758/persona-object-protocol), [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol), [token-governor](https://github.com/joy7758/token-governor), and [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk).
 
 ## Canonical Stack
 
@@ -52,10 +96,6 @@ flowchart TB
     DBA --> Persona --> Interaction --> Governance --> Execution --> Audit
 ```
 
-## Standard Entry Matrix
-
-[docs/standard-entry-matrix.md](docs/standard-entry-matrix.md)
-
 ## FDO Proposal Entry
 
 See [docs/fdo-profile-proposal-entry.md](docs/fdo-profile-proposal-entry.md)
@@ -96,37 +136,24 @@ https://github.com/joy7758/token-governor
 
 https://github.com/joy7758/fdo-kernel-mvk
 
+### Concrete Execution-Evidence Entry
+
+https://github.com/joy7758/agent-evidence
+
 ### Audit Evidence Layer
 
 https://github.com/joy7758/aro-audit
-
-## Repository Roles
-
-| Repository | Role |
-| --- | --- |
-| [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture) | narrative hub and system overview |
-| [persona-object-protocol](https://github.com/joy7758/persona-object-protocol) | persona layer |
-| [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol) | interaction layer |
-| [token-governor](https://github.com/joy7758/token-governor) | governance layer |
-| [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) | execution integrity reference for verifiable runtime evidence |
-| [aro-audit](https://github.com/joy7758/aro-audit) | audit evidence layer |
-| [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo) | end-to-end demonstration |
 
 ## Canonical Navigation
 
 - [Canonical terms](docs/canonical-terms.md) for architecture vocabulary and repository-name distinctions.
 - [Repository map](docs/repository-map.md) for repository roles, layer placement, and entry guidance.
+- [Standard Entry Matrix](docs/standard-entry-matrix.md) for the canonical hub, evidence, demo, audit, and layer-entry surfaces.
 - [Interaction Layer](docs/interaction-layer.md) for the interaction-layer rationale and boundaries.
 - [Five-Layer Stack](docs/five-layer-stack.md) for the one-page stack summary.
 - [Canonical Stack](#canonical-stack), [Repository Roles](#repository-roles), and [Layer Notes](#layer-notes) in this README for the main architecture overview.
-- [Verifiable Agent Demo](https://github.com/joy7758/verifiable-agent-demo) for the smallest guided walkthrough across layers.
-
-## Where to Start
-
-- For the system view, stay in this repository.
-- For the persona-layer entry point, go to [persona-object-protocol](https://github.com/joy7758/persona-object-protocol).
-- For the interaction-layer draft, go to [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol).
-- For the smallest cross-layer walkthrough, go to [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo).
+- [Agent Evidence](https://github.com/joy7758/agent-evidence) for the concrete execution-evidence entry.
+- [Verifiable Agent Demo](https://github.com/joy7758/verifiable-agent-demo) for the shortest guided walkthrough across layers.
 
 ## Why this stack exists
 
@@ -138,6 +165,7 @@ https://github.com/joy7758/aro-audit
 
 ## Start in 5 Minutes
 
+- [Agent Evidence](https://github.com/joy7758/agent-evidence) for the concrete execution-evidence package and offline verification path.
 - [Verifiable Agent Demo](https://github.com/joy7758/verifiable-agent-demo) for a compact end-to-end walkthrough.
 - [POP quick trial](https://github.com/joy7758/persona-object-protocol/blob/main/TRY_POP.md) for a minimal persona-layer entry point.
 - [Agent Intent Protocol](https://github.com/joy7758/agent-intent-protocol) for the interaction-layer draft.

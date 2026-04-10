@@ -4,17 +4,59 @@
 
 # 数字生物圈架构
 
-数字生物圈架构是一种面向治理的架构，适用于日益自治的人工智能系统。
+这个仓库是 Digital Biosphere 生态的规范架构总入口。
 
-该仓库不是独立的代理框架。它是分层架构的叙述中心，将生态系统组织为五个规范层：角色层、交互层、治理层、执行完整性层和审计证据层。
+它解释了日益自治的 AI 系统如何落在五个规范层之中：角色层、交互层、治理层、执行完整性层和审计证据层。需要系统视角、仓库边界或跨仓导航时，应先从这里进入。
 
-对于术语和仓库角色，请使用此仓库作为更广泛的生态系统的规范解释入口点。
+## 本仓库是什么
+
+- Digital Biosphere 的规范架构总入口
+- 用来解释仓库角色、层边界和跨仓导航的解释性入口
+- 不是具体的证据 package
+- 不是 walkthrough demo
+- 不是 audit control plane
+
+## 三种进入方式
+
+- system view -> [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture)
+- concrete execution-evidence entry -> [agent-evidence](https://github.com/joy7758/agent-evidence)
+- shortest walkthrough -> [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
+- post-execution audit control plane -> [aro-audit](https://github.com/joy7758/aro-audit)
+
+## 五层地图
+
+1. **角色层** -> [persona-object-protocol](https://github.com/joy7758/persona-object-protocol)
+2. **交互层** -> [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)
+3. **治理层** -> [token-governor](https://github.com/joy7758/token-governor)
+4. **执行完整性层** -> [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk)
+5. **审计证据层** -> [aro-audit](https://github.com/joy7758/aro-audit)
+
+[agent-evidence](https://github.com/joy7758/agent-evidence) 是具体的 execution-evidence 入口，用来把运行时执行打包成可离线验证的证据 bundle，并承接执行到审计之间的交付面。
+
+## 仓库角色
+
+| 仓库 | 角色 |
+| --- | --- |
+| [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture) | 规范架构总入口 |
+| [agent-evidence](https://github.com/joy7758/agent-evidence) | 具体的 execution-evidence 入口 |
+| [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo) | walkthrough demo |
+| [aro-audit](https://github.com/joy7758/aro-audit) | post-execution audit control plane |
+| [persona-object-protocol](https://github.com/joy7758/persona-object-protocol) | 角色层仓库 |
+| [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol) | 交互层仓库 |
+| [token-governor](https://github.com/joy7758/token-governor) | 治理层仓库 |
+| [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) | 执行完整性层仓库 |
+
+## 从哪里开始
+
+- 要看规范系统视角，就留在本仓库，先读 [规范栈](#规范堆栈)、[仓库角色](#仓库角色) 和 [规范导航](#规范导航)。
+- 要进入具体的 execution-evidence package，就去 [agent-evidence](https://github.com/joy7758/agent-evidence)。
+- 要走最短的跨层 walkthrough，就去 [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)。
+- 要做执行后的审阅、receipt、replay-oriented audit 和 conformance，就去 [aro-audit](https://github.com/joy7758/aro-audit)。
+- 要看具体分层仓库，就用 [persona-object-protocol](https://github.com/joy7758/persona-object-protocol)、[agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)、[token-governor](https://github.com/joy7758/token-governor) 和 [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk)。
 
 ## 规范堆栈
 
-数字生物圈架构
-
-层数：
+数字生物圈架构由五个规范层组成：
 
 1. **角色层**
 实现：POP（角色对象协议）
@@ -51,10 +93,6 @@ flowchart TB
 
     DBA --> Persona --> Interaction --> Governance --> Execution --> Audit
 ```
-
-## 标准输入矩阵
-
-[文档/standard-entry-matrix.md](docs/standard-entry-matrix.md)
 
 ## FDO提案输入
 
@@ -96,37 +134,24 @@ https://github.com/joy7758/token-governor
 
 https://github.com/joy7758/fdo-kernel-mvk
 
+### 具体的 Execution-Evidence 入口
+
+https://github.com/joy7758/agent-evidence
+
 ### 审计证据层
 
 https://github.com/joy7758/aro-audit
-
-## 仓库角色
-
-|仓库 |角色 |
-| --- | --- |
-| [数字生物圈架构](https://github.com/joy7758/digital-biosphere-architecture) |叙事中心和系统概述|
-| [角色对象协议](https://github.com/joy7758/persona-object-protocol) |角色层|
-| [智能体意图协议](https://github.com/joy7758/agent-intent-protocol) |交互层 |
-| [代币调控者](https://github.com/joy7758/token-governor) |治理层|
-| [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) |可验证运行时证据的执行完整性参考 |
-| [aro-审计](https://github.com/joy7758/aro-audit) |审计证据层|
-| [可验证代理演示](https://github.com/joy7758/verifiable-agent-demo) |端到端演示|
 
 ## 规范导航
 
 - [规范术语](docs/canonical-terms.md) 用于架构词汇和仓库名称区别。
 - [仓库地图](docs/repository-map.md) 用于仓库角色、图层放置和条目指导。
+- [标准入口矩阵](docs/standard-entry-matrix.md) 用于查看 canonical hub、evidence、demo、audit 与 layer-entry 的总导航。
 - [交互层](docs/interaction-layer.md) 交互层的基本原理和边界。
 - [五层堆栈](docs/five-layer-stack.md) 用于一页堆栈摘要。
-- 本 README 中的 [Canonical Stack](#canonical-stack)、[Repository Roles](#repository-roles) 和 [Layer Notes](#layer-notes) 提供了主要架构概述。
-- [可验证代理演示](https://github.com/joy7758/verifiable-agent-demo) 用于跨层的最小引导演练。
-
-## 从哪里开始
-
-- 对于系统视图，请留在此仓库中。
-- 对于角色层入口点，请转至 [角色对象协议](https://github.com/joy7758/persona-object-protocol)。
-- 对于交互层草案，请转至 [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol)。
-- 对于最小的跨层演练，请转至 [可验证代理演示](https://github.com/joy7758/verifiable-agent-demo)。
+- 本 README 中的 [规范堆栈](#规范堆栈)、[仓库角色](#仓库角色) 和 [图层注释](#图层注释) 提供主架构视图。
+- [Agent Evidence](https://github.com/joy7758/agent-evidence) 是具体的 execution-evidence 入口。
+- [可验证代理演示](https://github.com/joy7758/verifiable-agent-demo) 提供最短的跨层 walkthrough。
 
 ## 为什么这个堆栈存在
 
@@ -136,8 +161,9 @@ https://github.com/joy7758/aro-audit
 - 执行完整性很重要，因为运行时声明需要有关实际发生情况的可检查证据。
 - 审计证据必须是可导出的，因为外部审核者需要可移植的工件，而不是仅限内部的断言。
 
-## 5 分钟后开始
+## 5 分钟起步
 
+- [Agent Evidence](https://github.com/joy7758/agent-evidence) 用于具体的 execution-evidence package 和离线验证路径。
 - [可验证代理演示](https://github.com/joy7758/verifiable-agent-demo) 用于紧凑的端到端演练。
 - [POP 快速试用](https://github.com/joy7758/persona-object-protocol/blob/main/TRY_POP.md) 用于最小角色层入口点。
 - [智能体意图协议](https://github.com/joy7758/agent-intent-protocol)交互层草案。
