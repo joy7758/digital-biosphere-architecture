@@ -4,45 +4,32 @@
 
 # Digital Biosphere Architecture
 
-This repository is the canonical architecture hub for the Digital Biosphere ecosystem.
+This repository is the canonical architecture hub for the Digital Biosphere Architecture.
 
-It explains how increasingly autonomous AI systems fit together across the Persona Layer, Interaction Layer, Governance Layer, Execution Integrity Layer, and Audit Evidence Layer. Use this repository for the system view, repository boundaries, and cross-repo navigation.
+Use it for the system view, repository boundaries, and cross-repo navigation. It is the architecture entry, not the implementation entry.
 
-## What this repo is
+## Start here
 
-- the canonical architecture hub for system context and layer boundaries
-- the interpretive entry for repository roles and cross-repo navigation
-- not the concrete evidence package
+- Architecture -> [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture)
+- Evidence -> [agent-evidence](https://github.com/joy7758/agent-evidence)
+- Demo -> [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
+- Audit -> [aro-audit](https://github.com/joy7758/aro-audit)
+
+## Five-layer map
+
+| Layer | Repository |
+| --- | --- |
+| Persona Layer | [persona-object-protocol](https://github.com/joy7758/persona-object-protocol) |
+| Interaction Layer | [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol) |
+| Governance Layer | [token-governor](https://github.com/joy7758/token-governor) |
+| Execution Integrity Layer | [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) |
+| Audit Evidence Layer | [aro-audit](https://github.com/joy7758/aro-audit) |
+
+## What this repo is not
+
+- not the concrete evidence implementation
 - not the walkthrough demo
 - not the audit control plane
-
-## Four ways to enter
-
-- system view -> [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture)
-- concrete execution-evidence entry -> [agent-evidence](https://github.com/joy7758/agent-evidence)
-- shortest walkthrough -> [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
-- post-execution audit control plane -> [aro-audit](https://github.com/joy7758/aro-audit)
-
-## Repository roles
-
-| Repository | Role |
-| --- | --- |
-| [digital-biosphere-architecture](https://github.com/joy7758/digital-biosphere-architecture) | canonical architecture hub |
-| [agent-evidence](https://github.com/joy7758/agent-evidence) | concrete execution-evidence entry |
-| [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo) | walkthrough demo |
-| [aro-audit](https://github.com/joy7758/aro-audit) | post-execution audit control plane |
-| [persona-object-protocol](https://github.com/joy7758/persona-object-protocol) | layer repo for the Persona Layer |
-| [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol) | layer repo for the Interaction Layer |
-| [token-governor](https://github.com/joy7758/token-governor) | layer repo for the Governance Layer |
-| [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) | layer repo for the Execution Integrity Layer |
-
-## Where to start
-
-- For the canonical system view, stay in this repository and read [Canonical Stack](#canonical-stack), [Repository Roles](#repository-roles), and [Canonical Navigation](#canonical-navigation).
-- For the concrete execution-evidence package, go to [agent-evidence](https://github.com/joy7758/agent-evidence).
-- For the shortest guided walkthrough, go to [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo).
-- For post-execution review, receipts, replay-oriented audit, and conformance, go to [aro-audit](https://github.com/joy7758/aro-audit).
-- For layer-specific work, use [persona-object-protocol](https://github.com/joy7758/persona-object-protocol), [agent-intent-protocol](https://github.com/joy7758/agent-intent-protocol), [token-governor](https://github.com/joy7758/token-governor), and [fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk).
 
 ## Canonical Stack
 
