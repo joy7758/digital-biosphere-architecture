@@ -36,6 +36,9 @@ provides the shortest guided walkthrough surface.
 
 See [docs/execution-evidence-bridge-map.md](docs/execution-evidence-bridge-map.md).
 
+Reviewer announcement:
+[docs/announcements/execution-evidence-bridge.md](docs/announcements/execution-evidence-bridge.md).
+
 ## Five-layer map
 
 | Layer | Repository |

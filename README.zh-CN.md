@@ -39,6 +39,8 @@ fdo-kernel-mvk
 
 详见 [docs/execution-evidence-bridge-map.md](docs/execution-evidence-bridge-map.md)。
 
+面向审阅者的说明：[docs/announcements/execution-evidence-bridge.md](docs/announcements/execution-evidence-bridge.md)。
+
 ## 仓库角色
 
 | 仓库 | 角色 |

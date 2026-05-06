@@ -1,5 +1,8 @@
 # Execution Evidence Bridge Map
 
+For the reviewer-facing announcement, see:
+[docs/announcements/execution-evidence-bridge.md](announcements/execution-evidence-bridge.md).
+
 ## Layer roles
 
 ```text
