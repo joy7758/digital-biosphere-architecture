@@ -23,6 +23,22 @@
 - shortest walkthrough -> [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
 - post-execution audit control plane -> [aro-audit](https://github.com/joy7758/aro-audit)
 
+## 执行证据路径
+
+跨实现仓库的可运行 bridge：
+
+```text
+fdo-kernel-mvk
+-> audit_bundle.json
+-> AEP-compatible bundle
+-> agent-evidence verification / signed export / review pack
+-> verifiable-agent-demo walkthrough
+```
+
+[fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) 证明 deterministic execution、replay verification 和 tamper detection。[agent-evidence](https://github.com/joy7758/agent-evidence) 打包并验证可移植证据工件。[verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo) 提供最短的引导演示入口。
+
+详见 [docs/execution-evidence-bridge-map.md](docs/execution-evidence-bridge-map.md)。
+
 ## 仓库角色
 
 | 仓库 | 角色 |
@@ -213,6 +229,7 @@ https://github.com/joy7758/aro-audit
 ## 文件
 
 - [架构](docs/architecture.md)
+- [Execution Evidence Bridge Map](docs/execution-evidence-bridge-map.md)
 - [交互层](docs/interaction-layer.md)
 - [五层堆叠](docs/five-layer-stack.md)
 - [治理架构白皮书](docs/governance_architecture_whitepaper.md)

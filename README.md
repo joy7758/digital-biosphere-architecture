@@ -15,6 +15,27 @@ Use it for the system view, repository boundaries, and cross-repo navigation. It
 - Demo -> [verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
 - Audit -> [aro-audit](https://github.com/joy7758/aro-audit)
 
+## Execution evidence path
+
+Runnable bridge across the implementation surfaces:
+
+```text
+fdo-kernel-mvk
+-> audit_bundle.json
+-> AEP-compatible bundle
+-> agent-evidence verification / signed export / review pack
+-> verifiable-agent-demo walkthrough
+```
+
+[fdo-kernel-mvk](https://github.com/joy7758/fdo-kernel-mvk) proves
+deterministic execution, replay verification, and tamper detection.
+[agent-evidence](https://github.com/joy7758/agent-evidence) packages and
+verifies portable evidence artifacts.
+[verifiable-agent-demo](https://github.com/joy7758/verifiable-agent-demo)
+provides the shortest guided walkthrough surface.
+
+See [docs/execution-evidence-bridge-map.md](docs/execution-evidence-bridge-map.md).
+
 ## Five-layer map
 
 | Layer | Repository |
@@ -202,6 +223,7 @@ Suggested citation:
 ## Documents
 
 - [Architecture](docs/architecture.md)
+- [Execution Evidence Bridge Map](docs/execution-evidence-bridge-map.md)
 - [Interaction Layer](docs/interaction-layer.md)
 - [Five-Layer Stack](docs/five-layer-stack.md)
 - [Governance Architecture Whitepaper](docs/governance_architecture_whitepaper.md)
