@@ -3,6 +3,9 @@
 A runnable bridge from execution integrity proof to portable AI evidence
 handoff.
 
+For a compact one-page reviewer brief, see:
+[../briefs/execution-evidence-bridge-one-pager.md](../briefs/execution-evidence-bridge-one-pager.md).
+
 ## What changed
 
 The stack now has a documented runnable path:
