@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this architecture entry, please cite it as below."
+title: "Execution Evidence Bridge"
+type: software
+authors:
+  - family-names: "joy7758"
+repository-code: "https://github.com/joy7758/digital-biosphere-architecture"
+abstract: "Execution Evidence Bridge is a runnable AI execution evidence path: MVK proves what happened, Agent Evidence packages and verifies the proof, and Verifiable Agent Demo provides the shortest cross-stack verification walkthrough."
+keywords:
+  - AI evidence
+  - execution integrity
+  - agent evidence
+  - offline verification
+  - audit receipt
+  - verifiable AI
