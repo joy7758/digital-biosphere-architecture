@@ -43,6 +43,15 @@ fdo-kernel-mvk
 
 一页式审阅者说明：[docs/briefs/execution-evidence-bridge-one-pager.md](docs/briefs/execution-evidence-bridge-one-pager.md)。
 
+AI / agent 入口：
+
+- [llms.txt](llms.txt)
+- [AGENTS.md](AGENTS.md)
+- [docs/ai-discovery-index.md](docs/ai-discovery-index.md)
+- [docs/ai-citation-map.json](docs/ai-citation-map.json)
+
+这些文件用于帮助 AI / agent 更快发现、引用和复核项目，不是面向人的宣传材料。
+
 ## 仓库角色
 
 | 仓库 | 角色 |

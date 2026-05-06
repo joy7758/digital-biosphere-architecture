@@ -42,6 +42,13 @@ Reviewer announcement:
 One-page reviewer brief:
 [docs/briefs/execution-evidence-bridge-one-pager.md](docs/briefs/execution-evidence-bridge-one-pager.md).
 
+AI / agent entry points:
+
+- [llms.txt](llms.txt)
+- [AGENTS.md](AGENTS.md)
+- [docs/ai-discovery-index.md](docs/ai-discovery-index.md)
+- [docs/ai-citation-map.json](docs/ai-citation-map.json)
+
 ## Five-layer map
 
 | Layer | Repository |
