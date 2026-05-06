@@ -39,6 +39,9 @@ See [docs/execution-evidence-bridge-map.md](docs/execution-evidence-bridge-map.m
 Reviewer announcement:
 [docs/announcements/execution-evidence-bridge.md](docs/announcements/execution-evidence-bridge.md).
 
+One-page reviewer brief:
+[docs/briefs/execution-evidence-bridge-one-pager.md](docs/briefs/execution-evidence-bridge-one-pager.md).
+
 ## Five-layer map
 
 | Layer | Repository |

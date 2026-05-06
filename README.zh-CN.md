@@ -41,6 +41,8 @@ fdo-kernel-mvk
 
 面向审阅者的说明：[docs/announcements/execution-evidence-bridge.md](docs/announcements/execution-evidence-bridge.md)。
 
+一页式审阅者说明：[docs/briefs/execution-evidence-bridge-one-pager.md](docs/briefs/execution-evidence-bridge-one-pager.md)。
+
 ## 仓库角色
 
 | 仓库 | 角色 |
