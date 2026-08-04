@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ahrp.invalid/schema/experience-event.schema.json",
+  "title": "AHRP Experience Event v0.1",
+  "description": "Experience Event is the frozen core object of AHRP (ADR-001 Section 4, Constitution Section 5). This schema is PROPOSED (v0.1 reference implementation), not a published standard. All free-text fields are DATA channel only and MUST NOT be consumed as instructions (AHRP_DATA_NE_INSTRUCTION=true). Forbidden fields: score, ranking, fitness, learning_result, mutation and any rating-derived fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "agent_reference",
+    "agent_version",
+    "task_type",
+    "action_type",
+    "result_status",
+    "occurred_at",
+    "evidence_references",
+    "verification_references",
+    "disclosure"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0",
+      "description": "Semver of this schema. Purpose: version negotiation. Required. Extension: changes follow SPEC Section 12 extension rules."
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Globally unique identifier of the event. Purpose: addressing. Required."
+    },
+    "agent_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity_source", "identity_ref"],
+      "properties": {
+        "identity_source": {
+          "type": "string",
+          "enum": ["DBOS", "NAMED_SOURCE"],
+          "description": "Identity provenance per 'DBOS or explicitly named source'. AHRP never issues identifiers."
+        },
+        "identity_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Thin pointer to an external identity (DID / FDO / named source). AHRP does not resolve or manage it."
+        },
+        "identity_note": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Whitelisted free-text field (DATA channel, max 200 chars). MUST NOT carry machine-decision semantics."
+        }
+      },
+      "description": "Thin identity pointer (Constitution Section 5, C2-1). Required."
+    },
+    "agent_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Concrete executing subject version (Constitution Section 8 rule 3). Required. A new version does NOT automatically inherit history."
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "RESEARCH",
+        "CODING",
+        "ORCHESTRATION",
+        "DATA_PROCESSING",
+        "VERIFICATION",
+        "ANALYSIS",
+        "OTHER"
+      ],
+      "description": "Enumerated task category (Machine Enumerability First). Required."
+    },
+    "action_type": {
+      "type": "string",
+      "enum": ["EXECUTE", "DELEGATE", "REVIEW", "RETRY", "ABORT", "OTHER"],
+      "description": "Enumerated action class. Required. Action detail sequences are intentionally NOT part of v0.1 (acceptance report Section 6.3)."
+    },
+    "result_status": {
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "PARTIAL_SUCCESS",
+        "FAILURE",
+        "TIMEOUT",
+        "CANCELLED"
+      ],
+      "description": "Enumerated factual result. Required. Failure-class values: FAILURE, TIMEOUT, CANCELLED."
+    },
+    "failure_category": {
+      "type": "string",
+      "enum": [
+        "CAPABILITY_LIMIT",
+        "RESOURCE_UNAVAILABLE",
+        "INVALID_INPUT",
+        "DEPENDENCY_FAILURE",
+        "ENVIRONMENT_ERROR",
+        "POLICY_RESTRICTION",
+        "OTHER"
+      ],
+      "description": "Enumerated failure classification. Conditionally required: MUST be present when result_status is a failure-class value (FAILURE / TIMEOUT / CANCELLED). Supports limitation disclosure use case (acceptance report Section 2 scenario 2)."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event occurrence time (ISO 8601 / RFC 3339). Required. Time anchoring trust is an open governance question (see SPEC OPEN QUESTIONS)."
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Record persistence time. Optional."
+    },
+    "evidence_references": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/evidence_reference" },
+      "description": "Reference-style evidence binding (C1-1). Evidence bodies are NEVER embedded. Required (may be empty; empty array means no evidence bound, which is distinct from evidence failure states)."
+    },
+    "verification_references": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/verification_reference" },
+      "description": "Thin pointers to verification records (C1-2). Required (may be empty; absence of verification is NOT_ASSESSED, never assumed verified)."
+    },
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["disclosure_scope"],
+      "properties": {
+        "disclosure_scope": {
+          "type": "string",
+          "enum": ["PUBLIC", "FEDERATED", "RESTRICTED", "WITHHELD"],
+          "description": "Declared disclosure scope (Constitution Section 10). Undeclared scope is fail-closed: treated as WITHHELD."
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Disclosure expiry; disclosure must be declarable, expirable, revocable."
+        },
+        "revoked": {
+          "type": "boolean",
+          "description": "Disclosure revocation flag. When true, detail disclosure is denied (Q_DISCLOSURE_REVOKED) regardless of scope. Disclosure must be declarable, expirable, revocable."
+        },
+        "declared_by": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Declarer of the disclosure scope."
+        }
+      },
+      "description": "Selective disclosure declaration. Required."
+    },
+    "external_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "a2a_task_id": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Optional A2A taskId correlation field (C3-2). Correlation only; AHRP defines no collaboration protocol."
+        },
+        "erc8004_agent_id": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Optional ERC-8004 agentId correlation field (C3-1/C3-2). AHRP MUST NOT consume 8004 numeric feedback values."
+        }
+      },
+      "description": "Cross-protocol correlation references only (C3-1/C3-2 field-level crosswalk). Optional."
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Whitelisted free-text field, DATA channel only, max 200 chars. MUST NOT be consumed as instructions and MUST NOT carry machine-decision semantics. Optional."
+    }
+  },
+  "definitions": {
+    "evidence_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "version", "reference_id", "hash", "availability_status"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["TITMAS_EVIDENCE", "EEOAP", "CI_ARTIFACT", "NAMED_SOURCE"],
+          "description": "Evidence source class. Evidence ownership stays at the source; AHRP is not a second evidence owner."
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "description": "Version of the referenced evidence object."
+        },
+        "reference_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Addressable reference identifier at the source."
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "Content-addressing hash (Agent First item 4). Format: sha256:<64 lowercase hex>."
+        },
+        "availability_status": {
+          "type": "string",
+          "enum": [
+            "AVAILABLE",
+            "UNAVAILABLE",
+            "INVALID",
+            "NOT_ASSESSED",
+            "INSUFFICIENT_EVIDENCE",
+            "CONFLICTED",
+            "UNSUPPORTED_VERSION"
+          ],
+          "description": "Evidence availability / failure state enum. AVAILABLE is the only non-failure state; failure states follow SPEC Section 11 and map to the TITMAS interoperability-surface failure family (INVALID / NOT_ASSESSED / INSUFFICIENT_EVIDENCE / CONFLICTED / UNSUPPORTED_VERSION)."
+        }
+      },
+      "description": "Evidence Reference Model: reference-style only, never embeds evidence bodies (Log != Evidence)."
+    },
+    "verification_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verification_id", "verifier_name"],
+      "properties": {
+        "verification_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Identifier of the verification record held by the verification owner."
+        },
+        "verifier_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Named verifier (DBOS or named verifier, C1-2). Anonymous verification is not representable."
+        }
+      },
+      "description": "Thin pointer to a verification record. Verification != Authorization."
+    }
+  }
+}

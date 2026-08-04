@@ -1,0 +1,92 @@
+{
+  "_comment": "SYNTHETIC_ONLY example 5: Selective Disclosure query flow. Demonstrates Selective Disclosure First: a summary query returns raw counts only (no ratios/scores), and detail is returned only on explicit drill-down with a permissive disclosure scope. This is an illustrative transcript of the reference query/ engine output, not a schema-governed document.",
+  "step_1_summary_query": {
+    "request": {
+      "interface": "summary",
+      "agent_identity_ref": "did:example:agent-alpha"
+    },
+    "response_envelope": {
+      "protocol": "AHRP",
+      "schema_version": "0.1.0",
+      "content_channel": {
+        "structured_facts": "payload fields not listed in restricted_text",
+        "restricted_text": []
+      },
+      "selective_disclosure": { "mode": "summary", "withheld_count": 1 },
+      "null_semantics": "NONE",
+      "result": {
+        "agent_identity_ref": "did:example:agent-alpha",
+        "identity_continuity": "FAIL_CLOSED_PER_VERSION_COUNTS_ONLY",
+        "by_version": {
+          "1.0.0": {
+            "total_events": 3,
+            "verified_events": 1,
+            "events_by_task_type": {
+              "DATA_PROCESSING": 1,
+              "ANALYSIS": 1,
+              "VERIFICATION": 1
+            },
+            "events_by_result_status": {
+              "SUCCESS": 1,
+              "PARTIAL_SUCCESS": 2
+            }
+          },
+          "2.0.0": {
+            "total_events": 1,
+            "verified_events": 0,
+            "events_by_task_type": { "DATA_PROCESSING": 1 },
+            "events_by_result_status": { "FAILURE": 1 }
+          }
+        },
+        "withheld_events": 1,
+        "note": "Raw counts only. No derived ratios, scores or rankings (AHRP Constitution Section 9 non-goals)."
+      }
+    }
+  },
+  "step_2_drilldown_detail": {
+    "request": {
+      "interface": "get_event",
+      "event_id": "evt-0001-synthetic",
+      "capability": "detail"
+    },
+    "response_envelope": {
+      "protocol": "AHRP",
+      "schema_version": "0.1.0",
+      "content_channel": {
+        "structured_facts": "payload fields not listed in restricted_text",
+        "restricted_text": ["notes"]
+      },
+      "selective_disclosure": { "mode": "detail", "withheld_count": 0 },
+      "null_semantics": "NONE",
+      "result": {
+        "structured_facts": {
+          "event_id": "evt-0001-synthetic",
+          "task_type": "DATA_PROCESSING",
+          "result_status": "SUCCESS",
+          "verification_status": "VERIFIED"
+        },
+        "restricted_text": {
+          "notes": "SYNTHETIC_ONLY example: successful ETL run with bound CI artifact."
+        }
+      }
+    }
+  },
+  "step_3_withheld_drilldown_fail_closed": {
+    "request": {
+      "interface": "get_event",
+      "event_id": "evt-0005-synthetic",
+      "capability": "detail"
+    },
+    "response_envelope": {
+      "protocol": "AHRP",
+      "schema_version": "0.1.0",
+      "content_channel": {
+        "structured_facts": "payload fields not listed in restricted_text",
+        "restricted_text": []
+      },
+      "selective_disclosure": { "mode": "detail", "withheld_count": 1 },
+      "null_semantics": "WITHHELD",
+      "result": { "event_id": "evt-0005-synthetic" }
+    }
+  }
+}

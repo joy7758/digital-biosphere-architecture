@@ -1,0 +1,28 @@
+{
+  "schema_version": "0.1.0",
+  "event_id": "evt-0002-synthetic",
+  "agent_reference": {
+    "identity_source": "DBOS",
+    "identity_ref": "did:example:agent-alpha"
+  },
+  "agent_version": "1.0.0",
+  "task_type": "ANALYSIS",
+  "action_type": "EXECUTE",
+  "result_status": "PARTIAL_SUCCESS",
+  "occurred_at": "2026-08-02T14:00:00Z",
+  "evidence_references": [
+    {
+      "source": "TITMAS_EVIDENCE",
+      "version": "0.3.0",
+      "reference_id": "evidence-bundle-119",
+      "hash": "sha256:2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+      "availability_status": "INSUFFICIENT_EVIDENCE"
+    }
+  ],
+  "verification_references": [],
+  "disclosure": {
+    "disclosure_scope": "FEDERATED",
+    "declared_by": "agent-alpha-holder"
+  },
+  "notes": "SYNTHETIC_ONLY: evidence bound but insufficient; verification NOT_ASSESSED (fail-closed)."
+}
