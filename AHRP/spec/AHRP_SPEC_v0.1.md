@@ -355,6 +355,12 @@ RESULT_STATUS, EVIDENCE_BINDING, FULL_EVENT, NOT_ASSESSED} 声明验证覆盖的
 向调用方暴露裸异常；统一返回第 11 章 `Q_*` 稳定错误码。仅当查询请求完全合法但确无
 匹配历史时返回 `Q_NO_RECORD`。
 
+**`Q_NO_RECORD` 的表达方式（澄清）**：`Q_NO_RECORD` 不通过错误信封（`ok=false`）
+返回。查询请求完全合法但确无匹配时，响应为 `ok=true` 且
+`null_semantics="NO_RECORD"`（§7.4 三态表达）——查询本身成功，只是没有结果。
+`Q_NO_RECORD` 作为错误码予以保留，但 v0.1 参考实现使用三态 `null_semantics`
+字段表达该状态。
+
 ### 7.4 空值三态（区分性必须可机读）
 
 | 态 | 语义 |
@@ -452,8 +458,12 @@ AuthZEN/ODRL/身份系统。枚举匹配大小写敏感；缺失字段或变体�
    错误码，至少含：`Q_INVALID_ENUM`、`Q_INVALID_TIME_FORMAT`、`Q_INVALID_TIME_RANGE`、
    `Q_INVALID_REFERENCE`、`Q_UNSUPPORTED_VERSION`、`Q_DISCLOSURE_DENIED`、
    `Q_DISCLOSURE_EXPIRED`、`Q_DISCLOSURE_REVOKED`、`Q_POLICY_DECISION_REQUIRED`、
-   `Q_NO_RECORD`。非法参数**绝不**映射为 `Q_NO_RECORD`；`Q_NO_RECORD` 仅在请求完全
-   合法但确无匹配历史时返回；查询接口**绝不**向调用方暴露裸异常。
+   `Q_NO_RECORD`、`Q_INVALID_PARAM`（limit/分页类参数校验失败；此前误用
+   `Q_INVALID_REFERENCE`）。非法参数**绝不**映射为 `Q_NO_RECORD`；`Q_NO_RECORD`
+   仅在请求完全合法但确无匹配历史时返回；查询接口**绝不**向调用方暴露裸异常。
+   `Q_NO_RECORD` 在 v0.1 参考实现中不经错误信封返回，而以 `ok=true` +
+   `null_semantics="NO_RECORD"` 的三态表达（见 §7.3/§7.4）；该错误码保留，供后续
+   版本使用。
 
 ---
 

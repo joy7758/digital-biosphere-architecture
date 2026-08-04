@@ -203,3 +203,52 @@ To be filled after independent re-verification:
 - Verification result: `NOT_ASSESSED`
 - `AHRP_INDEPENDENT_ADVERSARIAL_REVIEW`: not set to `PASS` here (pending
   independent re-verification per STATUS discipline).
+
+## 9. Independent Review Findings (Audit Round 2) and Fixes
+
+Four independent reviewers (Eric / Alex / Sam / fourth reviewer) identified
+3 Critical + 7 Major + minor issues against the round-2 remediation. All were
+fixed in this branch; this section records them.
+
+### Critical fixes
+
+| ID | Finding | Fix |
+|---|---|---|
+| CF-1 | Every `value in FROZENSET` check raised a bare `TypeError` for unhashable inputs (list/dict/set/number) | Added `_is_enum_member()` type guard; applied to every enum membership check in `_validate_query_params`, `_validate_disclosure_context`, `_evaluate_detail_disclosure` (scope + policy_version) and the `get_event` capability check. Non-string values now yield stable `Q_INVALID_ENUM` / `Q_POLICY_DECISION_REQUIRED` / `Q_UNSUPPORTED_VERSION` codes. |
+| CF-2 | `summary()` had zero parameter validation; empty/invalid refs mapped to NO_RECORD | `summary()` now validates `identity_ref` (non-empty string) and `agent_version` (non-empty string when present) BEFORE any lookup → `Q_INVALID_REFERENCE`. |
+| CF-3 | `get_event()` / `get_failure_category()` did not validate `event_id`; invalid `capability` was masked by the existence check | Both methods validate `event_id` (non-empty string) BEFORE any lookup → `Q_INVALID_REFERENCE`; `get_event` validates `capability` BEFORE the existence check → `Q_INVALID_ENUM`. |
+
+### Major fixes
+
+| ID | Finding | Fix |
+|---|---|---|
+| MF-1 | `saw_independent` was set for ANY resolved reference, including bounded-scope ones (e.g. EVIDENCE_BINDING), allowing a SELF event-level VERIFIED to be laundered into `independently_verified_events` | Self/independent classification in `_resolve_event_verification` now happens ONLY inside the `event_level` block, i.e. only for records that actually confer event-level status. |
+| MF-2 | A referenced verification with `verification_status="NOT_ASSESSED"` entered `conferring_statuses` but is absent from `_STATUS_PRIORITY`, raising a bare `StopIteration` | NOT_ASSESSED ("asserts nothing") is filtered out before conferring; if nothing conferring remains the result is `NOT_ASSESSED`. |
+| MF-3 | `verifications_for_event()` / `event_verification_status()` leaked WITHHELD event content | Both now check `_event_is_withheld()`: `[]` and `"WITHHELD"` respectively. |
+| MF-4 | `get_event(..., now=...)` let callers inject a clock and bypass expiry | `now` parameter removed; expiry uses module-level `_clock` (defaults to `_now_instant()`), monkey-patchable in tests only. |
+| MF-5 | `query_events` validated but never applied `disclosure_scope` | `_select` now filters on `event.disclosure.disclosure_scope`; WITHHELD events never enter content filtering. |
+| MF-6 | SPEC said `Q_NO_RECORD` should be emitted, implementation used `ok=true, null_semantics="NO_RECORD"` (constant was dead code) | Kept the three-state design (the query succeeded, just no results); SPEC §7.3/§11.5 updated to state that `Q_NO_RECORD` is expressed via the three-state `null_semantics` field and the error code is reserved. |
+| MF-7 | Invalid `limit` returned the semantically wrong `Q_INVALID_REFERENCE` | New `Q_INVALID_PARAM` code added to `QUERY_ERROR_CODES` and used for limit validation; SPEC §11.5 updated. |
+
+### Additional fixes
+
+| ID | Finding | Fix |
+|---|---|---|
+| AF-1 | Malformed `expires_at` skipped the expiry check | Present but malformed `expires_at` now fails closed → `Q_DISCLOSURE_EXPIRED`. |
+| AF-2 | `_resolve_event_verification` docstring claimed expiry/revocation checks that verification records do not have | Docstring corrected. |
+| AF-3 | Remediation record needed the independent-review round recorded | This section. |
+
+### Round-2 files and tests
+
+- `AHRP/query/engine.py` — all CF/MF/AF fixes above.
+- `AHRP/tests/test_audit_r2.py` — new additive regression suite
+  (unhashable inputs across every enum field; summary/get_event/
+  get_failure_category validation gates; independence-laundering;
+  NOT_ASSESSED conferring; WITHHELD auxiliary guards; clock-injection
+  rejection; disclosure_scope filtering; limit error code; malformed
+  expiry fail-closed).
+- `AHRP/spec/AHRP_SPEC_v0.1.md` — §7.3 / §11.5 clarifications (MF-6, MF-7).
+
+No pre-existing test was deleted, skipped, or weakened. No rankings, scores,
+recommendations, marketplace, payment, social graph, auto-learning, fitness,
+or mutation concepts were added. STATUS.md truth gates unchanged.

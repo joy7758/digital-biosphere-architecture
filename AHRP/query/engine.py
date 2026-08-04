@@ -32,6 +32,22 @@ Remediation round (Defects 1/2/3/4):
   parameter is validated BEFORE the engine runs; invalid requests never reach
   the engine, are never mapped to NO_RECORD, and never surface raw Python
   exceptions.
+
+Independent-review round (audit r2 fixes):
+
+* CF-1: type guards on every frozenset membership check so unhashable query
+  inputs (list / dict / set / number) return stable Q_* codes instead of a
+  bare TypeError.
+* CF-2 / CF-3: validation gates on ``summary()``, ``get_event()`` and
+  ``get_failure_category()`` BEFORE any lookup.
+* MF-1: independence counting is limited to event-level conferring records.
+* MF-2: NOT_ASSESSED is filtered out of conferring statuses.
+* MF-3: WITHHELD guard on ``verifications_for_event`` /
+  ``event_verification_status``.
+* MF-4: no caller-injectable clock on public methods (module-level ``_clock``).
+* MF-5: ``disclosure_scope`` is a real query filter.
+* MF-7: ``Q_INVALID_PARAM`` for limit/pagination validation failures.
+* AF-1: malformed ``expires_at`` fails closed (treated as expired).
 """
 
 from __future__ import annotations
@@ -139,13 +155,14 @@ Q_DISCLOSURE_EXPIRED = "Q_DISCLOSURE_EXPIRED"
 Q_DISCLOSURE_REVOKED = "Q_DISCLOSURE_REVOKED"
 Q_POLICY_DECISION_REQUIRED = "Q_POLICY_DECISION_REQUIRED"
 Q_NO_RECORD = "Q_NO_RECORD"
+Q_INVALID_PARAM = "Q_INVALID_PARAM"
 Q_INTERNAL_ERROR = "Q_INTERNAL_ERROR"
 
 QUERY_ERROR_CODES = (
     Q_INVALID_ENUM, Q_INVALID_TIME_FORMAT, Q_INVALID_TIME_RANGE,
     Q_INVALID_REFERENCE, Q_UNSUPPORTED_VERSION, Q_DISCLOSURE_DENIED,
     Q_DISCLOSURE_EXPIRED, Q_DISCLOSURE_REVOKED, Q_POLICY_DECISION_REQUIRED,
-    Q_NO_RECORD,
+    Q_NO_RECORD, Q_INVALID_PARAM,
 )
 
 # Required fields of a machine-readable Disclosure Context (Defect 1). AHRP
@@ -244,6 +261,12 @@ def _now_instant() -> float:
     return datetime.now(timezone.utc).timestamp()
 
 
+# Module-level clock (audit fix MF-4): public query methods never accept a
+# caller-supplied clock value, so expiry enforcement cannot be bypassed by
+# injecting ``now``. Tests monkey-patch this function instead.
+_clock = _now_instant
+
+
 def _get_path(doc: Dict[str, Any], dotted: str) -> Any:
     """Resolve a dotted path (e.g. 'agent_reference.identity_note')."""
     node: Any = doc
@@ -256,6 +279,14 @@ def _get_path(doc: Dict[str, Any], dotted: str) -> Any:
 
 def _is_nonempty_string(value: Any) -> bool:
     return isinstance(value, str) and len(value) > 0
+
+
+def _is_enum_member(value: Any, enum: frozenset) -> bool:
+    """Type guard (audit fix CF-1): unhashable inputs (list / dict / set /
+    ...) must never reach a frozenset membership check, which would raise a
+    bare ``TypeError``; any non-string value is simply not a legal enum
+    value and yields a stable ``Q_INVALID_ENUM``-class error instead."""
+    return isinstance(value, str) and value in enum
 
 
 # --------------------------------------------------------------------------
@@ -278,16 +309,19 @@ def _validate_disclosure_context(ctx: Any) -> Optional[Tuple[str, str]]:
     if not _is_nonempty_string(ctx["requester_reference"]):
         return (Q_POLICY_DECISION_REQUIRED,
                 "requester_reference must be a non-empty string")
-    if ctx["requested_disclosure_scope"] not in DISCLOSURE_SCOPE_ENUM:
+    # CF-1 type guards: unhashable scope/status values are invalid contexts,
+    # never a bare TypeError.
+    if not _is_enum_member(ctx["requested_disclosure_scope"],
+                           DISCLOSURE_SCOPE_ENUM):
         return (Q_POLICY_DECISION_REQUIRED,
                 "requested_disclosure_scope is not a legal disclosure scope")
-    if ctx["granted_scope"] not in DISCLOSURE_SCOPE_ENUM:
+    if not _is_enum_member(ctx["granted_scope"], DISCLOSURE_SCOPE_ENUM):
         return (Q_POLICY_DECISION_REQUIRED,
                 "granted_scope is not a legal disclosure scope")
     if not _is_nonempty_string(ctx["external_policy_decision_reference"]):
         return (Q_POLICY_DECISION_REQUIRED,
                 "external_policy_decision_reference must be a non-empty string")
-    if ctx["revocation_status"] not in REVOCATION_STATUS_ENUM:
+    if not _is_enum_member(ctx["revocation_status"], REVOCATION_STATUS_ENUM):
         return (Q_POLICY_DECISION_REQUIRED,
                 "revocation_status must be ACTIVE or REVOKED")
     for field in ("evaluated_at", "expiry"):
@@ -310,8 +344,9 @@ def _evaluate_detail_disclosure(event: Dict[str, Any],
     disclosure = event.get("disclosure", {}) or {}
     scope = disclosure.get("disclosure_scope")
 
-    # Unknown / undeclared scope -> fail-closed deny.
-    if scope not in DISCLOSURE_SCOPE_ENUM:
+    # Unknown / undeclared scope -> fail-closed deny. CF-1 type guard: a
+    # non-string scope value is unknown, never a bare TypeError.
+    if not _is_enum_member(scope, DISCLOSURE_SCOPE_ENUM):
         return _error_envelope(
             Q_DISCLOSURE_DENIED, "disclosure.disclosure_scope",
             "undeclared or unknown disclosure scope is denied (fail-closed)")
@@ -322,9 +357,15 @@ def _evaluate_detail_disclosure(event: Dict[str, Any],
             Q_DISCLOSURE_REVOKED, "disclosure.revoked",
             "disclosure has been revoked; detail is denied")
 
-    # Record-level expiry always denies detail.
+    # Record-level expiry always denies detail. Audit fix AF-1: a present but
+    # malformed expires_at is treated as expired (fail-closed), never skipped.
     expires_at = disclosure.get("expires_at")
-    if expires_at is not None and _is_valid_instant_string(expires_at):
+    if expires_at is not None:
+        if not _is_valid_instant_string(expires_at):
+            return _error_envelope(
+                Q_DISCLOSURE_EXPIRED, "disclosure.expires_at",
+                "disclosure expiry is malformed; treated as expired "
+                "(fail-closed)")
         if _parse_instant(expires_at) <= now:
             return _error_envelope(
                 Q_DISCLOSURE_EXPIRED, "disclosure.expires_at",
@@ -356,8 +397,8 @@ def _evaluate_detail_disclosure(event: Dict[str, Any],
             return _error_envelope(
                 Q_DISCLOSURE_EXPIRED, "disclosure_context.expiry",
                 "the supplied disclosure permission has expired")
-        # Unsupported policy version -> fail-closed deny.
-        if ctx["policy_version"] not in SUPPORTED_POLICY_VERSIONS:
+        # Unsupported policy version -> fail-closed deny (CF-1 type guard).
+        if not _is_enum_member(ctx["policy_version"], SUPPORTED_POLICY_VERSIONS):
             return _error_envelope(
                 Q_UNSUPPORTED_VERSION, "disclosure_context.policy_version",
                 f"policy version {ctx['policy_version']!r} is not supported "
@@ -418,7 +459,7 @@ class HistoryStore:
         Walks ``event.verification_references`` and validates each binding:
         reference id exact match, object existence, target/event scope match,
         agent reference/version match, verification version support, status
-        legality, verifier-name match, and expiry/revocation. Weak association
+        legality, and verifier-name match. Weak association
         (event_id / agent / time scanning of storage) is never used.
         """
         event_id = event["event_id"]
@@ -499,13 +540,8 @@ class HistoryStore:
                 saw_binding_error = True
                 continue
 
-            # Track verifier class / independence for every resolved reference.
             if verifier_class is not None:
                 resolved["verifier_classes"].append(verifier_class)
-            if verifier_class == SELF_CLASS or record.get("self_verification") is True:
-                saw_self = True
-            else:
-                saw_independent = True
 
             # F10 aspect filtering: only event-scoped, event-level aspects
             # confer an event-level verification status.
@@ -514,8 +550,23 @@ class HistoryStore:
                 and scope.get("covered_aspect") in _EVENT_LEVEL_ASPECTS
             )
             if event_level:
-                resolved["conferring"].append(record)
-                conferring_statuses.append(status)
+                # Audit fix MF-1: the self/independent classification comes
+                # ONLY from records that actually confer event-level status
+                # (i.e. participate in determining the effective verification
+                # status). A bounded-scope record (e.g. EVIDENCE_BINDING) can
+                # never launder independence into a SELF event-level VERIFIED.
+                if verifier_class == SELF_CLASS or \
+                        record.get("self_verification") is True:
+                    saw_self = True
+                else:
+                    saw_independent = True
+                # Audit fix MF-2: NOT_ASSESSED asserts nothing and is absent
+                # from _STATUS_PRIORITY; it must never enter the conferring
+                # statuses (a bare StopIteration would otherwise result). If
+                # nothing conferring remains, the result is NOT_ASSESSED.
+                if status != "NOT_ASSESSED":
+                    resolved["conferring"].append(record)
+                    conferring_statuses.append(status)
 
         resolved["has_independent"] = saw_independent
         resolved["self_only"] = saw_self and not saw_independent
@@ -539,9 +590,14 @@ class HistoryStore:
 
     def verifications_for_event(self, event_id: str) -> List[Dict[str, Any]]:
         """Defect 2: only verification objects explicitly referenced by the
-        event are returned (strong binding). Output copies prevent mutation."""
+        event are returned (strong binding). Output copies prevent mutation.
+
+        Audit fix MF-3: WITHHELD events leak nothing, not even their
+        verification records."""
         event = self._events.get(event_id)
         if event is None:
+            return []
+        if self._event_is_withheld(event):
             return []
         out = []
         for ref in event.get("verification_references", []) or []:
@@ -556,6 +612,11 @@ class HistoryStore:
         event = self._events.get(event_id)
         if event is None:
             return "NOT_ASSESSED"
+        # Audit fix MF-3: WITHHELD disclosure also withholds the effective
+        # verification status (consistent with get_event's three-state
+        # WITHHELD response).
+        if self._event_is_withheld(event):
+            return "WITHHELD"
         return self._resolve_event_verification(event)["effective_status"]
 
     def _verification_resolution(self, event: Dict[str, Any]) -> Dict[str, Any]:
@@ -607,7 +668,8 @@ class HistoryStore:
 
         Returns a ready-to-return error envelope, or ``None`` when the request
         is fully valid. Invalid parameters never reach the engine and are never
-        mapped to NO_RECORD.
+        mapped to NO_RECORD. CF-1: every enum check is type-guarded so
+        unhashable inputs yield stable Q_* codes, never a bare TypeError.
         """
         if identity_ref is not None and not _is_nonempty_string(identity_ref):
             return _error_envelope(
@@ -617,29 +679,33 @@ class HistoryStore:
             return _error_envelope(
                 Q_INVALID_REFERENCE, "agent_version",
                 "agent_version must be a non-empty string")
-        if task_type is not None and task_type not in TASK_TYPE_ENUM:
+        if task_type is not None and not _is_enum_member(task_type,
+                                                         TASK_TYPE_ENUM):
             return _error_envelope(
                 Q_INVALID_ENUM, "task_type",
                 f"task_type {task_type!r} is not a legal enum value")
-        if action_type is not None and action_type not in ACTION_TYPE_ENUM:
+        if action_type is not None and not _is_enum_member(action_type,
+                                                           ACTION_TYPE_ENUM):
             return _error_envelope(
                 Q_INVALID_ENUM, "action_type",
                 f"action_type {action_type!r} is not a legal enum value")
-        if verification_status is not None and \
-                verification_status not in VERIFICATION_STATUS_ENUM:
+        if verification_status is not None and not _is_enum_member(
+                verification_status, VERIFICATION_STATUS_ENUM):
             return _error_envelope(
                 Q_INVALID_ENUM, "verification_status",
                 f"verification_status {verification_status!r} is not a legal "
                 "enum value")
-        if verifier_class is not None and verifier_class not in VERIFIER_CLASS_ENUM:
+        if verifier_class is not None and not _is_enum_member(
+                verifier_class, VERIFIER_CLASS_ENUM):
             return _error_envelope(
                 Q_INVALID_ENUM, "verifier_class",
                 f"verifier_class {verifier_class!r} is not a legal enum value")
-        if disclosure_scope is not None and \
-                disclosure_scope not in DISCLOSURE_SCOPE_ENUM:
+        if disclosure_scope is not None and not _is_enum_member(
+                disclosure_scope, DISCLOSURE_SCOPE_ENUM):
             return _error_envelope(
                 Q_INVALID_ENUM, "disclosure_scope",
-                f"disclosure_scope {disclosure_scope!r} is not a legal enum value")
+                f"disclosure_scope {disclosure_scope!r} is not a legal enum "
+                "value")
         for field, value in (("time_start", time_start), ("time_end", time_end)):
             if value is not None and not _is_valid_instant_string(value):
                 return _error_envelope(
@@ -650,15 +716,18 @@ class HistoryStore:
             return _error_envelope(
                 Q_INVALID_TIME_RANGE, "time_start",
                 "time_start must not be after time_end")
-        if protocol_version is not None and \
-                protocol_version not in SUPPORTED_QUERY_PROTOCOL_VERSIONS:
+        if protocol_version is not None and not _is_enum_member(
+                protocol_version, SUPPORTED_QUERY_PROTOCOL_VERSIONS):
             return _error_envelope(
                 Q_UNSUPPORTED_VERSION, "protocol_version",
                 f"query protocol version {protocol_version!r} is not supported")
         if limit is not None:
             if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1:
+                # Audit fix MF-7: limit/pagination failures are parameter
+                # errors, not reference errors (Q_INVALID_REFERENCE was
+                # semantically wrong).
                 return _error_envelope(
-                    Q_INVALID_REFERENCE, "limit",
+                    Q_INVALID_PARAM, "limit",
                     "limit must be a positive integer")
         return None
 
@@ -668,6 +737,7 @@ class HistoryStore:
                 time_start: Optional[str], time_end: Optional[str],
                 verification_status: Optional[str],
                 verifier_class: Optional[str],
+                disclosure_scope: Optional[str],
                 require_independent: bool):
         # F6: addressing filters (identity_ref, agent_version) are applied
         # FIRST; withheld records are only counted within that addressed
@@ -692,6 +762,13 @@ class HistoryStore:
             if task_type is not None and event["task_type"] != task_type:
                 continue
             if action_type is not None and event["action_type"] != action_type:
+                continue
+            # Audit fix MF-5: disclosure_scope is a real filter, not merely a
+            # validated-and-ignored parameter. WITHHELD events never enter
+            # content filtering (handled above), so they can never match.
+            if disclosure_scope is not None and \
+                    event.get("disclosure", {}).get("disclosure_scope") \
+                    != disclosure_scope:
                 continue
             # F5: absolute-instant comparison, not string lexicographic order.
             instant = _parse_instant(event["occurred_at"])
@@ -725,6 +802,16 @@ class HistoryStore:
         events; dedicated split fields report self / partial / not-assessed /
         conflicted counts separately.
         """
+        # Audit fix CF-2: validate BEFORE any lookup. Empty/invalid
+        # references are invalid requests, never NO_RECORD.
+        if not _is_nonempty_string(identity_ref):
+            return _error_envelope(
+                Q_INVALID_REFERENCE, "identity_ref",
+                "identity_ref must be a non-empty string reference")
+        if agent_version is not None and not _is_nonempty_string(agent_version):
+            return _error_envelope(
+                Q_INVALID_REFERENCE, "agent_version",
+                "agent_version must be a non-empty string")
         all_events = [
             e for e in self._events.values()
             if e["agent_reference"]["identity_ref"] == identity_ref
@@ -837,7 +924,7 @@ class HistoryStore:
             selected, withheld = self._select(
                 identity_ref, agent_version, task_type, action_type,
                 time_start, time_end, verification_status, verifier_class,
-                require_independent_verification)
+                disclosure_scope, require_independent_verification)
             if not selected and withheld > 0:
                 semantics = NullSemantics.WITHHELD
             elif not selected:
@@ -860,15 +947,33 @@ class HistoryStore:
                 f"internal query error: {type(exc).__name__}", retryable=True)
 
     def get_event(self, event_id: str, capability: str = "summary",
-                  disclosure_context: Optional[Dict[str, Any]] = None,
-                  now: Optional[float] = None) -> Dict[str, Any]:
+                  disclosure_context: Optional[Dict[str, Any]] = None
+                  ) -> Dict[str, Any]:
         """Drill-down. Detail requires explicit capability='detail' AND a
         disclosure truth-table evaluation that permits it; otherwise fail-closed.
 
         Defect 1: the plain string ``capability="detail"`` is a request, never
         an authorization. RESTRICTED detail additionally requires a valid,
         scope-matching Disclosure Context carrying an external policy decision.
+
+        Audit fix MF-4: this method no longer accepts a caller-supplied clock
+        (``now``) value; expiry enforcement always uses the module-level
+        ``_clock`` (a test-only monkey-patch point), so callers can never
+        inject a clock to bypass expiry.
         """
+        # Audit fix CF-3: validate BEFORE any lookup. Invalid references and
+        # capabilities are invalid requests, never NO_RECORD, never a bare
+        # TypeError (CF-1 type guard on the capability enum check).
+        if not _is_nonempty_string(event_id):
+            return _error_envelope(
+                Q_INVALID_REFERENCE, "event_id",
+                "event_id must be a non-empty string reference")
+        if capability is not None and not _is_enum_member(capability,
+                                                          CAPABILITY_ENUM):
+            return _error_envelope(
+                Q_INVALID_ENUM, "capability",
+                f"capability {capability!r} must be one of "
+                f"{sorted(CAPABILITY_ENUM)}")
         event = self._events.get(event_id)
         if event is None:
             return _envelope("detail", NullSemantics.NO_RECORD,
@@ -876,17 +981,11 @@ class HistoryStore:
         if self._event_is_withheld(event):
             return _envelope("detail", NullSemantics.WITHHELD,
                              {"event_id": event_id}, withheld_count=1)
-        # Defect 4: capability is a validated enum, never free-form.
-        if capability not in CAPABILITY_ENUM:
-            return _error_envelope(
-                Q_INVALID_ENUM, "capability",
-                f"capability {capability!r} must be one of "
-                f"{sorted(CAPABILITY_ENUM)}")
         if capability != "detail":
             return _envelope("summary", NullSemantics.NONE,
                              self._event_summary(event))
         # Detail: enforce the disclosure truth table (fail-closed).
-        instant = _now_instant() if now is None else now
+        instant = _clock()
         denial = _evaluate_detail_disclosure(event, disclosure_context, instant)
         if denial is not None:
             return denial
@@ -931,6 +1030,12 @@ class HistoryStore:
         NO_RECORD: event unknown; NOT_APPLICABLE: result is not failure-class;
         otherwise the enumerated failure_category value.
         """
+        # Audit fix CF-3: validate BEFORE any lookup; an empty/invalid
+        # event_id is an invalid request, never NO_RECORD.
+        if not _is_nonempty_string(event_id):
+            return _error_envelope(
+                Q_INVALID_REFERENCE, "event_id",
+                "event_id must be a non-empty string reference")
         event = self._events.get(event_id)
         if event is None:
             return _envelope("detail", NullSemantics.NO_RECORD,
