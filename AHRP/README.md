@@ -54,7 +54,7 @@ AHRP/
 ├── examples/                  # 5 组合成 fixtures（SYNTHETIC_ONLY）
 ├── demo/
 │   └── run_demo.py            # 最小演示（全程合成数据）
-└── tests/                     # unittest 自动化测试（131 项）
+└── tests/                     # unittest 自动化测试（208 项）
 ```
 
 ## 运行（Python 3 标准库，无第三方依赖）

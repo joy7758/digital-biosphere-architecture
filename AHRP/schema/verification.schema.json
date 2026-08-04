@@ -91,12 +91,12 @@
         "agent_ref": {
           "type": "string",
           "maxLength": 256,
-          "description": "Optional: identity_ref of the agent whose event is the verification subject. When present, strong event<->verification binding requires it to match the subject event's agent_reference.identity_ref (fail-closed mismatch -> INVALID)."
+          "description": "Required when scope.subject_type is EXPERIENCE_EVENT (conditional-required enforced by the reference validator at protocol level): identity_ref of the agent whose event is the verification subject. Strong event<->verification binding requires it to match the subject event's agent_reference.identity_ref (fail-closed: missing -> BINDING_INCOMPLETE, mismatch -> INVALID)."
         },
         "agent_version": {
           "type": "string",
           "maxLength": 64,
-          "description": "Optional: agent_version of the event being verified. When present, strong event<->verification binding requires it to match the subject event's agent_version (fail-closed mismatch -> INVALID)."
+          "description": "Required when scope.subject_type is EXPERIENCE_EVENT (conditional-required enforced by the reference validator at protocol level): agent_version of the event being verified. Strong event<->verification binding requires it to match the subject event's agent_version (fail-closed: missing -> BINDING_INCOMPLETE, mismatch -> INVALID)."
         },
         "subject_type": {
           "type": "string",

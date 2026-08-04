@@ -187,7 +187,10 @@ Reproduced against the pre-fix reference implementation:
 | D4 | `verification_status="BOGUS"` | `Q_INVALID_ENUM` |
 | D4 | `time_start="not-a-date"` | `Q_INVALID_TIME_FORMAT` (no exception) |
 
-Test suite: **131 tests, all passing** (88 pre-existing preserved + 43 new).
+Test suite at round-1 remediation closure: **131 tests, all passing**
+(88 pre-existing preserved + 43 new). Superseded by later rounds: audit r2
+raised the suite to 168 tests and trust-boundary hardening r3 to 208 tests
+(see Section 10); every round remained fully additive.
 
 ```text
 Ran 131 tests
@@ -252,3 +255,63 @@ fixed in this branch; this section records them.
 No pre-existing test was deleted, skipped, or weakened. No rankings, scores,
 recommendations, marketplace, payment, social graph, auto-learning, fitness,
 or mutation concepts were added. STATUS.md truth gates unchanged.
+
+## 10. Trust Boundary Hardening (Audit Round r3)
+
+- Branch: `fix/ahrp-v0.1-audit-r3` (from `fix/ahrp-v0.1-independent-audit-r2`
+  @ `1fb9bf7`).
+- Date: `2026-08-05`.
+
+Round r3 hardened four trust-boundary weaknesses found after the r2 fixes:
+
+| ID | Finding | Fix |
+|---|---|---|
+| R3-1 | `_validate_disclosure_context` only checked format/enum/version; any caller could fabricate a disclosure_context and bypass RESTRICTED | `HistoryStore` now accepts an optional `policy_decision_resolver` hook. For RESTRICTED detail, after format validation the context's `external_policy_decision_reference` must be confirmed by the resolver. **No resolver configured -> every RESTRICTED detail access fails closed with `Q_POLICY_DECISION_REQUIRED`** (format-only validation is never sufficient). The context additionally requires `issuer` and `decision_id`. A `SyntheticPolicyResolver` (configurable whitelist) is provided for testing/simulation. |
+| R3-2 | `get_failure_category`, `verifications_for_event`, `event_verification_status` bypassed RESTRICTED disclosure checks | New shared guard `_require_detail_disclosure(event, disclosure_context)` routes ALL data-access paths through the same disclosure truth table. The three methods accept `disclosure_context=None`; for RESTRICTED events without a confirmed context they return `[]` / `"RESTRICTED"` / a denial envelope respectively. WITHHELD keeps its three-state response; PUBLIC/FEDERATED are unchanged. |
+| R3-3 | `scope.agent_ref` / `scope.agent_version` were optional; a verification could bind to an event without declaring which agent/version it verifies | Event-level resolution now requires BOTH fields (`BINDING_INCOMPLETE` -> INVALID, fail-closed) and both must match the subject event. The validator enforces conditional-required at protocol level for `subject_type=EXPERIENCE_EVENT` (schema descriptions updated; the JSON-Schema subset has no conditional-required). Examples, demo and fixtures declare the complete binding. |
+| R3-4 | A NOT_ASSESSED independent record still set `saw_independent=True`, laundering SELF-verified events into appearing independently verified | Independence classification moved inside the combined `event_level AND status != NOT_ASSESSED` condition: only records that actually assert something can set `saw_self` / `saw_independent`. |
+
+Fix 5 (truth gate unification): STATUS.md test evidence updated to the actual
+suite result; `AHRP_INDEPENDENT_ADVERSARIAL_REVIEW=PENDING_R3` (deliberately
+NOT `PASS` -- the independent re-verification has not yet happened);
+README.md test count aligned; a new consistency test
+(`test_audit_r3.py::TestR35TruthConsistency`) parses STATUS.md / README.md,
+verifies the truth gates do not contradict each other, verifies the schema
+files are valid draft-07 JSON, and asserts the documented test counts equal
+the actual discovery count (> 168).
+
+### r3 files and tests
+
+- `AHRP/query/engine.py` -- R3-1/R3-2/R3-3/R3-4 (resolver hook +
+  `SyntheticPolicyResolver`, `_require_detail_disclosure`, mandatory agent
+  binding, NOT_ASSESSED independence filter).
+- `AHRP/validator/core.py` -- R3-3 protocol-level conditional-required.
+- `AHRP/schema/verification.schema.json` -- scope.agent_ref / agent_version
+  descriptions (required when EXPERIENCE_EVENT).
+- `AHRP/examples/01-verification-verified.json`,
+  `AHRP/examples/04-verification-conflicted.json`, `AHRP/demo/run_demo.py`,
+  `AHRP/tests/_helpers.py` -- fixtures declare the complete agent/version
+  binding.
+- `AHRP/tests/test_remediation.py`, `AHRP/tests/test_audit_r2.py`,
+  `AHRP/tests/test_query.py` -- fixture updates only (resolver injection,
+  complete binding); no assertion deleted or weakened.
+- `AHRP/tests/test_audit_r3.py` -- 40 new additive tests (disclosure
+  anti-forgery incl. fake/expired/revoked/missing-issuer/missing-decision-id/
+  scope-mismatch/no-resolver/valid paths; unified guard across all three
+  auxiliary methods; agent/version binding incl. validator enforcement;
+  NOT_ASSESSED independence; query stable-error regression; truth-gate
+  consistency).
+- `AHRP/STATUS.md`, `AHRP/README.md` -- truth-gate unification (test counts,
+  `AHRP_INDEPENDENT_ADVERSARIAL_REVIEW=PENDING_R3`, last-update date).
+
+Test suite after r3: **208 tests, all passing** (168 pre-r3 preserved +
+40 new).
+
+```text
+Ran 208 tests
+OK
+```
+
+No Constitution, ADR-001, or v0.2 semantics were introduced. No rankings,
+scores, marketplace, payment, social graph, or auto-learning concepts were
+added. `SYNTHETIC_ONLY=true` remains in force.

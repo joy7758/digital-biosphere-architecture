@@ -12,7 +12,9 @@
   "scope": {
     "subject_event_id": "evt-0004-synthetic",
     "subject_type": "EXPERIENCE_EVENT",
-    "covered_aspect": "RESULT_STATUS"
+    "covered_aspect": "RESULT_STATUS",
+    "agent_ref": "did:example:agent-alpha",
+    "agent_version": "1.0.0"
   },
   "self_verification": false,
   "authorization_effect": "NONE",

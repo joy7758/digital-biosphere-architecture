@@ -48,6 +48,26 @@ Independent-review round (audit r2 fixes):
 * MF-5: ``disclosure_scope`` is a real query filter.
 * MF-7: ``Q_INVALID_PARAM`` for limit/pagination validation failures.
 * AF-1: malformed ``expires_at`` fails closed (treated as expired).
+
+Trust-boundary hardening round (audit r3 fixes):
+
+* R3-1: Disclosure Context anti-forgery. Format-only validation is NEVER
+  sufficient for RESTRICTED detail: a configured ``policy_decision_resolver``
+  hook must confirm the external policy decision reference, and without a
+  resolver every RESTRICTED detail read fails closed
+  (``Q_POLICY_DECISION_REQUIRED``). The context must additionally carry an
+  ``issuer`` and a ``decision_id``.
+* R3-2: unified disclosure guard. ``verifications_for_event`` /
+  ``event_verification_status`` / ``get_failure_category`` route through the
+  same disclosure truth table as ``get_event`` via
+  ``_require_detail_disclosure``; RESTRICTED detail-level projections are
+  denied without a valid, resolver-confirmed disclosure context.
+* R3-3: event-level verification binding MUST declare ``scope.agent_ref``
+  AND ``scope.agent_version``, and both must match the subject event
+  (fail-closed BINDING_INCOMPLETE / mismatch -> INVALID).
+* R3-4: NOT_ASSESSED records never confer independence: the SELF /
+  independent classification happens only for records that pass BOTH the
+  event-level filter AND the NOT_ASSESSED filter.
 """
 
 from __future__ import annotations
@@ -165,9 +185,13 @@ QUERY_ERROR_CODES = (
     Q_NO_RECORD, Q_INVALID_PARAM,
 )
 
-# Required fields of a machine-readable Disclosure Context (Defect 1). AHRP
-# validates only the format / status / scope of an external policy decision;
-# it never becomes a second AuthZEN/ODRL/identity system.
+# Required fields of a machine-readable Disclosure Context (Defect 1 / R3-1).
+# AHRP validates only the format / status / scope of an external policy
+# decision; it never becomes a second AuthZEN/ODRL/identity system. R3-1 adds
+# ``issuer`` and ``decision_id`` so a fabricated context is structurally
+# incomplete without naming WHO decided and WHICH decision it cites; the
+# decision reference itself is only trusted after the configured policy
+# decision resolver confirms it (fail-closed without a resolver).
 DISCLOSURE_CONTEXT_FIELDS = (
     "requester_reference",
     "requested_disclosure_scope",
@@ -177,7 +201,34 @@ DISCLOSURE_CONTEXT_FIELDS = (
     "evaluated_at",
     "expiry",
     "revocation_status",
+    "issuer",
+    "decision_id",
 )
+
+
+class SyntheticPolicyResolver:
+    """Test/simulation policy-decision resolver (SYNTHETIC_ONLY).
+
+    Audit fix R3-1: RESTRICTED detail access is granted only when a
+    ``policy_decision_resolver`` confirms the context's
+    ``external_policy_decision_reference``. This synthetic resolver accepts
+    references on a configurable whitelist; anything else is denied. Real
+    deployments would inject a resolver that checks the actual external
+    policy decision system; AHRP itself never issues decisions.
+    """
+
+    def __init__(self, allowed_references=(), default_valid: bool = False):
+        self._allowed = set(allowed_references)
+        self._default_valid = bool(default_valid)
+
+    def __call__(self, reference: Any) -> Dict[str, Any]:
+        if not _is_nonempty_string(reference):
+            return {"valid": False, "reason": "MISSING_REFERENCE"}
+        if reference in self._allowed:
+            return {"valid": True, "reference": reference}
+        if self._default_valid:
+            return {"valid": True, "reference": reference}
+        return {"valid": False, "reason": "UNKNOWN_REFERENCE"}
 
 
 class NullSemantics(str, Enum):
@@ -309,6 +360,14 @@ def _validate_disclosure_context(ctx: Any) -> Optional[Tuple[str, str]]:
     if not _is_nonempty_string(ctx["requester_reference"]):
         return (Q_POLICY_DECISION_REQUIRED,
                 "requester_reference must be a non-empty string")
+    # R3-1: the context must name the decision issuer and the decision id;
+    # an anonymous or unidentified permission is never accepted.
+    if not _is_nonempty_string(ctx["issuer"]):
+        return (Q_POLICY_DECISION_REQUIRED,
+                "disclosure context is missing a non-empty 'issuer'")
+    if not _is_nonempty_string(ctx["decision_id"]):
+        return (Q_POLICY_DECISION_REQUIRED,
+                "disclosure context is missing a non-empty 'decision_id'")
     # CF-1 type guards: unhashable scope/status values are invalid contexts,
     # never a bare TypeError.
     if not _is_enum_member(ctx["requested_disclosure_scope"],
@@ -334,12 +393,21 @@ def _validate_disclosure_context(ctx: Any) -> Optional[Tuple[str, str]]:
 
 def _evaluate_detail_disclosure(event: Dict[str, Any],
                                 disclosure_context: Any,
-                                now: float) -> Optional[Dict[str, Any]]:
+                                now: float,
+                                policy_decision_resolver=None
+                                ) -> Optional[Dict[str, Any]]:
     """Decide whether a detail read is permitted (disclosure truth table).
 
     Returns ``None`` when allowed, otherwise a ready-to-return error envelope.
     Fail-closed everywhere: WITHHELD is handled by the caller; unknown scopes,
     missing / malformed / expired / revoked policy decisions all deny.
+
+    Audit fix R3-1: for RESTRICTED events, passing the format / enum / version
+    checks is necessary but NOT sufficient. The context's
+    ``external_policy_decision_reference`` must additionally be confirmed by
+    the configured ``policy_decision_resolver``; with no resolver configured,
+    ALL RESTRICTED detail access is denied (fail-closed). A caller-fabricated
+    disclosure context can therefore never bypass RESTRICTED on its own.
     """
     disclosure = event.get("disclosure", {}) or {}
     scope = disclosure.get("disclosure_scope")
@@ -409,6 +477,28 @@ def _evaluate_detail_disclosure(event: Dict[str, Any],
             return _error_envelope(
                 Q_DISCLOSURE_DENIED, "disclosure_context.granted_scope",
                 "granted_scope does not match the RESTRICTED disclosure scope")
+        # R3-1 anti-forgery: the external policy decision reference must be
+        # confirmed by the configured resolver. Without a resolver there is
+        # no way to confirm the issuer's decision, so access fails closed:
+        # format-only validation is never sufficient for RESTRICTED access.
+        if policy_decision_resolver is None:
+            return _error_envelope(
+                Q_POLICY_DECISION_REQUIRED, "disclosure_context",
+                "no policy decision resolver is configured; RESTRICTED "
+                "detail cannot be verified against the issuing policy system "
+                "(fail-closed)")
+        try:
+            resolution = policy_decision_resolver(
+                ctx.get("external_policy_decision_reference"))
+        except Exception:
+            resolution = None
+        if not isinstance(resolution, dict) or not resolution.get("valid",
+                                                                  False):
+            return _error_envelope(
+                Q_POLICY_DECISION_REQUIRED,
+                "disclosure_context.external_policy_decision_reference",
+                "the external policy decision reference could not be "
+                "confirmed by the policy decision resolver (fail-closed)")
         return None
 
     # WITHHELD (and anything unexpected) -> deny. WITHHELD is usually handled
@@ -425,7 +515,12 @@ class HistoryStore:
     holder. All ingestion is validated first and fails closed.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, policy_decision_resolver=None) -> None:
+        # Audit fix R3-1: RESTRICTED detail reads are granted only when this
+        # resolver confirms the external policy decision reference; with no
+        # resolver configured the store fails closed on every RESTRICTED
+        # detail access path.
+        self._policy_decision_resolver = policy_decision_resolver
         self._events: Dict[str, Dict[str, Any]] = {}
         self._verifications: Dict[str, Dict[str, Any]] = {}
 
@@ -504,6 +599,22 @@ class HistoryStore:
             verifier_class = verifier.get("verifier_class")
             ok = True
 
+            # Audit fix R3-3: an event-level verification binding MUST
+            # declare both scope.agent_ref and scope.agent_version; a
+            # verification can no longer bind to an event without naming
+            # WHICH agent (and which version of it) it verifies. Missing
+            # either -> BINDING_INCOMPLETE (fail-closed).
+            if scope.get("subject_type") == _EVENT_SCOPE_SUBJECT_TYPE and \
+                    ("agent_ref" not in scope or "agent_version" not in scope):
+                resolved["binding_errors"].append({
+                    "ref_id": verification_id,
+                    "reason": "BINDING_INCOMPLETE",
+                    "detail": "agent_ref and agent_version required for "
+                              "event-level binding",
+                })
+                saw_binding_error = True
+                continue
+
             # Target/event scope must match the current event exactly.
             if scope.get("subject_event_id") != event_id:
                 ok = False
@@ -514,7 +625,9 @@ class HistoryStore:
                 ok = False
                 resolved["binding_errors"].append(
                     "reference verifier_name does not match verification record")
-            # Agent reference / version binding (when declared) must match.
+            # Audit fix R3-3: agent reference / version binding must match
+            # the subject event (event-level scopes must declare both, see
+            # BINDING_INCOMPLETE above); any declared mismatch fails closed.
             if ok and "agent_ref" in scope and \
                     scope.get("agent_ref") != event_agent_ref:
                 ok = False
@@ -549,24 +662,24 @@ class HistoryStore:
                 scope.get("subject_type") == _EVENT_SCOPE_SUBJECT_TYPE
                 and scope.get("covered_aspect") in _EVENT_LEVEL_ASPECTS
             )
-            if event_level:
-                # Audit fix MF-1: the self/independent classification comes
-                # ONLY from records that actually confer event-level status
-                # (i.e. participate in determining the effective verification
-                # status). A bounded-scope record (e.g. EVIDENCE_BINDING) can
-                # never launder independence into a SELF event-level VERIFIED.
+            # Audit fix R3-4 (supersedes the MF-1 / MF-2 ordering): only
+            # records that actually assert something -- event-level AND
+            # non-NOT_ASSESSED -- can confer status or classify independence.
+            # A bounded-scope record (e.g. EVIDENCE_BINDING) can never
+            # launder independence into a SELF event-level VERIFIED, and a
+            # NOT_ASSESSED record asserts nothing, so neither may set
+            # saw_self / saw_independent. NOT_ASSESSED is also absent from
+            # _STATUS_PRIORITY and must never enter the conferring statuses
+            # (a bare StopIteration would otherwise result); if nothing
+            # conferring remains, the result is NOT_ASSESSED.
+            if event_level and status != "NOT_ASSESSED":
+                resolved["conferring"].append(record)
+                conferring_statuses.append(status)
                 if verifier_class == SELF_CLASS or \
                         record.get("self_verification") is True:
                     saw_self = True
                 else:
                     saw_independent = True
-                # Audit fix MF-2: NOT_ASSESSED asserts nothing and is absent
-                # from _STATUS_PRIORITY; it must never enter the conferring
-                # statuses (a bare StopIteration would otherwise result). If
-                # nothing conferring remains, the result is NOT_ASSESSED.
-                if status != "NOT_ASSESSED":
-                    resolved["conferring"].append(record)
-                    conferring_statuses.append(status)
 
         resolved["has_independent"] = saw_independent
         resolved["self_only"] = saw_self and not saw_independent
@@ -588,16 +701,22 @@ class HistoryStore:
             resolved["effective_status"] = "NOT_ASSESSED"
         return resolved
 
-    def verifications_for_event(self, event_id: str) -> List[Dict[str, Any]]:
+    def verifications_for_event(self, event_id: str,
+                                disclosure_context: Optional[Dict[str, Any]] = None
+                                ) -> List[Dict[str, Any]]:
         """Defect 2: only verification objects explicitly referenced by the
         event are returned (strong binding). Output copies prevent mutation.
 
         Audit fix MF-3: WITHHELD events leak nothing, not even their
-        verification records."""
+        verification records. Audit fix R3-2: RESTRICTED events route through
+        the unified disclosure guard; without a valid, resolver-confirmed
+        disclosure context the verification list is denied (empty)."""
         event = self._events.get(event_id)
         if event is None:
             return []
-        if self._event_is_withheld(event):
+        permitted, _withheld, _denial = self._require_detail_disclosure(
+            event, disclosure_context)
+        if not permitted:
             return []
         out = []
         for ref in event.get("verification_references", []) or []:
@@ -608,15 +727,23 @@ class HistoryStore:
                 out.append(copy.deepcopy(record))
         return out
 
-    def event_verification_status(self, event_id: str) -> str:
+    def event_verification_status(self, event_id: str,
+                                  disclosure_context: Optional[Dict[str, Any]] = None
+                                  ) -> str:
         event = self._events.get(event_id)
         if event is None:
             return "NOT_ASSESSED"
         # Audit fix MF-3: WITHHELD disclosure also withholds the effective
         # verification status (consistent with get_event's three-state
-        # WITHHELD response).
-        if self._event_is_withheld(event):
+        # WITHHELD response). Audit fix R3-2: RESTRICTED events expose the
+        # effective status only through a confirmed disclosure context;
+        # otherwise the status itself is restricted.
+        permitted, withheld, _denial = self._require_detail_disclosure(
+            event, disclosure_context)
+        if withheld:
             return "WITHHELD"
+        if not permitted:
+            return "RESTRICTED"
         return self._resolve_event_verification(event)["effective_status"]
 
     def _verification_resolution(self, event: Dict[str, Any]) -> Dict[str, Any]:
@@ -624,6 +751,33 @@ class HistoryStore:
 
     def _event_is_withheld(self, event: Dict[str, Any]) -> bool:
         return event.get("disclosure", {}).get("disclosure_scope") == "WITHHELD"
+
+    def _require_detail_disclosure(self, event: Dict[str, Any],
+                                   disclosure_context: Any = None
+                                   ) -> Tuple[bool, bool,
+                                              Optional[Dict[str, Any]]]:
+        """Audit fix R3-2: unified detail-disclosure guard for EVERY data
+        access path (``get_event`` / ``verifications_for_event`` /
+        ``event_verification_status`` / ``get_failure_category``).
+
+        Returns ``(permitted, withheld, error_envelope_or_None)``:
+
+        * ``withheld=True`` -- WITHHELD scope; the caller emits the
+          three-state WITHHELD response (existence acknowledged, content
+          withheld).
+        * ``permitted=True`` -- detail-level access is allowed.
+        * otherwise -- an error envelope to return verbatim (fail-closed;
+          includes RESTRICTED without a confirmed disclosure context and the
+          R3-1 no-resolver denial).
+        """
+        if self._event_is_withheld(event):
+            return False, True, None
+        denial = _evaluate_detail_disclosure(
+            event, disclosure_context, _clock(),
+            self._policy_decision_resolver)
+        if denial is not None:
+            return False, False, denial
+        return True, False, None
 
     def _event_summary(self, event: Dict[str, Any]) -> Dict[str, Any]:
         entry: Dict[str, Any] = {}
@@ -984,9 +1138,11 @@ class HistoryStore:
         if capability != "detail":
             return _envelope("summary", NullSemantics.NONE,
                              self._event_summary(event))
-        # Detail: enforce the disclosure truth table (fail-closed).
-        instant = _clock()
-        denial = _evaluate_detail_disclosure(event, disclosure_context, instant)
+        # Detail: enforce the disclosure truth table (fail-closed) through the
+        # unified guard, including the R3-1 policy decision resolver gate
+        # (RESTRICTED without a configured resolver is always denied).
+        _permitted, _withheld, denial = self._require_detail_disclosure(
+            event, disclosure_context)
         if denial is not None:
             return denial
         # F4: every whitelisted free-text field (including nested dot paths)
@@ -1005,7 +1161,8 @@ class HistoryStore:
             container[parts[-1]] = node.pop(parts[-1])
         resolution = self._resolve_event_verification(event)
         structured["verification_status"] = resolution["effective_status"]
-        structured["verification_records"] = self.verifications_for_event(event_id)
+        structured["verification_records"] = self.verifications_for_event(
+            event_id, disclosure_context)
         # Defect 3: expose verification independence metadata even when the
         # event status is VERIFIED.
         structured["verification_independence"] = {
@@ -1024,11 +1181,16 @@ class HistoryStore:
             restricted_fields=restricted,
         )
 
-    def get_failure_category(self, event_id: str) -> Dict[str, Any]:
+    def get_failure_category(self, event_id: str,
+                             disclosure_context: Optional[Dict[str, Any]] = None
+                             ) -> Dict[str, Any]:
         """Dedicated projection demonstrating the three-state null semantics.
 
         NO_RECORD: event unknown; NOT_APPLICABLE: result is not failure-class;
         otherwise the enumerated failure_category value.
+
+        Audit fix R3-2: RESTRICTED events never leak the failure category
+        without a valid, resolver-confirmed disclosure context.
         """
         # Audit fix CF-3: validate BEFORE any lookup; an empty/invalid
         # event_id is an invalid request, never NO_RECORD.
@@ -1040,9 +1202,16 @@ class HistoryStore:
         if event is None:
             return _envelope("detail", NullSemantics.NO_RECORD,
                              {"event_id": event_id})
-        if self._event_is_withheld(event):
+        # Audit fix R3-2: unified disclosure guard. WITHHELD keeps its
+        # three-state response; RESTRICTED without a confirmed disclosure
+        # context returns a denial envelope and never the category value.
+        _permitted, withheld, denial = self._require_detail_disclosure(
+            event, disclosure_context)
+        if withheld:
             return _envelope("detail", NullSemantics.WITHHELD,
                              {"event_id": event_id}, withheld_count=1)
+        if denial is not None:
+            return denial
         if event["result_status"] not in FAILURE_CLASS_STATUSES:
             return _envelope("detail", NullSemantics.NOT_APPLICABLE,
                              {"event_id": event_id, "failure_category": None})

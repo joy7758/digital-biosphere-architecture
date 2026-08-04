@@ -61,6 +61,8 @@ def make_verification(**overrides):
             "subject_event_id": "evt-test-0001",
             "subject_type": "EXPERIENCE_EVENT",
             "covered_aspect": "FULL_EVENT",
+            "agent_ref": "did:example:test-agent",
+            "agent_version": "1.0.0",
         },
         "self_verification": False,
         "authorization_effect": "NONE",

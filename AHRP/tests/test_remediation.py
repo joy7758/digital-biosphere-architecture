@@ -36,6 +36,7 @@ from query.engine import (
     Q_NO_RECORD,
     Q_POLICY_DECISION_REQUIRED,
     Q_UNSUPPORTED_VERSION,
+    SyntheticPolicyResolver,
 )
 from validator import validate_experience_event
 
@@ -54,18 +55,26 @@ def make_disclosure_context(**overrides):
         "evaluated_at": "2026-08-01T00:00:00Z",
         "expiry": FAR_FUTURE,
         "revocation_status": "ACTIVE",
+        "issuer": "did:example:policy-authority",
+        "decision_id": "decision-0001",
     }
     ctx.update(overrides)
     return ctx
 
 
 def event_scope(event_id, aspect="FULL_EVENT", subject_type="EXPERIENCE_EVENT",
-                **extra):
+                agent_ref=AGENT, agent_version="1.0.0", **extra):
+    # R3-3: event-level verification must bind agent + version; the default
+    # fixture declares the complete binding matching make_event().
     scope = {
         "subject_event_id": event_id,
         "subject_type": subject_type,
         "covered_aspect": aspect,
     }
+    if agent_ref is not None:
+        scope["agent_ref"] = agent_ref
+    if agent_version is not None:
+        scope["agent_version"] = agent_version
     scope.update(extra)
     return scope
 
@@ -78,7 +87,11 @@ class TestSelectiveDisclosure(unittest.TestCase):
     """Defect 1: disclosure truth table, fail-closed, stable error codes."""
 
     def _store_with(self, event):
-        store = HistoryStore()
+        # R3-1: RESTRICTED detail access requires a configured policy
+        # decision resolver (fail-closed without one); the default synthetic
+        # context cites "policy-decision-0001".
+        store = HistoryStore(policy_decision_resolver=SyntheticPolicyResolver(
+            {"policy-decision-0001"}))
         store.ingest_event(event)
         return store
 
@@ -246,11 +259,13 @@ class TestVerificationStrongBinding(unittest.TestCase):
 
     def test_agent_version_mismatch_is_invalid(self):
         store = HistoryStore()
+        # R3-3: the scope declares a complete binding, but its agent_version
+        # does not match the subject event's version -> fail-closed INVALID.
         store.ingest_verification(make_verification(
             verification_id="ver-av",
-            scope=event_scope("evt-av", agent_version="9.9.9")))
+            scope=event_scope("evt-av")))
         store.ingest_event(make_event(
-            event_id="evt-av", agent_version="1.0.0",
+            event_id="evt-av", agent_version="9.9.9",
             verification_references=[ref("ver-av")]))
         self.assertEqual(store.event_verification_status("evt-av"), "INVALID")
 
@@ -463,7 +478,8 @@ class TestSecurityRegression(unittest.TestCase):
         self.assertIn("2.0.0", result["by_version"])
 
     def test_disclosure_not_bypassable_via_missing_field(self):
-        store = HistoryStore()
+        store = HistoryStore(policy_decision_resolver=SyntheticPolicyResolver(
+            {"policy-decision-0001"}))
         store.ingest_event(make_event(
             event_id="evt-rest",
             disclosure={"disclosure_scope": "RESTRICTED", "declared_by": "h"}))
@@ -475,7 +491,8 @@ class TestSecurityRegression(unittest.TestCase):
         self.assertEqual(env["error"]["code"], Q_POLICY_DECISION_REQUIRED)
 
     def test_disclosure_not_bypassable_via_case_variant(self):
-        store = HistoryStore()
+        store = HistoryStore(policy_decision_resolver=SyntheticPolicyResolver(
+            {"policy-decision-0001"}))
         store.ingest_event(make_event(
             event_id="evt-rest",
             disclosure={"disclosure_scope": "RESTRICTED", "declared_by": "h"}))
@@ -488,7 +505,8 @@ class TestSecurityRegression(unittest.TestCase):
             self.assertFalse(env["ok"], bad_scope)
 
     def test_record_expiry_dominates_even_with_permission(self):
-        store = HistoryStore()
+        store = HistoryStore(policy_decision_resolver=SyntheticPolicyResolver(
+            {"policy-decision-0001"}))
         store.ingest_event(make_event(
             event_id="evt-rest-exp",
             disclosure={"disclosure_scope": "RESTRICTED",

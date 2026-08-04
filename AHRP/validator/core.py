@@ -271,6 +271,26 @@ def validate_verification_record(doc: Any) -> ValidationResult:
     for err in jsonschema_subset.validate(doc, schema):
         result.add(_map_code(err["keyword"], err["path"]), err["path"], err["message"])
 
+    # Audit fix R3-3 (protocol-level enforcement): a verification whose scope
+    # targets an EXPERIENCE_EVENT must declare the complete agent binding
+    # (scope.agent_ref AND scope.agent_version). The JSON-Schema subset has no
+    # conditional-required support, so the rule is enforced here: an
+    # event-scoped verification that does not name the verified agent and
+    # version is incomplete and rejected (fail-closed).
+    scope = doc.get("scope")
+    if isinstance(scope, dict) and \
+            scope.get("subject_type") == "EXPERIENCE_EVENT":
+        for bound_field in ("agent_ref", "agent_version"):
+            value = scope.get(bound_field)
+            if not isinstance(value, str) or not value:
+                result.add(
+                    "E_FIELD_MISSING",
+                    f"$.scope.{bound_field}",
+                    f"scope.{bound_field} is required when scope.subject_type "
+                    "is EXPERIENCE_EVENT (event-level verification must bind "
+                    "the agent identity and version; fail-closed)",
+                )
+
     # Constitution discipline: SELF verifier class must be explicitly flagged,
     # and self_verification=true must coincide with verifier_class SELF.
     verifier = doc.get("verifier")

@@ -33,7 +33,9 @@ def build_store():
         verification_id="ver-a1", scope={
             "subject_event_id": "evt-a1",
             "subject_type": "EXPERIENCE_EVENT",
-            "covered_aspect": "FULL_EVENT"}))
+            "covered_aspect": "FULL_EVENT",
+            "agent_ref": AGENT,
+            "agent_version": "1.0.0"}))
     return store
 
 
@@ -265,7 +267,9 @@ class TestF10VerificationScopeAggregation(unittest.TestCase):
         store.ingest_verification(make_verification(scope={
             "subject_event_id": "evt-test-0001",
             "subject_type": "EXPERIENCE_EVENT",
-            "covered_aspect": "EVIDENCE_BINDING"}))
+            "covered_aspect": "EVIDENCE_BINDING",
+            "agent_ref": AGENT,
+            "agent_version": "1.0.0"}))
         self.assertEqual(store.event_verification_status("evt-test-0001"),
                          "NOT_ASSESSED")
         self.assertEqual(
@@ -280,7 +284,8 @@ class TestF10VerificationScopeAggregation(unittest.TestCase):
         store.ingest_verification(make_verification(scope={
             "subject_event_id": "evt-test-0001",
             "subject_type": "EVIDENCE_REFERENCE",
-            "covered_aspect": "FULL_EVENT"}))
+            "covered_aspect": "FULL_EVENT"}))  # R3-3: non-event subject types
+        # keep the optional binding (only EXPERIENCE_EVENT requires it).
         self.assertEqual(store.event_verification_status("evt-test-0001"),
                          "NOT_ASSESSED")
 
@@ -292,7 +297,9 @@ class TestF10VerificationScopeAggregation(unittest.TestCase):
         store.ingest_verification(make_verification(scope={
             "subject_event_id": "evt-test-0001",
             "subject_type": "EXPERIENCE_EVENT",
-            "covered_aspect": "EVIDENCE_BINDING"}))
+            "covered_aspect": "EVIDENCE_BINDING",
+            "agent_ref": AGENT,
+            "agent_version": "1.0.0"}))
         env = store.query_events(identity_ref=AGENT,
                                  verification_status="VERIFIED")
         self.assertEqual(env["result"]["count"], 0)

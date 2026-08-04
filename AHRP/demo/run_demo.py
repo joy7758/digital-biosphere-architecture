@@ -92,6 +92,8 @@ def main() -> int:
             "subject_event_id": "evt-demo-0001",
             "subject_type": "EXPERIENCE_EVENT",
             "covered_aspect": "FULL_EVENT",
+            "agent_ref": "did:example:agent-A",
+            "agent_version": "1.2.0",
         },
         "self_verification": False,
         "authorization_effect": "NONE",

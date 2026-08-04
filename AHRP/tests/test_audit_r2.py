@@ -34,6 +34,7 @@ from query.engine import (
     Q_INVALID_REFERENCE,
     Q_POLICY_DECISION_REQUIRED,
     Q_UNSUPPORTED_VERSION,
+    SyntheticPolicyResolver,
 )
 
 AGENT = "did:example:test-agent"
@@ -42,12 +43,19 @@ LONG_PAST = "2000-01-01T00:00:00Z"
 UNHASHABLE_VALUES = (["VERIFIED"], {"k": 1}, {"a"}, 42)
 
 
-def event_scope(event_id, aspect="FULL_EVENT", subject_type="EXPERIENCE_EVENT"):
-    return {
+def event_scope(event_id, aspect="FULL_EVENT", subject_type="EXPERIENCE_EVENT",
+                agent_ref=AGENT, agent_version="1.0.0"):
+    # R3-3: default fixture declares the complete agent/version binding.
+    scope = {
         "subject_event_id": event_id,
         "subject_type": subject_type,
         "covered_aspect": aspect,
     }
+    if agent_ref is not None:
+        scope["agent_ref"] = agent_ref
+    if agent_version is not None:
+        scope["agent_version"] = agent_version
+    return scope
 
 
 def ref(verification_id, verifier_name="named-verifier-1"):
@@ -64,6 +72,8 @@ def make_disclosure_context(**overrides):
         "evaluated_at": "2026-08-01T00:00:00Z",
         "expiry": "2099-01-01T00:00:00Z",
         "revocation_status": "ACTIVE",
+        "issuer": "did:example:policy-authority",
+        "decision_id": "decision-0001",
     }
     ctx.update(overrides)
     return ctx
@@ -74,7 +84,12 @@ class TestCF1UnhashableInputs(unittest.TestCase):
     bare TypeError from frozenset membership checks."""
 
     def setUp(self):
-        self.store = HistoryStore()
+        # R3-1: the RESTRICTED disclosure-context cases below need a
+        # configured resolver (fail-closed otherwise); the default synthetic
+        # context cites "policy-decision-0001".
+        self.store = HistoryStore(
+            policy_decision_resolver=SyntheticPolicyResolver(
+                {"policy-decision-0001"}))
         self.store.ingest_event(make_event(event_id="evt-u1"))
 
     def test_unhashable_query_enum_filters_are_invalid_enum(self):

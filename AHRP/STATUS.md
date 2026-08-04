@@ -1,6 +1,6 @@
 # AHRP v0.1 — STATUS
 
-- Date recorded: `2026-08-05`（independent-audit remediation round 2：五项缺陷修复 + 回归测试后重测）
+- Date recorded: `2026-08-05`（trust-boundary hardening round r3：四项信任边界修复 + 回归测试后重测；last update 2026-08-05）
 - Scope: 本文件只记录 AHRP v0.1 参考实现的工件存在性与测试证据；
   文档状态（PROPOSED）与实现状态（IMPLEMENTED）分离记录，不自动传播。
 
@@ -32,10 +32,11 @@ AHRP_IMPLEMENTATION_EXISTS=true
 python3 -m unittest discover
 ```
 
-输出摘要（真实运行结果，含五项缺陷修复后的新增回归测试）：
+输出摘要（真实运行结果，含五项缺陷修复、独立审查 r2 修复与 r3 信任边界加固后
+的新增回归测试）：
 
 ```text
-Ran 131 tests in 0.010s
+Ran 208 tests in 0.016s
 
 OK
 ```
@@ -44,8 +45,14 @@ OK
 （`tests/test_validator.py`）、Query Test（`tests/test_query.py`）、Failure Case
 Test（`tests/test_failure_cases.py`，含注入负例与禁止字段负例）、Remediation
 Test（`tests/test_remediation.py`，43 项：选择性披露真值表、验证↔事件强绑定、
-自验证/独立验证分离、查询请求校验与稳定错误码、安全回归）。原有 88 项全部保留、
-未被删除/跳过/削弱；其夹具仅按强绑定语义补充显式 `verification_references`。
+自验证/独立验证分离、查询请求校验与稳定错误码、安全回归）、Independent-Review
+r2 Test（`tests/test_audit_r2.py`，37 项：不可哈希输入类型守卫、验证前置校验门、
+独立性洗白防护、NOT_ASSESSED 过滤、WITHHELD 辅助守卫、时钟注入拒绝、
+披露范围过滤、limit 错误码、畸形过期 fail-closed）、Trust-Boundary r3 Test
+（`tests/test_audit_r3.py`，40 项：披露上下文防伪与 resolver fail-closed、
+统一披露守卫、agent+version 强制绑定、NOT_ASSESSED 不授予独立性、查询稳定
+错误码回归、真值门一致性）。原有测试全部保留、未被删除/跳过/削弱；受新语义
+影响的夹具仅按新规则补充 resolver 注入与完整 agent/version 绑定。
 缺陷根因、改动清单与修复前后复现证据见
 `docs/review/AHRP-v0.1-remediation-record.md`。
 
@@ -70,7 +77,7 @@ PHYSICAL_OR_REAL_AGENT_VALIDATED=false
 AHRP_REAL_WORLD_ADOPTION_VALIDATED=false
 AHRP_PRODUCTION_READY=false
 AHRP_STANDARD_PUBLISHED=false
-AHRP_INDEPENDENT_ADVERSARIAL_REVIEW=NOT_ASSESSED
+AHRP_INDEPENDENT_ADVERSARIAL_REVIEW=PENDING_R3
 NEW_TRUTH_SOURCE_CREATED=false
 SECOND_EVIDENCE_OR_VERIFICATION_OWNER_CREATED=false
 NEW_IDENTITY_PROTOCOL_CREATED=false
