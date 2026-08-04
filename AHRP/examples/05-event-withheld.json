@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1.0",
+  "event_id": "evt-0005-synthetic",
+  "agent_reference": {
+    "identity_source": "DBOS",
+    "identity_ref": "did:example:agent-alpha"
+  },
+  "agent_version": "1.0.0",
+  "task_type": "ORCHESTRATION",
+  "action_type": "DELEGATE",
+  "result_status": "SUCCESS",
+  "occurred_at": "2026-08-04T16:00:00Z",
+  "evidence_references": [],
+  "verification_references": [],
+  "disclosure": {
+    "disclosure_scope": "WITHHELD",
+    "declared_by": "agent-alpha-holder"
+  },
+  "notes": "SYNTHETIC_ONLY: WITHHELD scope; queries count it but never reveal content."
+}

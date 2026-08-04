@@ -1,0 +1,9 @@
+{
+  "tasks": 15,
+  "success": 12,
+  "failure": 1,
+  "timeout": 1,
+  "cancelled": 1,
+  "decision_changed": 1,
+  "queries_made": 15
+}

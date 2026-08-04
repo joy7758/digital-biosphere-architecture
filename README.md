@@ -2,10 +2,6 @@
 [English](./README.md) | [中文](./README.zh-CN.md)
 <!-- language-switch:end -->
 
-> **SAEE 产品生态关系｜SAEE product-ecosystem relationship**<br>
-> 本仓库继续作为独立的 Digital Biosphere Architecture 架构中心维护，并在 [SAEE 智能体可靠性评估基础设施](https://github.com/joy7758/SAEE) 中映射为 **Architecture Foundation**。该映射不合并仓库、不改变引用身份，也不把本仓库描述为运行时实现。<br>
-> This repository remains the independent Digital Biosphere Architecture hub and is mapped as the **Architecture Foundation** of the [SAEE Agent Reliability Evaluation Infrastructure](https://github.com/joy7758/SAEE). The mapping does not merge repositories, change citation identity, or reframe this repository as runtime implementation.
-
 # Digital Biosphere Architecture
 
 This repository is the canonical architecture hub for the Digital Biosphere Architecture.

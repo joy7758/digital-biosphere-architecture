@@ -1,0 +1,38 @@
+{
+  "schema_version": "0.1.0",
+  "event_id": "evt-0001-synthetic",
+  "agent_reference": {
+    "identity_source": "DBOS",
+    "identity_ref": "did:example:agent-alpha"
+  },
+  "agent_version": "1.0.0",
+  "task_type": "DATA_PROCESSING",
+  "action_type": "EXECUTE",
+  "result_status": "SUCCESS",
+  "occurred_at": "2026-08-01T09:30:00Z",
+  "recorded_at": "2026-08-01T09:31:00Z",
+  "evidence_references": [
+    {
+      "source": "CI_ARTIFACT",
+      "version": "1.4.2",
+      "reference_id": "ci-run-8842/artifacts/etl-report.json",
+      "hash": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+      "availability_status": "AVAILABLE"
+    }
+  ],
+  "verification_references": [
+    {
+      "verification_id": "ver-0001-synthetic",
+      "verifier_name": "orchestrator-domain-a"
+    }
+  ],
+  "disclosure": {
+    "disclosure_scope": "FEDERATED",
+    "expires_at": "2027-08-01T00:00:00Z",
+    "declared_by": "agent-alpha-holder"
+  },
+  "external_references": {
+    "a2a_task_id": "a2a-task-778"
+  },
+  "notes": "SYNTHETIC_ONLY example: successful ETL run with bound CI artifact."
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1.0",
+  "verification_id": "ver-0001-synthetic",
+  "verifier": {
+    "verifier_name": "orchestrator-domain-a",
+    "verifier_class": "ORCHESTRATOR",
+    "verifier_ref": "did:example:orchestrator-domain-a"
+  },
+  "verification_type": "EVENT_CONFIRMATION",
+  "verification_status": "VERIFIED",
+  "verified_at": "2026-08-01T10:00:00Z",
+  "scope": {
+    "subject_event_id": "evt-0001-synthetic",
+    "subject_type": "EXPERIENCE_EVENT",
+    "covered_aspect": "FULL_EVENT",
+    "agent_ref": "did:example:agent-alpha",
+    "agent_version": "1.0.0"
+  },
+  "self_verification": false,
+  "authorization_effect": "NONE",
+  "notes": "SYNTHETIC_ONLY. Verification != Authorization: grants no capability."
+}

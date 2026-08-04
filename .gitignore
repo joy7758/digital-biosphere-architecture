@@ -13,3 +13,6 @@ htmlcov/
 *.egg-info/
 .idea/
 .vscode/
+
+# Temporary review staging area (evidence staging, not source)
+.review-staging/
