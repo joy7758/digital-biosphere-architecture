@@ -1,0 +1,105 @@
+{
+  "recording_completeness": {
+    "qualifying_tasks_total": 17,
+    "events_generated": 17,
+    "event_generation_coverage": "100%",
+    "schema_valid_rate": "100%",
+    "independent_verification_count": 14,
+    "self_verification_count": 3,
+    "verification_coverage_of_failures": "100%"
+  },
+  "query_usage": {
+    "total_queries": 7,
+    "summary_queries": 4,
+    "detail_drilldowns": 3,
+    "no_record_count": 2,
+    "disclosure_denials": 0,
+    "query_errors": 1,
+    "simulated_unavailable": 1
+  },
+  "decision_impact": {
+    "total_decisions_recorded": 7,
+    "decision_changes": 1,
+    "capability_limit_vetoes": 2,
+    "policy_restriction_blocks": 1,
+    "environment_error_adjustments": 1,
+    "cold_start_conservative_dispatches": 2,
+    "fail_closed_events": 1,
+    "evidence_supported_decision_changes": 1
+  },
+  "outcome_observation": {
+    "alternative_agent_success_after_veto": true,
+    "known_failure_path_avoided": true,
+    "new_failures_introduced": false,
+    "manual_overrides": 0
+  },
+  "truth_boundaries": {
+    "CONTROLLED_INTERNAL_PREPILOT": true,
+    "REAL_WORLD_ADOPTION_VALIDATED": false,
+    "SYNTHETIC_ONLY": true,
+    "AHRP_BASELINE_COMMIT": "64bfed1f3063f4f463bb1e2680ef6b0b1d312201"
+  },
+  "governance_status": {
+    "PREPILOT_MECHANICAL_LOOP_VALIDATED": true,
+    "PREPILOT_MINIMUM_SAMPLE_REQUIREMENTS_MET": true,
+    "PREPILOT_RESULT": "SUPPORTED_WITH_CONDITIONS",
+    "prepilot_result_updated_at": "2026-08-05",
+    "prepilot_result_note": "Progression: round 1 ended INCONCLUSIVE because minimum sample thresholds were unmet (17 events < 20, 7 queries < 10) and the initially used verdict string was not a member of the frozen result enum (see Governance Correction Note in AHRP_PREPILOT_REPORT_v0.1.md, preserved). Phase 2 completed 2026-08-04 with all minimum sample thresholds met (46 tasks, 31 events, 23 queries, 10 shadow comparisons, 3 EVIDENCE_SUPPORTED_DECISION_CHANGEs, 28 independent verifications, 8 FAILURE/TIMEOUT/CANCELLED events), so PREPILOT_RESULT advances to SUPPORTED_WITH_CONDITIONS. The formal-pilot conditions (real agents, networked query service, two-phase shadow protocol, no-AHRP baseline arm, real verifier pool, trusted time anchoring, non-synthetic long-term data, real operational accountability, external adoption evidence) remain unresolved; this result makes no production, adoption, or reliability claim.",
+    "governance_correction_history": "Governance Correction Note (2026-08-05): round-1 verdict string SUPPORTED_FOR_PILOT_WITH_CONDITIONS retracted as not a member of the frozen enum; status corrected to PREPILOT_RESULT=INCONCLUSIVE with PREPILOT_MINIMUM_SAMPLE_REQUIREMENTS_MET=false. That correction remains part of the record and is not deleted by this update.",
+    "REAL_WORLD_ADOPTION_VALIDATED": false,
+    "AHRP_PRODUCTION_READY": false,
+    "governance_correction_at": "2026-08-05",
+    "phase2_completed_at": "2026-08-04T20:32:03.583309+00:00"
+  },
+  "phase2": {
+    "generated_at": "2026-08-04T20:32:03.583305+00:00",
+    "totals": {
+      "tasks": 46,
+      "experience_events": 31,
+      "verification_records": 31,
+      "independent_verifications": 28,
+      "self_verifications_flagged": 3,
+      "queries": 23,
+      "decisions": 19,
+      "shadow_comparison_records": 10,
+      "decision_changes": 3,
+      "failure_timeout_cancelled_events": 8
+    },
+    "phase2_new": {
+      "tasks": 22,
+      "experience_events": 14,
+      "verification_records": 14,
+      "queries": 16,
+      "decisions": 12,
+      "real_internal_tasks_recorded": 6,
+      "disclosure_e2e_withheld_probes_pass": true,
+      "disclosure_e2e_restricted_scenarios_pass": 6,
+      "version_isolation_pass": true,
+      "cold_start_cases": 2,
+      "shadow_decision_changed_count": 3
+    },
+    "thresholds": {
+      "tasks_minimum": 30,
+      "events_minimum": 20,
+      "pre_dispatch_queries_minimum": 10,
+      "shadow_comparison_records_minimum": 10,
+      "failure_timeout_cancelled_minimum": 5,
+      "independent_verifications_minimum": 5,
+      "evidence_supported_decision_change_minimum": 1
+    },
+    "threshold_checks": {
+      "tasks": true,
+      "events": true,
+      "pre_dispatch_queries": true,
+      "shadow_comparison_records": true,
+      "failure_timeout_cancelled": true,
+      "independent_verifications": true,
+      "evidence_supported_decision_change": true
+    },
+    "all_thresholds_met": true,
+    "api_limitations": [
+      "frozen v0.1 schemas declare additionalProperties=false: the control block and monotonic_sequence cannot be embedded inside AHRP event/verification records; they are carried on prepilot wrapper records and summarized in the whitelisted notes field",
+      "round-1 deterministic synthetic timestamps extend slightly into the future relative to the real phase-2 UTC clock; phase-2 records use real UTC timestamps and are internally time-ordered (verification >= event, query >= referenced phase-2 events, monotonic_sequence 1000..1049 strictly increasing); round-1 records untouched (append-only)"
+    ]
+  }
+}

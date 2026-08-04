@@ -1,0 +1,97 @@
+AHRP v0.1 CONTROLLED INTERNAL PREPILOT - VALIDATOR OUTPUT
+CONTROLLED_INTERNAL_PREPILOT=true SYNTHETIC_ONLY=true
+AHRP baseline commit: 64bfed1f3063f4f463bb1e2680ef6b0b1d312201 (frozen, read-only)
+Validator: /Users/zhangbin/GitHub/AHRP-remediation-worktree/AHRP/validator (reference implementation)
+
+[validator] verification_record ver-prepilot-001: PASS
+[validator] experience_event evt-prepilot-001: PASS
+[validator] verification_record ver-prepilot-002: PASS
+[validator] experience_event evt-prepilot-002: PASS
+[validator] verification_record ver-prepilot-003: PASS
+[validator] experience_event evt-prepilot-003: PASS
+[validator] verification_record ver-prepilot-004: PASS
+[validator] experience_event evt-prepilot-004: PASS
+[validator] verification_record ver-prepilot-005: PASS
+[validator] experience_event evt-prepilot-005: PASS
+[validator] verification_record ver-prepilot-006: PASS
+[validator] experience_event evt-prepilot-006: PASS
+[validator] verification_record ver-prepilot-007: PASS
+[validator] experience_event evt-prepilot-007: PASS
+[validator] verification_record ver-prepilot-008: PASS
+[validator] experience_event evt-prepilot-008: PASS
+[validator] verification_record ver-prepilot-009: PASS
+[validator] experience_event evt-prepilot-009: PASS
+[validator] verification_record ver-prepilot-010: PASS
+[validator] experience_event evt-prepilot-010: PASS
+[validator] verification_record ver-prepilot-011: PASS
+[validator] experience_event evt-prepilot-011: PASS
+[validator] verification_record ver-prepilot-012: PASS
+[validator] experience_event evt-prepilot-012: PASS
+[validator] verification_record ver-prepilot-014: PASS
+[validator] experience_event evt-prepilot-014: PASS
+[validator] verification_record ver-prepilot-017: PASS
+[validator] experience_event evt-prepilot-017: PASS
+[validator] verification_record ver-prepilot-019: PASS
+[validator] experience_event evt-prepilot-019: PASS
+[validator] verification_record ver-prepilot-021: PASS
+[validator] experience_event evt-prepilot-021: PASS
+[validator] verification_record ver-prepilot-024: PASS
+[validator] experience_event evt-prepilot-024: PASS
+
+total experience events validated: 17 (all PASS)
+total verification records validated: 17 (all PASS)
+
+Injection negative case (validator rejects instruction-like free text):
+  hostile event validator verdict: FAIL
+  E_INJECTION_SUSPECTED raised: True
+  hostile event ingested: False (must be False)
+
+schema validation errors on stored records: 0
+
+AHRP v0.1 CONTROLLED INTERNAL PREPILOT PHASE 2 - VALIDATOR OUTPUT
+CONTROLLED_INTERNAL_PREPILOT=true CONTROLLED_INTERNAL_TASK=true REAL_EXTERNAL_AGENT=false SYNTHETIC_MARKET_ADOPTION=false
+AHRP baseline commit: 64bfed1f3063f4f463bb1e2680ef6b0b1d312201 (frozen, read-only)
+monotonic_sequence range (wrapper records): 1000..1049
+phase-2 records validated (real UTC timestamps):
+[validator] verification_record ver-prepilot-r1: PASS
+[validator] experience_event evt-prepilot-r1: PASS
+[validator] verification_record ver-prepilot-r2: PASS
+[validator] experience_event evt-prepilot-r2: PASS
+[validator] verification_record ver-prepilot-r3: PASS
+[validator] experience_event evt-prepilot-r3: PASS
+[validator] verification_record ver-prepilot-r4: PASS
+[validator] experience_event evt-prepilot-r4: PASS
+[validator] verification_record ver-prepilot-r5: PASS
+[validator] experience_event evt-prepilot-r5: PASS
+[validator] verification_record ver-prepilot-r6: PASS
+[validator] experience_event evt-prepilot-r6: PASS
+[validator] verification_record ver-prepilot-p2-withheld: PASS
+[validator] experience_event evt-prepilot-p2-withheld: PASS
+[validator] verification_record ver-prepilot-p2-restricted: PASS
+[validator] experience_event evt-prepilot-p2-restricted: PASS
+[validator] verification_record ver-prepilot-p2-gamma110: PASS
+[validator] experience_event evt-prepilot-p2-gamma110: PASS
+[validator] verification_record ver-prepilot-p2-nu-exploration: PASS
+[validator] experience_event evt-prepilot-p2-nu-exploration: PASS
+[validator] verification_record ver-prepilot-p2-s01: PASS
+[validator] experience_event evt-prepilot-p2-s01: PASS
+[validator] verification_record ver-prepilot-p2-s05: PASS
+[validator] experience_event evt-prepilot-p2-s05: PASS
+[validator] verification_record ver-prepilot-p2-s07: PASS
+[validator] experience_event evt-prepilot-p2-s07: PASS
+[validator] verification_record ver-prepilot-p2-s10: PASS
+[validator] experience_event evt-prepilot-p2-s10: PASS
+
+total phase-2 experience events validated: 14 (all PASS)
+total phase-2 verification records validated: 14 (all PASS)
+note: frozen v0.1 schemas are additionalProperties=false; control block + monotonic_sequence are carried on prepilot wrapper records (tasks/queries/decisions) and compacted into the whitelisted notes field
+
+HONEST TIMESTAMP NOTE (phase 2):
+  Round-1 records carry deterministic synthetic session timestamps that extend
+  to 2026-08-05T06:48+08:00 (= 2026-08-04T22:48Z), i.e. slightly into the
+  future relative to the real phase-2 execution clock (real UTC now()).
+  Phase-2 uses REAL UTC timestamps as required and is internally consistent:
+  every new verification timestamp is >= its event's occurred_at, every new
+  query timestamp is >= the phase-2 events it references, and
+  monotonic_sequence 1000..1049 is strictly increasing. No round-1 record was
+  rewritten (append-only verified by byte-prefix comparison).

@@ -1,0 +1,97 @@
+{
+  "control": {
+    "CONTROLLED_INTERNAL_PREPILOT": true,
+    "CONTROLLED_INTERNAL_TASK": true,
+    "REAL_EXTERNAL_AGENT": false,
+    "SYNTHETIC_MARKET_ADOPTION": false,
+    "REAL_WORLD_ADOPTION_VALIDATED": false,
+    "AHRP_PRODUCTION_READY": false,
+    "AHRP_BASELINE_COMMIT": "64bfed1f3063f4f463bb1e2680ef6b0b1d312201",
+    "DATA_CHANNEL": "SYNTHETIC_PREPILOT"
+  },
+  "generated_at": "2026-08-04T20:32:03.583063+00:00",
+  "ahrp_baseline_commit": "64bfed1f3063f4f463bb1e2680ef6b0b1d312201",
+  "api_limitations": [
+    "frozen v0.1 schemas declare additionalProperties=false: the control block and monotonic_sequence cannot be embedded inside AHRP event/verification records; they are carried on prepilot wrapper records and summarized in the whitelisted notes field"
+  ],
+  "withheld": {
+    "event_id": "evt-prepilot-p2-withheld",
+    "verification_id": "ver-prepilot-p2-withheld",
+    "agent": "external-epsilon@1.0.0",
+    "result_status": "FAILURE",
+    "failure_category": "DEPENDENCY_FAILURE",
+    "probes": [
+      {
+        "probe": "summary",
+        "withheld_events_count": 1,
+        "withheld_event_id_leaked": false,
+        "failure_category_leaked": false,
+        "excluded_from_detail_bearing_output": true,
+        "pass": true
+      },
+      {
+        "probe": "get_event detail with normal disclosure context",
+        "expected": "DENIED (three-state WITHHELD response, no detail)",
+        "ok": true,
+        "null_semantics": "WITHHELD",
+        "result_keys": [
+          "event_id"
+        ],
+        "pass": true
+      },
+      {
+        "probe": "get_failure_category on WITHHELD event",
+        "expected": "withheld (no category leak)",
+        "ok": true,
+        "null_semantics": "WITHHELD",
+        "failure_category_value": null,
+        "pass": true
+      },
+      {
+        "probe": "verifications_for_event on WITHHELD event",
+        "expected": "denied (empty list, no verification leak)",
+        "records_returned": 0,
+        "pass": true
+      }
+    ],
+    "all_pass": true
+  },
+  "restricted": [
+    {
+      "name": "no_policy_resolver",
+      "expected": "denied (Q_POLICY_DECISION_REQUIRED)",
+      "actual": "DENIED code=Q_POLICY_DECISION_REQUIRED (no policy decision resolver is configured; RESTRICTED detail cannot be verified against th)",
+      "pass": true
+    },
+    {
+      "name": "forged_policy_reference",
+      "expected": "denied (Q_POLICY_DECISION_REQUIRED)",
+      "actual": "DENIED code=Q_POLICY_DECISION_REQUIRED (the external policy decision reference could not be confirmed by the policy decision resol)",
+      "pass": true
+    },
+    {
+      "name": "scope_mismatch",
+      "expected": "denied (Q_DISCLOSURE_DENIED)",
+      "actual": "DENIED code=Q_DISCLOSURE_DENIED (granted_scope does not match the RESTRICTED disclosure scope)",
+      "pass": true
+    },
+    {
+      "name": "expired_permission",
+      "expected": "denied (Q_DISCLOSURE_EXPIRED)",
+      "actual": "DENIED code=Q_DISCLOSURE_EXPIRED (the supplied disclosure permission has expired)",
+      "pass": true
+    },
+    {
+      "name": "revoked_permission",
+      "expected": "denied (Q_DISCLOSURE_REVOKED)",
+      "actual": "DENIED code=Q_DISCLOSURE_REVOKED (the supplied disclosure permission is revoked)",
+      "pass": true
+    },
+    {
+      "name": "legitimate_matching_permission",
+      "expected": "allowed",
+      "actual": "ALLOWED (mode=detail)",
+      "pass": true
+    }
+  ]
+}

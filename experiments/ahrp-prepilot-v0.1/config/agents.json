@@ -1,0 +1,97 @@
+{
+  "control_metadata": {
+    "CONTROLLED_INTERNAL_PREPILOT": true,
+    "REAL_WORLD_ADOPTION_VALIDATED": false,
+    "AHRP_BASELINE_COMMIT": "64bfed1f3063f4f463bb1e2680ef6b0b1d312201",
+    "SYNTHETIC_ONLY": true
+  },
+  "agents": [
+    {
+      "agent_reference": "orchestrator-alpha",
+      "agent_version": "1.0.0",
+      "role": "Orchestrator Agent",
+      "capabilities": [
+        "task-routing",
+        "ahrp-query",
+        "decision-recording"
+      ],
+      "trust_boundary": "internal"
+    },
+    {
+      "agent_reference": "coder-beta",
+      "agent_version": "1.0.0",
+      "role": "Coding Agent",
+      "capabilities": [
+        "implementation",
+        "bug-fix",
+        "refactoring"
+      ],
+      "trust_boundary": "internal"
+    },
+    {
+      "agent_reference": "coder-beta",
+      "agent_version": "1.1.0",
+      "role": "Coding Agent (upgraded)",
+      "capabilities": [
+        "implementation",
+        "bug-fix",
+        "refactoring",
+        "performance"
+      ],
+      "trust_boundary": "internal"
+    },
+    {
+      "agent_reference": "researcher-gamma",
+      "agent_version": "1.0.0",
+      "role": "Research Agent",
+      "capabilities": [
+        "literature-review",
+        "analysis",
+        "synthesis"
+      ],
+      "trust_boundary": "internal"
+    },
+    {
+      "agent_reference": "verifier-delta",
+      "agent_version": "1.0.0",
+      "role": "Verification Agent",
+      "capabilities": [
+        "testing",
+        "validation",
+        "audit"
+      ],
+      "trust_boundary": "internal"
+    },
+    {
+      "agent_reference": "external-epsilon",
+      "agent_version": "1.0.0",
+      "role": "External Integration Agent",
+      "capabilities": [
+        "api-integration",
+        "data-transform"
+      ],
+      "trust_boundary": "external"
+    },
+    {
+      "agent_reference": "researcher-gamma",
+      "agent_version": "1.1.0",
+      "role": "Research Agent (upgraded)",
+      "capabilities": [
+        "literature-review",
+        "analysis",
+        "synthesis",
+        "formal-summary"
+      ],
+      "trust_boundary": "internal"
+    },
+    {
+      "agent_reference": "worker-nu",
+      "agent_version": "1.0.0",
+      "role": "General Worker Agent (newly onboarded)",
+      "capabilities": [
+        "data-processing"
+      ],
+      "trust_boundary": "internal"
+    }
+  ]
+}

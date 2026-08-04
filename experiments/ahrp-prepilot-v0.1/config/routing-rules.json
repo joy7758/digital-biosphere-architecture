@@ -1,0 +1,39 @@
+{
+  "rules": [
+    {
+      "rule_id": "A",
+      "name": "CAPABILITY_LIMIT_VETO",
+      "condition": ">=2 independently verified FAILURE events with failure_category=CAPABILITY_LIMIT for same agent_reference+agent_version+task_type",
+      "action": "DO_NOT_DISPATCH_HIGH_RISK",
+      "fallback": "REASSIGN_TO_ALTERNATIVE"
+    },
+    {
+      "rule_id": "B",
+      "name": "POLICY_RESTRICTION_BLOCK",
+      "condition": ">=1 independently verified FAILURE with failure_category=POLICY_RESTRICTION matching current task requirements",
+      "action": "BLOCK_DISPATCH",
+      "fallback": "REASSIGN_OR_MANUAL_REVIEW"
+    },
+    {
+      "rule_id": "C",
+      "name": "ENVIRONMENT_ERROR_ADJUST",
+      "condition": "FAILURE with failure_category=ENVIRONMENT_ERROR exists",
+      "action": "ALLOW_WITH_ADJUSTMENTS",
+      "adjustments": ["limit_budget", "add_retry", "reduce_concurrency"]
+    },
+    {
+      "rule_id": "D",
+      "name": "COLD_START_CONSERVATIVE",
+      "condition": "Q_NO_RECORD returned",
+      "action": "LOW_RISK_ONLY",
+      "constraints": ["reversible", "sandboxed", "limited_permissions"]
+    },
+    {
+      "rule_id": "E",
+      "name": "FAIL_CLOSED",
+      "condition": "AHRP unavailable or query error",
+      "action": "FAIL_CLOSED",
+      "fallback": ["use_known_internal_agent", "degrade_to_sandbox", "require_manual_approval"]
+    }
+  ]
+}
