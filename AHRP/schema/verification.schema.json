@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ahrp.invalid/schema/verification.schema.json",
+  "title": "AHRP Verification Record v0.1",
+  "description": "Verification record expressing WHO verified (named verifier, required), WHAT was verified (scope / subject reference), and the verification status. Reference-style: AHRP does not create a second verification owner (C1-2). Constitution discipline: self-verification MUST be explicitly flagged; Verification != Authorization. This schema is PROPOSED (v0.1 reference implementation), not a published standard.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "verification_id",
+    "verifier",
+    "verification_type",
+    "verification_status",
+    "verified_at",
+    "scope",
+    "self_verification",
+    "authorization_effect"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1.0",
+      "description": "Semver of this schema. Required."
+    },
+    "verification_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Globally unique identifier of the verification record. Required."
+    },
+    "verifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verifier_name", "verifier_class"],
+      "properties": {
+        "verifier_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Named verifier (WHO verified). Anonymous verifier is not representable. Required."
+        },
+        "verifier_class": {
+          "type": "string",
+          "enum": ["DBOS", "NAMED_VERIFIER", "ORCHESTRATOR", "SELF", "INDEPENDENT_AGENT", "ORGANIZATION", "HUMAN", "SYSTEM_BENCHMARK"],
+          "description": "Verifier class enum. SELF class MUST coincide with self_verification=true. All non-SELF classes are independent verifier classes for summary counting; SELF is a distinct, weaker signal class and never satisfies an independent-verification requirement."
+        },
+        "verifier_ref": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Optional thin pointer to verifier identity at an external source."
+        }
+      },
+      "description": "WHO verified. Named verifier is mandatory (Constitution Section 6 Verification layer). Required."
+    },
+    "verification_type": {
+      "type": "string",
+      "enum": [
+        "EVIDENCE_CHECK",
+        "EVENT_CONFIRMATION",
+        "SCOPE_ATTESTATION",
+        "INDEPENDENT_REVIEW"
+      ],
+      "description": "Enumerated verification type. Required."
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "VERIFIED",
+        "PARTIALLY_VERIFIED",
+        "NOT_ASSESSED",
+        "INVALID",
+        "CONFLICTED"
+      ],
+      "description": "Verification status enum. Required. NOT_ASSESSED is the fail-closed default for absent verification; never assume VERIFIED."
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Verification timestamp (ISO 8601 / RFC 3339). Required."
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_event_id", "subject_type"],
+      "properties": {
+        "subject_event_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Identifier of the subject being verified (WHAT). Required."
+        },
+        "agent_ref": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Required when scope.subject_type is EXPERIENCE_EVENT (conditional-required enforced by the reference validator at protocol level): identity_ref of the agent whose event is the verification subject. Strong event<->verification binding requires it to match the subject event's agent_reference.identity_ref (fail-closed: missing -> BINDING_INCOMPLETE, mismatch -> INVALID)."
+        },
+        "agent_version": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Required when scope.subject_type is EXPERIENCE_EVENT (conditional-required enforced by the reference validator at protocol level): agent_version of the event being verified. Strong event<->verification binding requires it to match the subject event's agent_version (fail-closed: missing -> BINDING_INCOMPLETE, mismatch -> INVALID)."
+        },
+        "subject_type": {
+          "type": "string",
+          "enum": ["EXPERIENCE_EVENT", "EVIDENCE_REFERENCE"],
+          "description": "Type of the verified subject. Required."
+        },
+        "covered_aspect": {
+          "type": "string",
+          "enum": [
+            "OCCURRENCE",
+            "RESULT_STATUS",
+            "EVIDENCE_BINDING",
+            "FULL_EVENT",
+            "NOT_ASSESSED"
+          ],
+          "description": "Which aspect of the subject the verification covers (scope statement). Bounded verification MUST NOT be read as whole-event verification."
+        }
+      },
+      "description": "WHAT was verified (scope / subject reference). Required."
+    },
+    "self_verification": {
+      "type": "boolean",
+      "description": "Constitution discipline: self-verification MUST be explicitly flagged. Consumers MUST treat self_verification=true as a distinct, weaker signal class. Required."
+    },
+    "authorization_effect": {
+      "const": "NONE",
+      "description": "Verification != Authorization (VERIFICATION_NE_AUTHORIZATION=true). A verification record confers no capability, permission, or adoption. Machine-enforced constant."
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Whitelisted free-text field, DATA channel only, max 200 chars. MUST NOT be consumed as instructions. Optional."
+    }
+  }
+}

@@ -1,0 +1,11 @@
+e6fd0eb3fa3304e8574c919ea8c3f8ac726fa166372bb2e1192e35f3dcb9c3d8  ./data/actual-executions.jsonl
+e82ff1cf1d6dc723af90cd65d97dbd2ca077eaa85af6bb85093ef67d32e41877  ./data/pre-query-decisions.jsonl
+edfaa74e77adc096d1c413924105e91ac5cf07d62604207ce8faf95bded4da3d  ./data/experience-events.jsonl
+ff1933a5e9c0d621a83da8bbb3ffc1e1fea90bf3b930d2ad2f168a1cb5c700f3  ./data/post-query-decisions.jsonl
+fe29fd7f58beea3e419c789bf269000495ebc0d5e599e17ed835ffd82155e45a  ./data/tasks.jsonl
+b4fb50c0fd1b83e7f9cbf8ca41213e5d3e064963886d96c9edcd74dbb7163996  ./AHRP_PILOT_READINESS_REPORT_v0.1.md
+a803d0eab1d008991d9e049c747c0ef746ec6bf081869cccdf6fc26f2c098b0e  ./run_experiment.py
+e35b843bdcbdfeb5d946186e4b3f6bc0128629f8cbe1d46d8f3ece8c83a4437e  ./analysis/shadow-protocol-integrity.json
+f18522d592f767f85b18d161d59d68f520455697f19d90e404ea67caefcac9cc  ./analysis/no-ahrp-arm.json
+edca4fe8dd27d5ebf60c209d86335431c0c614b3df537249b6318c0420979e28  ./analysis/operational-overhead.json
+a594df756b8db5c008167f663d155abdcaaa83151b087afad88471973a683afd  ./analysis/ahrp-assisted-arm.json

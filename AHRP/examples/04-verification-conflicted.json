@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1.0",
+  "verification_id": "ver-0004-synthetic",
+  "verifier": {
+    "verifier_name": "independent-reviewer-b",
+    "verifier_class": "NAMED_VERIFIER",
+    "verifier_ref": "did:example:reviewer-b"
+  },
+  "verification_type": "INDEPENDENT_REVIEW",
+  "verification_status": "CONFLICTED",
+  "verified_at": "2026-08-04T09:00:00Z",
+  "scope": {
+    "subject_event_id": "evt-0004-synthetic",
+    "subject_type": "EXPERIENCE_EVENT",
+    "covered_aspect": "RESULT_STATUS",
+    "agent_ref": "did:example:agent-alpha",
+    "agent_version": "1.0.0"
+  },
+  "self_verification": false,
+  "authorization_effect": "NONE",
+  "notes": "SYNTHETIC_ONLY: reviewer disagrees with producer-reported outcome."
+}
