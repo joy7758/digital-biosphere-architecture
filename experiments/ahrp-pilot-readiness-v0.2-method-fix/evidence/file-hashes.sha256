@@ -1,0 +1,10 @@
+b7aa81f2da0010a69197da5ffed0a33ae9b5c8e5e5e1298516c71dba11b0e56b  ./analyze_experiment.py
+c90db9430a321af3af9e427887fbf30164ccdc8faa0c9f2fc2aec4efee17633f  ./data/actual-executions.jsonl
+d401e3704a68c231c2b759c4c7a696f5d71f0c8ef4790113bd3972289dc6c4bc  ./data/pre-query-decisions.jsonl
+e99b6718be51cef400e1de3dd636d501dccc643bf5cf74747a489b787212e642  ./data/experience-events.jsonl
+f08b98b972a71b0f49a76a2d0da7a741204bb143e8c2b85ee7a2d71224ed29ee  ./data/post-query-decisions.jsonl
+dab2eb87886c696e5127b48abe1e309e9d854a7ec2c96ab3f0b4931d5ebfa76e  ./data/tasks.jsonl
+90a092758b1a9f110f78dfb0a3d199f3c89cd554df423eafc14ac09fbba19d87  ./run_experiment.py
+9ddfed5e40de0385740eb6574a8fdfeb6bb13bf5c0dc8cfac3c9883987474748  ./analysis/no-ahrp-arm.json
+a232cd682e9b5c30407425bf28b3355a87fc7679f49ed3ff54065e4a5af1ae63  ./analysis/ahrp-assisted-arm.json
+57a1533ba7acaae1e6b30d93190401e5a93f282cf31e4fec05a20cbd58b6204d  ./tests/test_experiment_logic.py
