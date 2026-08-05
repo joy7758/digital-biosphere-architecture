@@ -1,0 +1,4 @@
+Execution Evidence for task-001
+Agent: did:example:worker-alpha
+Outcome: SUCCESS
+Time: 2026-08-05T05:43:28.471309+00:00

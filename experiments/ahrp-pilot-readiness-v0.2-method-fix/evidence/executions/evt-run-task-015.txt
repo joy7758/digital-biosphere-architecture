@@ -1,0 +1,4 @@
+Execution Evidence for task-015
+Agent: did:example:worker-gamma
+Outcome: SUCCESS
+Time: 2026-08-05T05:43:28.495396+00:00

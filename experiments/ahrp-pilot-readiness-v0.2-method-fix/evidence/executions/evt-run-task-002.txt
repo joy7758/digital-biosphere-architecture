@@ -1,0 +1,4 @@
+Execution Evidence for task-002
+Agent: did:example:worker-beta
+Outcome: TIMEOUT
+Time: 2026-08-05T05:43:28.474757+00:00

@@ -45,7 +45,7 @@ def get_fake_ahrp_history(agent_id):
                 "result_status": "FAILURE",
                 "failure_category": "CAPABILITY_LIMIT",
                 "occurred_at": get_utc_now(),
-                "evidence_references": [{"source": "TITMAS_EVIDENCE", "version": "1.0", "reference_id": "mock-ref", "hash": "sha256:abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd", "availability_status": "AVAILABLE"}],
+                "evidence_references": [{"source": "TITMAS_EVIDENCE", "version": "1.0", "reference_id": f"mock-ref-a{i}", "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "availability_status": "AVAILABLE"}],
                 "verification_references": [{"verification_id": f"ver-hist-alpha-{i}", "verifier_name": "verifier-delta"}],
                 "disclosure": {"disclosure_scope": "PUBLIC", "declared_by": "mock"}
             })
@@ -60,7 +60,7 @@ def get_fake_ahrp_history(agent_id):
             "result_status": "FAILURE",
             "failure_category": "POLICY_RESTRICTION",
             "occurred_at": get_utc_now(),
-            "evidence_references": [{"source": "TITMAS_EVIDENCE", "version": "1.0", "reference_id": "mock-ref", "hash": "sha256:abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd", "availability_status": "AVAILABLE"}],
+            "evidence_references": [{"source": "TITMAS_EVIDENCE", "version": "1.0", "reference_id": "mock-ref-b", "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "availability_status": "AVAILABLE"}],
             "verification_references": [{"verification_id": "ver-hist-beta-1", "verifier_name": "verifier-delta"}],
             "disclosure": {"disclosure_scope": "PUBLIC", "declared_by": "mock"}
         })
@@ -124,6 +124,15 @@ def simulate_ahrp_query_integration(engine, task, agent):
 
     return {"decision_changed": False, "reason": "AHRP history acceptable", "new_agent": agent, "ref": []}
 
+def write_evidence_file(task_id, outcome, agent):
+    evidence_path = f"experiments/ahrp-pilot-readiness-v0.2-method-fix/evidence/executions/evt-run-{task_id}.txt"
+    content = f"Execution Evidence for {task_id}\nAgent: {agent}\nOutcome: {outcome}\nTime: {get_utc_now()}\n"
+    with open(evidence_path, "w") as f:
+         f.write(content)
+    with open(evidence_path, "rb") as f:
+         file_hash = "sha256:" + hashlib.sha256(f.read()).hexdigest()
+    return f"evt-run-{task_id}.txt", file_hash
+
 def main():
     for f in ["data/actual-executions.jsonl", "data/pre-query-decisions.jsonl", "data/post-query-decisions.jsonl", "data/experience-events.jsonl", "data/verification-records.jsonl"]:
         path = os.path.join("experiments/ahrp-pilot-readiness-v0.2-method-fix", f)
@@ -174,6 +183,8 @@ def main():
             }
             pre_query_record["record_hash"] = sha256_hash(pre_query_record)
             write_jsonl(pre_query_file, pre_query_record)
+            # simulate writing/fsync
+            time.sleep(0.001)
             monotonic_seq += 1
 
             query_result = simulate_ahrp_query_integration(engine, task, initial_agent)
@@ -191,6 +202,7 @@ def main():
             }
             post_query_record["record_hash"] = sha256_hash(post_query_record)
             write_jsonl(post_query_file, post_query_record)
+            time.sleep(0.001)
             monotonic_seq += 1
 
             final_agent = query_result["new_agent"]
@@ -204,6 +216,8 @@ def main():
                 "recorded_at": get_utc_now()
             })
 
+        ref_id, ref_hash = write_evidence_file(task["task_id"], outcome, final_agent)
+
         exp_evt = {
             "schema_version": "0.1.0",
             "event_id": f"evt-run-{task['task_id']}",
@@ -214,7 +228,7 @@ def main():
             "result_status": outcome,
             "failure_category": "NOT_APPLICABLE" if outcome == "SUCCESS" else "CAPABILITY_LIMIT",
             "occurred_at": get_utc_now(),
-            "evidence_references": [{"source": "TITMAS_EVIDENCE", "version": "1.0", "reference_id": f"ref-{task['task_id']}", "hash": "sha256:abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd", "availability_status": "AVAILABLE"}],
+            "evidence_references": [{"source": "TITMAS_EVIDENCE", "version": "1.0", "reference_id": ref_id, "hash": ref_hash, "availability_status": "AVAILABLE"}],
             "verification_references": [],
             "disclosure": {"disclosure_scope": "PUBLIC", "declared_by": "experiment-script"}
         }
