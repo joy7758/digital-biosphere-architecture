@@ -7,7 +7,7 @@
   "ahrp_query": [
     {
       "events_returned": 0,
-      "latency_ms": 0.0631,
+      "latency_ms": 0.0068,
       "null_semantics": "NO_RECORD",
       "ok": true,
       "params": {
@@ -19,7 +19,7 @@
     },
     {
       "events_returned": 0,
-      "latency_ms": 0.0082,
+      "latency_ms": 0.0037,
       "null_semantics": "NO_RECORD",
       "ok": true,
       "params": {
@@ -31,7 +31,7 @@
     },
     {
       "events_returned": 0,
-      "latency_ms": 0.0308,
+      "latency_ms": 0.0028,
       "null_semantics": "NO_RECORD",
       "ok": true,
       "params": {
@@ -48,28 +48,26 @@
     "selection_reason": "TYPE_ROUTING: data_processing -> did:example:worker-alpha (static capability match, no history consulted)"
   },
   "decision_changed": false,
-  "history_used": [
-    {
-      "agent_ref": "did:example:worker-alpha",
-      "event_id": null,
-      "reason": "NO_RECORD"
-    },
-    {
-      "agent_ref": "did:example:worker-beta",
-      "event_id": null,
-      "reason": "NO_RECORD"
-    },
-    {
-      "agent_ref": "did:example:worker-gamma",
-      "event_id": null,
-      "reason": "NO_RECORD"
-    }
-  ],
+  "history_used": [],
   "mode": "AHRP_ASSISTED_MODE",
   "occurred_at": "2026-08-07T02:08:00Z",
   "orchestrator_agent_id": "did:example:orchestrator-core",
   "orchestrator_agent_version": "1.0.0",
   "query_count": 3,
+  "query_observations": [
+    {
+      "agent_ref": "did:example:worker-alpha",
+      "outcome": "NO_RECORD"
+    },
+    {
+      "agent_ref": "did:example:worker-beta",
+      "outcome": "NO_RECORD"
+    },
+    {
+      "agent_ref": "did:example:worker-gamma",
+      "outcome": "NO_RECORD"
+    }
+  ],
   "result": {
     "artifact_paths": [
       "artifacts/t-208/normalized.csv"

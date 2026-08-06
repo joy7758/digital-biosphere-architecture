@@ -6,7 +6,8 @@
     "DECISION_CHANGED_TASKS": [
       "t-202",
       "t-204",
-      "t-206"
+      "t-206",
+      "t-210"
     ],
     "HISTORY_USED_REASONS": {
       "t-201": "POSITIVE_HISTORY",
@@ -16,21 +17,32 @@
       "t-205": "POSITIVE_HISTORY",
       "t-206": "CAPABILITY_LIMIT_HISTORY",
       "t-207": "POSITIVE_HISTORY",
-      "t-208": "NO_RECORD",
+      "t-208": "NONE",
       "t-209": "POSITIVE_HISTORY",
-      "t-210": "QUERY_ERROR"
+      "t-210": "NONE"
     },
-    "PROGRAMMATIC_DECISION_CHANGED_COUNT": 3,
-    "PROGRAMMATIC_DECISION_CHANGED_NOTE": "PROGRAMMATIC_ROUTING_CHANGE_OBSERVATION only; not an adoption signal, not an agent demand signal.",
+    "PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT": 3,
+    "PROGRAMMATIC_HISTORY_DECISION_CHANGED_NOTE": "PROGRAMMATIC_ROUTING_CHANGE_OBSERVATION only; supported exclusively by tasks whose decision changed after real history events were returned. Not an adoption signal, not an agent demand signal.",
+    "PROGRAMMATIC_HISTORY_DECISION_CHANGED_TASKS": [
+      "t-202",
+      "t-204",
+      "t-206"
+    ],
+    "QUERY_ERROR_SAFETY_OVERRIDE_COUNT": 1,
+    "QUERY_ERROR_SAFETY_OVERRIDE_NOTE": "Query-error safety override blocks automatic delegation (fail closed). It is NOT a history-driven decision change because no history event was returned.",
+    "QUERY_ERROR_SAFETY_OVERRIDE_TASKS": [
+      "t-210"
+    ],
     "RESOLVABLE_HISTORY_REFERENCE_COUNT": 16,
     "TASK_COUNT": 20,
+    "TOTAL_POST_QUERY_DECISION_CHANGED_COUNT": 4,
     "tasks_ahrp_assisted": 10,
     "tasks_no_ahrp": 10
   },
   "execution_outcomes_observational_only": {
     "ahrp_assisted": {
-      "NOT_EXECUTED": 3,
-      "SUCCESS": 7
+      "NOT_EXECUTED": 4,
+      "SUCCESS": 6
     },
     "no_ahrp": {
       "FAILURE": 4,
@@ -44,18 +56,18 @@
   "query_cost": {
     "calls_total": 12,
     "latency_ms_per_query": [
-      0.293,
-      0.0367,
-      0.0194,
-      0.03,
-      0.0178,
-      0.029,
-      0.0233,
-      0.0631,
-      0.0082,
-      0.0308,
-      0.0443,
-      0.0024
+      0.2812,
+      0.0378,
+      0.019,
+      0.0572,
+      0.024,
+      0.0358,
+      0.0239,
+      0.0068,
+      0.0037,
+      0.0028,
+      0.0432,
+      0.0025
     ],
     "tokens_estimated_per_query": [
       291,

@@ -12,7 +12,8 @@ AHRP 内部编排器集成试验 v0.1。
 
 本轮运行结果：**TRIAL_RESULT=INCONCLUSIVE**，
 **INTEGRATION_MECHANISM_DEMONSTRATED=true**（12 次接口查询，3 次由历史
-驱动的程序化路由改变）。详见 [REPORT.md](REPORT.md)。
+驱动的程序化路由改变，1 次查询错误 fail-closed 安全阻断）。详见
+[REPORT.md](REPORT.md)。
 
 ## 本试验不是什么
 
@@ -71,7 +72,7 @@ ahrp-internal-orchestrator-integration-v0.1/
 │   ├── generate_seed_history.py  确定性种子历史生成器
 │   ├── history-events.jsonl  6 条种子 Experience Event
 │   └── history-verifications.jsonl  6 条 SYSTEM_BENCHMARK 验证
-├── orchestrator.py           程序化编排器组件（决策策略）
+├── orchestrator.py           程序化编排器组件（决策策略 + fail-closed 查询错误阻断）
 ├── workers.py                程序化 Worker 组件（真实产出工件）
 ├── run_trial.py              双阶段运行器
 ├── verify_trial.py           后运行验证器
@@ -80,7 +81,7 @@ ahrp-internal-orchestrator-integration-v0.1/
 ├── evidence/                 种子与运行的证据体 + 工件
 ├── decisions/                每任务决策记录（no-ahrp / ahrp-assisted）
 ├── analysis/                 summary.json、限制声明
-└── tests/                    15 项测试（8 集成 + 7 真值边界）
+└── tests/                    25 项测试（8 集成 + 7 真值边界 + 6 fail-closed + 4 语义）
 ```
 
 ## 组件（可执行角色实现）
@@ -102,7 +103,7 @@ HistoryStore；历史查询实际改变了程序化处置结果。
 python3 config/generate_seed_history.py   # 生成种子（确定性）
 python3 run_trial.py                      # 完整双阶段运行
 python3 verify_trial.py                   # 后运行验证（PASS/FAIL）
-python3 -m unittest discover -s tests     # 15 项测试
+python3 -m unittest discover -s tests     # 25 项测试
 ```
 
 ## 冻结保证
@@ -117,3 +118,12 @@ AHRP Schema / Validator / Query Engine / Spec / Constitution 未被本试验
 - 不声称任何真实 Agent 采用结论；
 - 不开发网络服务、Agent Marketplace；
 - 不修改 AHRP 协议；不添加评分系统。
+
+## 记录语义
+
+- `history_used` 只包含实际返回的 Experience Event 引用（`event_id != null`）；
+- `NO_RECORD` / `WITHHELD` / `QUERY_ERROR` 只进入 `query_observations`，
+  不是历史，也不支持任何 history-driven 决策改变声明；
+- `QUERY_FAILURE_FAIL_CLOSED=true` 仅在查询错误同时满足：自动委派被阻断、
+  worker 未被调用、无工件、无 Experience Event、无 Verification Record
+  时成立；仅停止查询但继续执行是 fail-open，不得声明。

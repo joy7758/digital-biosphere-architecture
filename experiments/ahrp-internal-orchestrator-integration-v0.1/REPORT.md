@@ -61,8 +61,14 @@ TASK_COUNT:
 AHRP_QUERY_COUNT:
 12
 
-PROGRAMMATIC_DECISION_CHANGED_COUNT:
+PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT:
 3    (t-202, t-204, t-206 — each backed by a resolvable history reference)
+
+QUERY_ERROR_SAFETY_OVERRIDE_COUNT:
+1    (t-210 — NOT a history-driven change: no history event was returned)
+
+TOTAL_POST_QUERY_DECISION_CHANGED_COUNT:
+4
 
 RESOLVABLE_HISTORY_REFERENCE_COUNT:
 16 event references across the assisted phase
@@ -77,7 +83,8 @@ RESOLVABLE_HISTORY_REFERENCE_COUNT:
 
 Decision changes are recorded strictly as
 `PROGRAMMATIC_ROUTING_CHANGE_OBSERVATION` (not an adoption signal, not an
-agent demand signal):
+agent demand signal), and only tasks whose decision changed AFTER real
+history events were returned are counted:
 
 | Task | Before query | History reason | After query |
 |---|---|---|---|
@@ -85,20 +92,27 @@ agent demand signal):
 | t-204 (research, needs external sources) | DELEGATE worker-beta | POLICY_RESTRICTION_HISTORY (`evt-seed-beta-src-001`) | MANUAL_REVIEW |
 | t-206 (review, needs security review) | DELEGATE worker-gamma | CAPABILITY_LIMIT_HISTORY (`evt-seed-gamma-sec-001`) | MANUAL_REVIEW |
 
+Query-error safety override (fail closed, NOT history-driven):
+
+| Task | Before query | Query outcome | After query | Execution |
+|---|---|---|---|---|
+| t-210 (controlled query-error injection) | DELEGATE worker-alpha | QUERY_ERROR `Q_INVALID_REFERENCE` (query observation) | MANUAL_REVIEW, selected_agent=null | NOT_EXECUTED: worker never called, no artifact, no Experience Event, no Verification Record |
+
 No-change discipline observed:
 
-- `t-208` (data_processing): all queries returned `NO_RECORD` → decision
-  unchanged.
-- `t-210` (controlled query-error injection): engine returned a `Q_*`
-  error envelope → the component FAILED CLOSED, kept the before-query
-  decision, performed no further queries.
+- `t-208` (data_processing): all queries returned `NO_RECORD` (query
+  observations only) → decision unchanged.
 - `t-201/203/205/207/209`: positive history only (`POSITIVE_HISTORY`) →
   decision unchanged.
+
+Record semantics: `history_used` contains only actual Experience Event
+references (`event_id != null`). `NO_RECORD` / `WITHHELD` / `QUERY_ERROR`
+are query observations (`query_observations`), never history.
 
 Query cost (observational):
 
 ```text
-latency:  min 0.0024 ms / mean 0.0498 ms / max 0.293 ms
+latency:  min 0.002 ms / mean 0.0315 ms / max 0.163 ms
 tokens:   estimated 52–402 per envelope, 3156 total (len(json)//4)
 calls:    12
 ```
@@ -107,17 +121,17 @@ Execution outcomes (recorded for transparency ONLY — no comparison):
 
 ```text
 No-AHRP phase:       SUCCESS 6, FAILURE 4
-AHRP-assisted phase: SUCCESS 7, NOT_EXECUTED 3 (routed to manual review)
+AHRP-assisted phase: SUCCESS 6, NOT_EXECUTED 4 (routed to manual review)
 ```
 
 Verification of generated records:
 
 ```text
-run events: 7 (all executed delegations)
-run verifications: 7 (SYSTEM_BENCHMARK, full-event binding)
+run events: 6 (executed delegations only; t-210 blocked by fail-closed policy)
+run verifications: 6 (SYSTEM_BENCHMARK, full-event binding)
 all seeds + run records pass the AHRP Validator
 verify_trial.py: PASS
-tests: 15/15 OK
+tests: 25/25 OK
 ```
 
 ## 4. Supported findings
@@ -130,8 +144,14 @@ HISTORY_REFERENCES_RESOLVED=true
 QUERY_FAILURE_FAIL_CLOSED=true
 ```
 
+`QUERY_FAILURE_FAIL_CLOSED=true` 的声明条件（全部满足才成立）：
+query_error_detected、automatic_delegation_blocked、worker_called=false、
+execution_artifact_created=false、experience_event_created=false、
+verification_record_created=false。仅停止查询但继续执行是 fail-open，
+不构成该声明。
+
 即：冻结的 AHRP v0.1 查询接口可被程序化编排器集成，返回历史可绑定到
-可审计的委派决策记录，查询异常可 fail-closed。
+可审计的委派决策记录，查询异常触发 fail-closed（阻断自动委派）。
 
 ## 5. Unsupported findings
 
@@ -168,6 +188,13 @@ INTEGRATION_MECHANISM_DEMONSTRATED=true
 5. N=20; no statistical claims of any kind.
 6. No agent scores, rankings, trust scores or reliability scores are
    computed (AHRP Constitution Section 9 non-goals).
+7. **Fail-closed scope.** `QUERY_FAILURE_FAIL_CLOSED` describes only the
+   query-error path observed in this trial (t-210). It is a programmatic
+   safety behavior of the orchestrator component, not evidence of agent
+   judgment.
+8. **History vs observation.** `NO_RECORD` / `WITHHELD` / `QUERY_ERROR`
+   are query observations, not history; they never enter `history_used`
+   and never support a history-driven decision-change claim.
 
 ## Truth boundaries
 
@@ -196,5 +223,5 @@ cd experiments/ahrp-internal-orchestrator-integration-v0.1
 python3 config/generate_seed_history.py   # deterministic seeds
 python3 run_trial.py                      # full two-phase run
 python3 verify_trial.py                   # post-run verification
-python3 -m unittest discover -s tests     # 15 tests
+python3 -m unittest discover -s tests     # 25 tests
 ```

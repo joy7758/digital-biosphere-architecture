@@ -20,6 +20,11 @@ PROGRAMMATIC_DECISION_CHANGED_BY_HISTORY=true
 QUERY_FAILURE_FAIL_CLOSED=true
 ```
 
+`QUERY_FAILURE_FAIL_CLOSED=true` 仅在同时满足以下条件时允许声明：
+query error 被检测、自动委派被阻断（MANUAL_REVIEW、selected_agent=null）、
+worker 未被调用、无执行产物、无 Experience Event、无 Verification Record。
+仅「停止查询但继续执行」是 fail-open，不是 fail-closed。
+
 本试验不得回答：
 
 ```text
@@ -97,7 +102,11 @@ Flow: `Task -> Orchestrator component -> Query AHRP -> read history ->
 decide whether to change selection -> execute`.
 
 Recorded per task: `task_id, before_query_decision, ahrp_query,
-history_used, after_query_decision, decision_changed`.
+query_observations, history_used, after_query_decision, decision_changed`.
+
+语义约束：`history_used` 只包含实际返回的 Experience Event 引用
+（`event_id != null`）。`NO_RECORD` / `WITHHELD` / `QUERY_ERROR` 不是历史，
+只进入 `query_observations`。
 
 Decision policy (documented, deterministic):
 
@@ -108,8 +117,12 @@ Decision policy (documented, deterministic):
    `failure_category` matches the task's declared risk requirement:
    - `CAPABILITY_LIMIT` -> reason `CAPABILITY_LIMIT_HISTORY`
    - `POLICY_RESTRICTION` -> reason `POLICY_RESTRICTION_HISTORY`
-4. On any `Q_*` error envelope: FAIL CLOSED — keep the before-query
-   decision, stop querying (`QUERY_ERROR`).
+4. On any `Q_*` error envelope: FAIL CLOSED — automatic delegation is
+   BLOCKED: route to `MANUAL_REVIEW`, `selected_agent=null`, stop querying.
+   The worker is never called; no artifact, no Experience Event, no
+   Verification Record is produced (query-error safety override, recorded
+   as a `QUERY_ERROR` query observation). Keeping the before-query
+   delegation would be fail-open and is prohibited.
 5. `NO_RECORD` never changes a decision.
 6. All candidates vetoed -> route to `MANUAL_REVIEW`.
 
@@ -144,9 +157,15 @@ Recorded data:
 ```text
 TASK_COUNT=20
 AHRP_QUERY_COUNT=12
-PROGRAMMATIC_DECISION_CHANGED_COUNT=3
+PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT=3
+QUERY_ERROR_SAFETY_OVERRIDE_COUNT=1
+TOTAL_POST_QUERY_DECISION_CHANGED_COUNT=4
 RESOLVABLE_HISTORY_REFERENCE_COUNT=16
 ```
+
+`PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT` 只能由查询实际返回历史事件后
+决策改变的任务支持。Query Error Safety Override 不是 history-driven
+decision change，不得计入该指标。
 
 Mandatory interpretation constraints:
 

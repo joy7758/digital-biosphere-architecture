@@ -37,3 +37,19 @@ AHRP 内部编排器集成试验 v0.1 限制声明。
 9. **Production state unchanged.** `AHRP_PRODUCTION_READY=false`,
    `AHRP_STANDARD_PUBLISHED=false`, `SUCCESS_RATE_IMPROVEMENT_PROVEN=false`
    remain false after this trial.
+
+10. **Fail-closed scope.** `QUERY_FAILURE_FAIL_CLOSED=true` describes only
+    the query-error path observed in this trial: the query error was
+    detected, automatic delegation was blocked (MANUAL_REVIEW,
+    selected_agent=null), the worker was never called, and no artifact,
+    Experience Event or Verification Record was produced. It is a
+    programmatic safety behavior of the orchestrator component, not
+    evidence of agent judgment. Stopping queries while still executing
+    would be fail-open and is explicitly not claimed.
+
+11. **History vs query observations.** `history_used` contains only actual
+    Experience Event references (`event_id != null`). `NO_RECORD`,
+    `WITHHELD` and `QUERY_ERROR` are recorded as `query_observations`; they
+    are not history and never support a history-driven decision-change
+    claim. Query Error Safety Override is counted separately from
+    `PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT`.
