@@ -22,8 +22,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Whitespace sanity check
-        run: git diff --check origin/main...HEAD || true
+      - name: Whitespace sanity check (fail-closed gate)
+        run: |
+          # Fail-closed gate: any whitespace error introduced by this PR
+          # fails the workflow. No bypass: no '|| true', no
+          # continue-on-error, no 'set +e', no 'exit 0'.
+          # Exclusions (pathspec magic ':!'): three restored governance
+          # assets that are byte-for-byte copies of pre-PR12 history
+          # (commit 8e7afce). They were restored, not introduced, by
+          # this PR and must not be reformatted.
+          git diff --check origin/main...HEAD -- \
+            ':!回收站/REPO_RECYCLE_MANIFEST.csv' \
+            ':!回收站/RECYCLE_BIN_MANIFEST.md' \
+            ':!experiments/ahrp-prepilot-v0.1/evidence/query-output.txt'
 
       - name: AHRP tree is frozen (byte-identical to base commit)
         run: |
