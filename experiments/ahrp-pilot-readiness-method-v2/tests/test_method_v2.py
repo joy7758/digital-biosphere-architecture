@@ -4,7 +4,9 @@ Run from the experiment directory:
 
     python3 -m unittest discover -s tests -v
 
-Expected output ends with: Ran 20 tests / OK
+This file keeps the original 20 integrity tests; the 15 trust-boundary
+regression tests added by the PR #13 fix live in
+``test_trust_boundaries.py`` (35 tests total).
 """
 
 import copy
@@ -36,6 +38,10 @@ def ensure_run_data():
     executions = os.path.join(DATA, "controlled-executions.jsonl")
     if not (os.path.isfile(executions) and os.path.getsize(executions) > 0):
         run_experiment.main()
+    if not os.path.isfile(os.path.join(DATA, "experience-events.jsonl")):
+        import verify_run_records
+        if verify_run_records.main() != 0:
+            raise AssertionError("post-run verifier failed")
     comparison = os.path.join(EXPERIMENT_DIR, "analysis", "comparison.json")
     if not os.path.isfile(comparison):
         analyze_experiment.main()
@@ -63,7 +69,7 @@ class MethodV2IntegrityTests(unittest.TestCase):
     def test_tasks_do_not_contain_expected_outcome(self):
         """No task may predetermine its own result."""
         tasks = self._tasks()
-        self.assertEqual(len(tasks), 30)
+        self.assertEqual(len(tasks), 32)
         for task in tasks:
             for field in FORBIDDEN:
                 self.assertNotIn(field, task,
@@ -145,15 +151,22 @@ class MethodV2IntegrityTests(unittest.TestCase):
 
     # --------------------------------------------- 7. NO_RECORD is kept
     def test_no_record_not_safe(self):
-        """Empty history must NOT trigger a compensating decision change."""
+        """Empty history must NOT trigger a compensating decision change.
+
+        task-m2-030 (LOW, complete sandbox flags) sees NO_RECORD for its
+        initial agent; the policy keeps the initial selection as a
+        LOW_RISK_EXPLORATION decision -- never an invented alternative.
+        """
         store = history_loader.build_store()
         outcome = history_loader.query_agent_history(
-            store, "did:example:worker-gamma", "1.0.0", "CODING")
+            store, "did:example:worker-gamma", "1.0.0", "RESEARCH")
         self.assertEqual(outcome.status, "NO_RECORD")
         post_records = self._data("post-query-decisions.jsonl")
         record = next(r for r in post_records
                       if r["task_id"] == "task-m2-030")
         self.assertIn("NO_RECORD", record["selection_reason_after_query"])
+        self.assertIn("LOW_RISK_EXPLORATION",
+                      record["selection_reason_after_query"])
         self.assertFalse(record["decision_changed"])
 
     # --------------------------------------------- 8. commitment intact
@@ -223,8 +236,8 @@ class MethodV2IntegrityTests(unittest.TestCase):
         arm_tasks = {"No-AHRP": 0, "AHRP-assisted": 0}
         for allocation in allocations:
             arm_tasks[allocation["arm"]] += 1
-        self.assertEqual(arm_tasks["No-AHRP"], 15)
-        self.assertEqual(arm_tasks["AHRP-assisted"], 15)
+        self.assertEqual(arm_tasks["No-AHRP"], 16)
+        self.assertEqual(arm_tasks["AHRP-assisted"], 16)
         with open(os.path.join(EXPERIMENT_DIR, "analysis",
                                "no-ahrp-arm.json"),
                   encoding="utf-8") as handle:
@@ -238,6 +251,8 @@ class MethodV2IntegrityTests(unittest.TestCase):
         for status in ("SUCCESS", "FAILURE", "TIMEOUT", "CANCELLED"):
             self.assertEqual(reported.get(status, 0),
                              recounted.get(status, 0))
+        # The No-AHRP baseline arm executes every submitted task.
+        self.assertEqual(reported["tasks"], arm_tasks["No-AHRP"])
 
     # --------------------------------------- 14. deletion detected
     def test_missing_record_reduces_completeness(self):
@@ -290,7 +305,9 @@ class MethodV2IntegrityTests(unittest.TestCase):
         verify_evidence_references.check_events(run_events, "run",
                                                 problems, seen)
         self.assertEqual(problems, [])
-        self.assertEqual(len(run_events), 30)
+        # Exactly one final event per executed task; blocked tasks have none.
+        executions = self._data("controlled-executions.jsonl")
+        self.assertEqual(len(run_events), len(executions))
 
     # --------------------------------------- 18. placeholders rejected
     def test_placeholder_hash_rejected(self):
