@@ -1,0 +1,52 @@
+{
+  "matrix_id": "capability-matrix-method-v2",
+  "matrix_version": "1.0.0",
+  "description": "Frozen synthetic capability matrix for the method-v2 controlled experiment. Written BEFORE the experiment run; its SHA-256 is committed in capability-matrix.commitment and the runner fails closed if the matrix no longer matches. Declared capability levels are synthetic fixtures, not measurements of real agents.",
+  "agents": {
+    "did:example:worker-alpha@1.0.0": {
+      "identity_ref": "did:example:worker-alpha",
+      "agent_version": "1.0.0",
+      "policy_compliance_certified": false,
+      "capabilities": {
+        "CODING": {"level": 2, "max_input_mb": 512},
+        "DATA_PROCESSING": {"level": 3, "max_input_mb": 2048},
+        "ANALYSIS": {"level": 1, "max_input_mb": 256},
+        "RESEARCH": {"level": 2, "max_input_mb": 512},
+        "ORCHESTRATION": {"level": 1, "max_input_mb": 128},
+        "VERIFICATION": {"level": 1, "max_input_mb": 128}
+      }
+    },
+    "did:example:worker-beta@1.0.0": {
+      "identity_ref": "did:example:worker-beta",
+      "agent_version": "1.0.0",
+      "policy_compliance_certified": true,
+      "capabilities": {
+        "CODING": {"level": 3, "max_input_mb": 1024},
+        "DATA_PROCESSING": {"level": 2, "max_input_mb": 1024},
+        "ANALYSIS": {"level": 3, "max_input_mb": 1024},
+        "RESEARCH": {"level": 1, "max_input_mb": 256},
+        "ORCHESTRATION": {"level": 2, "max_input_mb": 512},
+        "VERIFICATION": {"level": 2, "max_input_mb": 512}
+      }
+    },
+    "did:example:worker-gamma@1.0.0": {
+      "identity_ref": "did:example:worker-gamma",
+      "agent_version": "1.0.0",
+      "policy_compliance_certified": true,
+      "capabilities": {
+        "CODING": {"level": 1, "max_input_mb": 256},
+        "DATA_PROCESSING": {"level": 1, "max_input_mb": 512},
+        "ANALYSIS": {"level": 2, "max_input_mb": 512},
+        "RESEARCH": {"level": 3, "max_input_mb": 2048},
+        "ORCHESTRATION": {"level": 3, "max_input_mb": 1024},
+        "VERIFICATION": {"level": 3, "max_input_mb": 1024}
+      }
+    }
+  },
+  "environment": {
+    "environment_id": "controlled-env-method-v2",
+    "max_single_input_mb": 4096,
+    "unavailable_services": ["ORCHESTRATION_SCHEDULER"],
+    "note": "Deterministic controlled environment fixture. ORCHESTRATION_SCHEDULER is down for maintenance; tasks requiring it are CANCELLED."
+  }
+}

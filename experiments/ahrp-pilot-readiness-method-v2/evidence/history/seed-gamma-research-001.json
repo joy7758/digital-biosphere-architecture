@@ -1,0 +1,9 @@
+{
+  "evidence_id": "ev-seed-gamma-research-001",
+  "synthetic": true,
+  "subject": {"agent": "did:example:worker-gamma", "agent_version": "1.0.0", "task_type": "RESEARCH"},
+  "occurrence": "Synthetic pre-experiment fixture: worker-gamma completed a RESEARCH survey; only a SELF verification exists for this event, which must never count as independent verification.",
+  "observed_failure_category": null,
+  "captured_at": "2026-07-07T09:30:00Z",
+  "captured_by": "method-v2-seed-generator"
+}

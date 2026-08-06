@@ -1,0 +1,16 @@
+{
+  "arm": "No-AHRP",
+  "tasks": 15,
+  "SUCCESS": 8,
+  "FAILURE": 4,
+  "TIMEOUT": 2,
+  "CANCELLED": 1,
+  "avg_decision_time": {
+    "avg_ms": 0.000194,
+    "p50_ms": 0.000167,
+    "p95_ms": 0.000328
+  },
+  "human_overrides": 0,
+  "human_overrides_note": "controlled run: no human intervention occurred; counted honestly as zero",
+  "repeat_selection_of_known_failure_boundary_agent": 5
+}

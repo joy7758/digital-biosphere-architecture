@@ -1,0 +1,96 @@
+{
+  "no_ahrp": {
+    "arm": "No-AHRP",
+    "tasks": 15,
+    "SUCCESS": 8,
+    "FAILURE": 4,
+    "TIMEOUT": 2,
+    "CANCELLED": 1,
+    "avg_decision_time": {
+      "avg_ms": 0.000194,
+      "p50_ms": 0.000167,
+      "p95_ms": 0.000328
+    },
+    "human_overrides": 0,
+    "human_overrides_note": "controlled run: no human intervention occurred; counted honestly as zero",
+    "repeat_selection_of_known_failure_boundary_agent": 5
+  },
+  "ahrp_assisted": {
+    "arm": "AHRP-assisted",
+    "tasks": 15,
+    "SUCCESS": 8,
+    "FAILURE": 4,
+    "TIMEOUT": 2,
+    "CANCELLED": 1,
+    "avg_decision_time": {
+      "avg_ms": 0.197694,
+      "p50_ms": 0.18925,
+      "p95_ms": 0.276225
+    },
+    "human_overrides": 0,
+    "human_overrides_note": "controlled run: no human intervention occurred; counted honestly as zero",
+    "repeat_selection_of_known_failure_boundary_agent": 0,
+    "query_count": 34,
+    "summary_query_count": 15,
+    "summary_list_query_count": 19,
+    "detail_query_count": 0,
+    "no_record_count": 11,
+    "withheld_count": 5,
+    "disclosure_denial_count": 5,
+    "query_error_count": 0,
+    "decision_change_count": 3,
+    "supporting_event_reference_count": 5,
+    "query_char_count": 24776,
+    "token_estimate": 6208,
+    "token_estimation_method": "ceil(chars/4) heuristic, documented",
+    "latency_p50_ms": 0.008084,
+    "latency_p95_ms": 0.024551
+  },
+  "design_note": "Both arms execute the SAME deterministic worker on the SAME tasks; only the decision procedure differs.",
+  "allowed_claims": [
+    "AHRP_HISTORY_WAS_USED",
+    "AHRP_ASSOCIATED_WITH_DIFFERENT_DECISION"
+  ],
+  "forbidden_claims_blocked": [
+    "AHRP_PROVED_TO_IMPROVE_SUCCESS_RATE",
+    "FAILURE_PREVENTED"
+  ],
+  "decision_change_detail": [
+    {
+      "task_id": "task-m2-004",
+      "reason": "RULE_B_POLICY_RESTRICTION_BLOCK:ALTERNATIVE_NO_RECORD_CLEAN",
+      "supporting_event_references": [
+        "evt-seed-beta-analysis-001"
+      ],
+      "execution_result": "SUCCESS"
+    },
+    {
+      "task_id": "task-m2-010",
+      "reason": "RULE_A_CAPABILITY_LIMIT_VETO:ALTERNATIVE_NO_RECORD_CLEAN",
+      "supporting_event_references": [
+        "evt-seed-alpha-coding-001",
+        "evt-seed-alpha-coding-002"
+      ],
+      "execution_result": "FAILURE"
+    },
+    {
+      "task_id": "task-m2-020",
+      "reason": "RULE_A_CAPABILITY_LIMIT_VETO:ALTERNATIVE_NO_RECORD_CLEAN",
+      "supporting_event_references": [
+        "evt-seed-alpha-coding-001",
+        "evt-seed-alpha-coding-002"
+      ],
+      "execution_result": "FAILURE"
+    }
+  ],
+  "experiment_result": "INCONCLUSIVE",
+  "truth_boundary": {
+    "CONTROLLED_INTERNAL_EXPERIMENT": true,
+    "SYNTHETIC_AGENT_ROSTER": true,
+    "REAL_EXTERNAL_AGENT": false,
+    "REAL_WORLD_ADOPTION_VALIDATED": false,
+    "AHRP_PRODUCTION_READY": false,
+    "AHRP_STANDARD_PUBLISHED": false,
+    "NETWORK_SERVICE_RECOMMENDATION": "DEFER"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "evidence_id": "ev-seed-beta-analysis-001",
+  "synthetic": true,
+  "subject": {"agent": "did:example:worker-beta", "agent_version": "1.0.0", "task_type": "ANALYSIS"},
+  "occurrence": "Synthetic pre-experiment fixture: worker-beta declined a regulated ANALYSIS task because its policy scope did not cover the requested data class; controlled harness recorded FAILURE.",
+  "observed_failure_category": "POLICY_RESTRICTION",
+  "captured_at": "2026-07-03T14:15:00Z",
+  "captured_by": "method-v2-seed-generator"
+}

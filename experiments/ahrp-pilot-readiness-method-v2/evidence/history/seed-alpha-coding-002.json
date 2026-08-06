@@ -1,0 +1,9 @@
+{
+  "evidence_id": "ev-seed-alpha-coding-002",
+  "synthetic": true,
+  "subject": {"agent": "did:example:worker-alpha", "agent_version": "1.0.0", "task_type": "CODING"},
+  "occurrence": "Synthetic pre-experiment fixture: worker-alpha attempted a level-3 CODING migration task and produced incomplete output beyond its declared capability level; controlled harness recorded FAILURE.",
+  "observed_failure_category": "CAPABILITY_LIMIT",
+  "captured_at": "2026-07-02T10:30:00Z",
+  "captured_by": "method-v2-seed-generator"
+}

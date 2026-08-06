@@ -1,0 +1,27 @@
+{
+  "capability_match": {
+    "agent_key": "did:example:worker-gamma@1.0.0",
+    "declared_capability": {
+      "level": 2,
+      "max_input_mb": 512
+    },
+    "required_level": 2,
+    "task_type": "ANALYSIS"
+  },
+  "deciding_rule": "RULE_PASS",
+  "environment": {
+    "environment_id": "controlled-env-method-v2"
+  },
+  "failure_category": "NOT_APPLICABLE",
+  "finished_at": "2026-08-06T14:15:29.864315+00:00",
+  "result": "SUCCESS",
+  "selected_agent": "did:example:worker-gamma",
+  "started_at": "2026-08-06T14:15:29.864308+00:00",
+  "task_id": "task-m2-004",
+  "task_requirements": {
+    "input_size_mb": 300,
+    "min_capability_level": 2,
+    "required_services": [],
+    "requires_policy_compliance": true
+  }
+}
