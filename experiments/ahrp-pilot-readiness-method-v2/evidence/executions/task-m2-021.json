@@ -13,10 +13,10 @@
     "environment_id": "controlled-env-method-v2"
   },
   "failure_category": "RESOURCE_UNAVAILABLE",
-  "finished_at": "2026-08-06T14:15:29.870357+00:00",
+  "finished_at": "2026-08-06T15:50:42.093285+00:00",
   "result": "TIMEOUT",
   "selected_agent": "did:example:worker-gamma",
-  "started_at": "2026-08-06T14:15:29.870355+00:00",
+  "started_at": "2026-08-06T15:50:42.093283+00:00",
   "task_id": "task-m2-021",
   "task_requirements": {
     "input_size_mb": 700,

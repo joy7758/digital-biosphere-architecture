@@ -13,10 +13,10 @@
     "environment_id": "controlled-env-method-v2"
   },
   "failure_category": "CAPABILITY_LIMIT",
-  "finished_at": "2026-08-06T14:15:29.863817+00:00",
+  "finished_at": "2026-08-06T15:50:42.087953+00:00",
   "result": "FAILURE",
   "selected_agent": "did:example:worker-gamma",
-  "started_at": "2026-08-06T14:15:29.863815+00:00",
+  "started_at": "2026-08-06T15:50:42.087950+00:00",
   "task_id": "task-m2-003",
   "task_requirements": {
     "input_size_mb": 1500,

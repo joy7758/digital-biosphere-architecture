@@ -13,10 +13,10 @@
     "environment_id": "controlled-env-method-v2"
   },
   "failure_category": "RESOURCE_UNAVAILABLE",
-  "finished_at": "2026-08-06T14:15:29.868983+00:00",
+  "finished_at": "2026-08-06T15:50:42.092111+00:00",
   "result": "TIMEOUT",
   "selected_agent": "did:example:worker-alpha",
-  "started_at": "2026-08-06T14:15:29.868981+00:00",
+  "started_at": "2026-08-06T15:50:42.092109+00:00",
   "task_id": "task-m2-017",
   "task_requirements": {
     "input_size_mb": 2500,

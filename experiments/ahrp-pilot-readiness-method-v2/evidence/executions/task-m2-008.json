@@ -1,22 +1,22 @@
 {
   "capability_match": {
-    "agent_key": "did:example:worker-alpha@1.0.0",
+    "agent_key": "did:example:worker-gamma@1.0.0",
     "declared_capability": {
-      "level": 3,
-      "max_input_mb": 2048
+      "level": 1,
+      "max_input_mb": 512
     },
     "required_level": 3,
     "task_type": "DATA_PROCESSING"
   },
-  "deciding_rule": "RULE_PASS",
+  "deciding_rule": "RULE_CAPABILITY_MISSING",
   "environment": {
     "environment_id": "controlled-env-method-v2"
   },
-  "failure_category": "NOT_APPLICABLE",
-  "finished_at": "2026-08-06T14:15:29.865711+00:00",
-  "result": "SUCCESS",
-  "selected_agent": "did:example:worker-alpha",
-  "started_at": "2026-08-06T14:15:29.865708+00:00",
+  "failure_category": "CAPABILITY_LIMIT",
+  "finished_at": "2026-08-06T15:50:42.089792+00:00",
+  "result": "FAILURE",
+  "selected_agent": "did:example:worker-gamma",
+  "started_at": "2026-08-06T15:50:42.089787+00:00",
   "task_id": "task-m2-008",
   "task_requirements": {
     "input_size_mb": 1200,

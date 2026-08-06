@@ -19,20 +19,27 @@ experiment run; the runner fails closed on any mismatch.
 
 ## 2. Tasks
 
-30 tasks in `config/tasks.jsonl`. Each task declares ONLY requirements:
+32 tasks in `config/tasks.jsonl`. Each task declares ONLY requirements:
 `task_type`, `risk_level`, `requirements` (min capability level, input
 size, policy-compliance need, required services), and candidate agents.
+LOW-risk cold-start candidates additionally declare four experiment-level
+sandbox flags (`cold_start_candidate`, `reversible`, `sandboxed`,
+`limited_permissions`); these flags live in the experiment configuration
+only and never enter the AHRP Schema. One task (`task-m2-032`) carries a
+deliberately invalid `task_type` to inject a controlled query error
+(`Q_INVALID_ENUM`) at the HIGH risk level.
 The fields `expected_outcome`, `forced_result`, `desired_result` are
 forbidden and rejected at load time.
 
-Coverage constraints: >=3 task types (6 used), >=5 HIGH-risk tasks (7),
->=5 failure-boundary probes (8), >=5 cold-start candidate scenarios (7).
+Coverage constraints: >=3 task types (6 used), >=5 HIGH-risk tasks (8),
+>=5 failure-boundary probes (8), >=5 cold-start candidate scenarios (7),
+>=1 controlled query-error injection (1).
 
 ## 3. Arm allocation (fixed before any result exists)
 
 ```text
-task sequence odd  -> No-AHRP arm        (15 tasks)
-task sequence even -> AHRP-assisted arm  (15 tasks)
+task sequence odd  -> No-AHRP arm        (16 tasks)
+task sequence even -> AHRP-assisted arm  (16 tasks)
 ```
 
 Allocation reads only `sequence`. It never reads results, decisions, or
@@ -77,9 +84,23 @@ Mandatory checks: `ok`, `error`, `null_semantics` (NONE / NO_RECORD /
 WITHHELD), `result.events`. Iterating the envelope top level is forbidden.
 There is NO branch that forces a decision change when history is empty.
 
-## 7. Decision rules (AHRP-assisted arm only)
+## 7. Decision rules and fail-closed dispatch (AHRP-assisted arm)
 
-Applied strictly to disclosed, independently verified summary projections:
+Every AHRP-arm decision produces an experiment-layer `DispatchDecision`
+(not part of the AHRP Schema):
+
+```python
+@dataclass(frozen=True)
+class DispatchDecision:
+    disposition: str                       # DISPATCH / LOW_RISK_EXPLORATION
+                                           # / BLOCK / MANUAL_REVIEW
+    selected_agent: Optional[str]          # None unless dispatchable
+    reason: str
+    supporting_event_references: list[str]
+```
+
+Veto rules, applied strictly to disclosed, independently verified summary
+projections:
 
 - `RULE_A_CAPABILITY_LIMIT_VETO` — >=2 independently verified failure-class
   events with `failure_category=CAPABILITY_LIMIT` for the same agent,
@@ -87,13 +108,30 @@ Applied strictly to disclosed, independently verified summary projections:
 - `RULE_B_POLICY_RESTRICTION_BLOCK` — HIGH-risk task and any independently
   verified failure-class event with `failure_category=POLICY_RESTRICTION`.
 
-On veto, the first alternative candidate (declared order) without veto
-evidence is selected; alternatives whose answer is WITHHELD or a query
-error are unknown and therefore NOT selectable (fail-closed). If no clean
-alternative exists, the initial selection is kept.
-NO_RECORD and WITHHELD answers for the initial agent keep the initial
-selection (conservative). Query errors keep the initial selection and are
-logged.
+Trust-boundary semantics (fail-closed):
+
+- `NO_RECORD` means UNKNOWN / COLD_START; `WITHHELD` means
+  RECORD_EXISTS_BUT_NOT_DISCLOSED; a query error means QUERY_ERROR. None of
+  the three may ever be read as CLEAN, SAFE, or TRUSTED, and none of them
+  permits dispatch of the affected agent.
+- An alternative candidate is dispatchable ONLY when its own query returns
+  status `OK` with disclosed events AND it carries no veto evidence
+  (`KNOWN_NON_VETOED_ALTERNATIVE`). Alternatives answering NO_RECORD,
+  WITHHELD, or QUERY_ERROR are unknown and never selectable
+  (`NO_KNOWN_ALTERNATIVE`).
+- HIGH risk with no known non-vetoed candidate: `disposition=BLOCK`,
+  `selected_agent=None`; the worker is never invoked.
+- MEDIUM risk with no known non-vetoed candidate:
+  `disposition=MANUAL_REVIEW`. This controlled experiment has no real human
+  approver, so MANUAL_REVIEW never auto-executes.
+- LOW risk with an unknown initial candidate may explore cold start ONLY
+  when all four sandbox flags are true (`disposition=LOW_RISK_EXPLORATION`);
+  otherwise BLOCK.
+
+BLOCK and MANUAL_REVIEW tasks are recorded in `data/allocations.jsonl`,
+`data/post-query-decisions.jsonl`, and `data/non-dispatched-tasks.jsonl`.
+They never produce execution evidence, Experience Events, or Verification
+Records, and are never disguised as FAILURE or CANCELLED.
 
 ## 8. Two-phase shadow protocol
 
@@ -104,8 +142,9 @@ Fields: `task_id`, `candidate_agents`, `selected_agent_before_query`,
 `record_hash`.
 
 Post-query records bind `pre_query_record_hash`, list the query IDs in the
-window, record `selected_agent_after_query`, `decision_changed`, and
-`supporting_event_references`. Every query itself is logged with latency,
+window, record `selected_agent_after_query`, the final `disposition`,
+`decision_changed`, and `supporting_event_references`. Every query itself
+is logged with latency,
 character count, token estimate, mode, `ok` / `null_semantics` / error
 code, and is bound to the pre-query hash.
 
@@ -123,17 +162,61 @@ Experience Event references that file's recomputed SHA-256.
 `verify_evidence_references.py` re-reads every referenced file, recomputes
 its hash, blocks path traversal, and rejects placeholder/duplicate hashes.
 
-## 10. Metrics
+## 10. Verification independence
+
+The runner (`run_experiment.py`) writes ONLY
+`data/experience-events-unverified.jsonl`; every runner-emitted event
+carries `verification_references=[]` and no VERIFIED status of any kind.
+The runner contains no verifier class, no verification writer, and never
+claims `INDEPENDENT_AGENT` verification.
+
+`verify_run_records.py` runs separately AFTER the runner and:
+
+1. re-reads the frozen tasks, the frozen capability matrix (against its
+   pre-run SHA-256 commitment), and every controlled execution evidence
+   file;
+2. recomputes the deterministic worker result and compares
+   `selected_agent`, `result_status`, `failure_category`, the capability
+   matrix hash, and every evidence file SHA-256;
+3. validates every final Experience Event and Verification Record through
+   the real AHRP Validator and checks complete event/verification binding
+   (`subject_event_id`, `agent_ref`, `agent_version`, `covered_aspect`);
+4. only on PASS writes `data/experience-events.jsonl` and
+   `data/verification-records.jsonl`, plus
+   `analysis/generated-object-validation.json`; any failure exits non-zero.
+
+Verification records use `verifier_class=SYSTEM_BENCHMARK` and
+`verifier_name=method-v2-post-run-verifier`. This is a deterministic
+post-run recomputation, NOT independent verification:
+`REAL_INDEPENDENT_VERIFICATION=false`,
+`SYNTHETIC_SYSTEM_VERIFICATION=true`,
+`POST_RUN_RECOMPUTATION_VERIFIED=true`.
+
+## 11. Metrics
 
 `analyze_experiment.py` recomputes everything from raw JSONL (never from a
-prior summary). Per arm: task counts, result distribution, decision time,
+prior summary). It reports the task flow honestly:
+`submitted_tasks`, `dispatched_tasks`, `low_risk_exploration_tasks`,
+`blocked_tasks`, `manual_review_tasks`, `executed_tasks`,
+`experience_event_count`, `verification_record_count`, and
+`non_dispatched_record_count`. Per arm: task counts, result distribution,
+decision time,
 human overrides (honestly zero in a controlled run), and repeat selection
 of agents with known failure boundaries. AHRP arm additionally: query
 counts by mode, NO_RECORD / WITHHELD / disclosure-denial / error counts,
 decision changes, supporting references, character and token estimates,
 p50/p95 latency.
 
-## 11. Claim ceiling
+The repeat-selection metric is reported strictly as a
+`ROUTING_POLICY_CONFORMANCE_OBSERVATION`:
+
+> This metric is mechanically related to the configured veto policy.
+> It is not independent evidence of improved real-world outcomes.
+
+It is never reported as `AHRP_VALUE_IMPROVEMENT`, `RELIABILITY_IMPROVEMENT`,
+or `FAILURE_PREVENTED`.
+
+## 12. Claim ceiling
 
 The protocol permits only:
 
@@ -144,4 +227,4 @@ AHRP_ASSOCIATED_WITH_DIFFERENT_DECISION
 
 and forbids `AHRP_PROVED_TO_IMPROVE_SUCCESS_RATE` and `FAILURE_PREVENTED`.
 Final result vocabulary: INCONCLUSIVE / READY_WITH_CONDITIONS / NOT_READY;
-with 30 synthetic tasks the default is INCONCLUSIVE.
+with 32 synthetic tasks the default is INCONCLUSIVE.

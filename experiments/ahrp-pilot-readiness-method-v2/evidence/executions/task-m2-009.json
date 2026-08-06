@@ -13,10 +13,10 @@
     "environment_id": "controlled-env-method-v2"
   },
   "failure_category": "NOT_APPLICABLE",
-  "finished_at": "2026-08-06T14:15:29.865945+00:00",
+  "finished_at": "2026-08-06T15:50:42.090081+00:00",
   "result": "SUCCESS",
   "selected_agent": "did:example:worker-alpha",
-  "started_at": "2026-08-06T14:15:29.865943+00:00",
+  "started_at": "2026-08-06T15:50:42.090078+00:00",
   "task_id": "task-m2-009",
   "task_requirements": {
     "input_size_mb": 200,

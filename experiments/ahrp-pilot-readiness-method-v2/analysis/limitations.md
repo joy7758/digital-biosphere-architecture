@@ -14,12 +14,13 @@ analysis; they are properties of the experiment design itself.
 
 ## 2. Sample size
 
-- 30 tasks total (15 per arm). Arm allocation is a fixed parity rule over
+- 32 tasks total (16 per arm). Arm allocation is a fixed parity rule over
   `sequence`, not randomization.
-- With n=15 per arm, no statistical inference is possible. The identical
-  result distributions (8/4/2/1 in both arms) are exactly the expected
-  consequence of a deterministic worker and carry no signal about AHRP's
-  effect on outcomes.
+- With n=16 per arm, no statistical inference is possible. Fail-closed
+  dispatch means the two arms executed DIFFERENT task subsets (24 executed
+  overall; 8 AHRP-arm tasks blocked or held for manual review), so arm
+  result distributions are not comparable and carry no signal about
+  AHRP's effect on outcomes.
 
 ## 3. Deterministic execution model
 
@@ -29,19 +30,28 @@ analysis; they are properties of the experiment design itself.
   from (task, agent) to result.
 - Therefore this experiment can measure decision differences and protocol
   mechanics, but it CANNOT measure whether different decisions lead to
-  better real-world outcomes. `FAILURE_PREVENTED` is not observable here.
+  better real-world outcomes. `FAILURE_PREVENTED` is not observable here —
+  blocked tasks have no outcome at all, by design.
+
+## 3a. Verification is system-level, not independent
+
+- All 24 Verification Records are produced by the post-run SYSTEM_BENCHMARK
+  verifier (`method-v2-post-run-verifier`), a deterministic recomputation
+  against the same worker, matrix, and evidence hashes.
+- `REAL_INDEPENDENT_VERIFICATION=false`. This is not third-party,
+  adversarial, or external verification of any kind.
 
 ## 4. Synthetic history seed
 
-- The seven seed events and six verification records are authored for this
+- The nine seed events and eight verification records are authored for this
   experiment. They exercise validator, disclosure, and null-semantics
   mechanics; they are not a corpus of accumulated operational experience.
-- Cold-start dominance (11 of 34 queries returned NO_RECORD) is a property
+- Cold-start dominance (13 of 52 queries returned NO_RECORD) is a property
   of the sparse seed, not a prediction about production traffic.
 
 ## 5. Overhead numbers are local and uncalibrated
 
-- Latencies (p50 ~0.008 ms, p95 ~0.025 ms) are in-process function calls on
+- Latencies (p50 ~0.009 ms, p95 ~0.018 ms) are in-process function calls on
   a single machine; no network, no persistence layer, no concurrency.
 - Token estimates use the documented `ceil(chars/4)` heuristic against a
   synthetic projection format; they do not reflect any specific model or
