@@ -9,12 +9,15 @@ verifications and analysis summary. Exits non-zero on any problem.
 Checks:
  1. truth boundaries present with the mandated fixed values
  2. no-ahrp baseline records never carry AHRP query fields
- 3. every decision change is backed by resolvable history references
+ 3. every history-driven decision change is backed by resolvable history
+    references; query-error safety overrides block execution entirely
  4. all-NO_RECORD queries never produce a decision change
  5. run events and verifications pass the AHRP Validator
  6. verification scope is strongly bound to its event (version binding)
  7. run evidence hashes recompute exactly
  8. no prohibited metric (score / ranking / trust / reliability) anywhere
+ 9. history_used only contains real Experience Event references
+    (NO_RECORD / WITHHELD / QUERY_ERROR live in query_observations)
 """
 
 import hashlib
@@ -98,14 +101,43 @@ def main() -> int:
 
     # 3/4. assisted records consistency
     changed_with_history = 0
+    safety_overrides = []
     for path in assisted:
         record = json.loads(path.read_text(encoding="utf-8"))
         for key in ("task_id", "before_query_decision", "ahrp_query",
-                    "history_used", "after_query_decision", "decision_changed"):
+                    "query_observations", "history_used",
+                    "after_query_decision", "decision_changed"):
             if key not in record:
                 problems.append(f"{path.name}: missing field {key!r}")
                 continue
-        if record.get("decision_changed"):
+        # 9. history_used must only reference real Experience Events
+        for entry in record.get("history_used", []):
+            if not entry.get("event_id"):
+                problems.append(
+                    f"{path.name}: history_used entry without event_id "
+                    f"({entry.get('reason')!r}); NO_RECORD / QUERY_ERROR "
+                    "belong in query_observations")
+        if record.get("query_error_safety_override"):
+            safety_overrides.append(path.stem)
+            after = record.get("after_query_decision", {})
+            result = record.get("result", {})
+            if after.get("decision") != "MANUAL_REVIEW":
+                problems.append(f"{path.name}: safety override did not route "
+                                "to MANUAL_REVIEW")
+            if after.get("selected_agent") is not None:
+                problems.append(f"{path.name}: safety override selected an agent")
+            if result.get("status") != "NOT_EXECUTED":
+                problems.append(f"{path.name}: safety override executed a worker")
+            if result.get("artifact_paths"):
+                problems.append(f"{path.name}: safety override produced artifacts")
+            if not record.get("fail_closed"):
+                problems.append(f"{path.name}: safety override missing fail_closed")
+            if record.get("history_used"):
+                problems.append(f"{path.name}: safety override claims history use")
+            if not record.get("query_observations"):
+                problems.append(f"{path.name}: safety override has no "
+                                "query_observations")
+        elif record.get("decision_changed"):
             refs = [e for e in record.get("history_used", [])
                     if e.get("event_id")]
             if not refs:
@@ -179,6 +211,15 @@ def main() -> int:
             if ref["hash"] != f"sha256:{digest}":
                 problems.append(f"{path.name}: evidence hash mismatch")
 
+    # 3c. safety overrides must not leave any run event / verification
+    for task_id in safety_overrides:
+        if (events_dir / f"evt-trial-run-{task_id}.json").exists():
+            problems.append(f"{task_id}: safety override created an "
+                            "Experience Event")
+        if (events_dir / f"ver-trial-run-{task_id}.json").exists():
+            problems.append(f"{task_id}: safety override created a "
+                            "Verification Record")
+
     # consistency: summary counts match records
     counts = summary.get("counts", {})
     actual_queries = sum(
@@ -189,9 +230,22 @@ def main() -> int:
     actual_changed = sum(
         1 for p in assisted
         if json.loads(p.read_text(encoding="utf-8")).get("decision_changed"))
-    if counts.get("PROGRAMMATIC_DECISION_CHANGED_COUNT") != actual_changed:
-        problems.append("PROGRAMMATIC_DECISION_CHANGED_COUNT inconsistent "
+    if counts.get("TOTAL_POST_QUERY_DECISION_CHANGED_COUNT") != actual_changed:
+        problems.append("TOTAL_POST_QUERY_DECISION_CHANGED_COUNT inconsistent "
                         "with decision records")
+    if counts.get("QUERY_ERROR_SAFETY_OVERRIDE_COUNT") != len(safety_overrides):
+        problems.append("QUERY_ERROR_SAFETY_OVERRIDE_COUNT inconsistent "
+                        "with decision records")
+    if counts.get("PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT") != \
+            changed_with_history:
+        problems.append("PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT "
+                        "inconsistent with decision records")
+    # QUERY_FAILURE_FAIL_CLOSED may only be claimed when every safety
+    # override actually blocked execution (checked above per record).
+    findings = summary.get("supported_findings", {})
+    if findings.get("QUERY_FAILURE_FAIL_CLOSED") and not safety_overrides:
+        problems.append("QUERY_FAILURE_FAIL_CLOSED claimed without any "
+                        "query-error safety override")
     # the query-count disclaimer must travel with the metric
     if "configured AHRP-assisted execution path" not in counts.get(
             "AHRP_QUERY_COUNT_NOTE", ""):
@@ -206,6 +260,7 @@ def main() -> int:
     print("trial records: 10 no-ahrp + 10 ahrp-assisted")
     print(f"run events: {len(run_events)}, run verifications: {len(run_verifications)}")
     print(f"decision changes backed by history references: {changed_with_history}")
+    print(f"query-error safety overrides (execution blocked): {len(safety_overrides)}")
     print("verify_trial: PASS")
     return 0
 
