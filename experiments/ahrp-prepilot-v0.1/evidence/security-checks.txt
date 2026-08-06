@@ -1,0 +1,38 @@
+AHRP v0.1 CONTROLLED INTERNAL PREPILOT - SECURITY CHECKS
+CONTROLLED_INTERNAL_PREPILOT=true SYNTHETIC_ONLY=true
+
+1. Injection check (DATA != INSTRUCTION, validator negative case)
+   hostile free-text event rejected by validator: True
+   hostile event blocked by fail-closed ingest: True
+   PASS
+
+2. Disclosure bypass check
+   all events disclosure_scope=PUBLIC per config/disclosure-policy.json;
+   no RESTRICTED/WITHHELD detail accessed without resolver-confirmed
+   policy decision; SyntheticPolicyResolver whitelist: ['pilot-policy-001', 'pilot-policy-002']
+   queries executed: 7, denial leaks detected: 0
+   PASS
+
+3. Decision-input channel separation
+   all routing decisions computed exclusively from
+   structured_decision_inputs() output (restricted_text stripped);
+   decision facts containing restricted_text: 0
+   PASS
+
+4. Forbidden-field check (no score/ranking/fitness/learning semantics)
+   forbidden fields detected in generated records: 0 (validator _scan_forbidden_fields runs on every ingest)
+   PASS
+
+5. Self-verification discipline
+   SELF-class verifications (tasks 2, 6, 11) explicitly flagged
+   self_verification=true; never counted as independently verified
+   (summary verified_events counts independent verifications only).
+   PASS
+
+6. Evidence-supported decision change (task 13)
+   decision changes recorded: 1
+   - dec-013: coder-beta@1.0.0 -> external-epsilon@1.0.0 via A/CAPABILITY_LIMIT_VETO; evidence: 2 independently verified CAPABILITY_LIMIT failures (events evt-prepilot-003, evt-prepilot-005)
+
+7. Baseline integrity
+   AHRP source unmodified (read-only baseline 64bfed1f3063f4f463bb1e2680ef6b0b1d312201)
+   residual issues: 0

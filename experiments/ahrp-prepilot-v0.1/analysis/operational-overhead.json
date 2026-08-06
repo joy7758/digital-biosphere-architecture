@@ -1,0 +1,51 @@
+{
+  "control": {
+    "CONTROLLED_INTERNAL_PREPILOT": true,
+    "CONTROLLED_INTERNAL_TASK": true,
+    "REAL_EXTERNAL_AGENT": false,
+    "SYNTHETIC_MARKET_ADOPTION": false,
+    "REAL_WORLD_ADOPTION_VALIDATED": false,
+    "AHRP_PRODUCTION_READY": false,
+    "AHRP_BASELINE_COMMIT": "64bfed1f3063f4f463bb1e2680ef6b0b1d312201",
+    "DATA_CHANNEL": "SYNTHETIC_PREPILOT"
+  },
+  "generated_at": "2026-08-04T20:32:03.583159+00:00",
+  "measurement_method": "time.perf_counter around validate+ingest for every event and verification; len(json.dumps(envelope)) for query payload sizes; counts taken from the actual run. Latency is reported alongside payload-size, token-estimate and step-count metrics, NOT alone.",
+  "event_generation_validation_ingest": {
+    "samples": 14,
+    "average_seconds": 0.00011087492748629302,
+    "min_seconds": 9.641599899623543e-05,
+    "max_seconds": 0.00019254200014984235
+  },
+  "verification_record_creation_ingest": {
+    "samples": 14,
+    "average_seconds": 7.005657244008034e-05,
+    "min_seconds": 4.920799983665347e-05,
+    "max_seconds": 0.0002005420028581284
+  },
+  "query_payload_sizes": {
+    "summary_query_chars": 1143,
+    "detail_query_chars": 2235,
+    "summary_query_estimated_tokens": 285,
+    "detail_query_estimated_tokens": 558,
+    "token_estimation_method": "chars/4"
+  },
+  "orchestrator_extra_query_steps_per_decision": 1.3333333333333333,
+  "manual_operations_count": 0,
+  "manual_operations_note": "fully scripted run; 0 manual operations",
+  "failure_retries_count": 0,
+  "extra_tool_calls_per_agent_attributable_to_ahrp": {
+    "method_note": "honest per-role estimate of AHRP-attributable scripted calls per task: 1 pre-dispatch query + 1 decision record by the orchestrator; 1 validate + 1 ingest by the executor per event; 1 validate + 1 ingest by the verifier per verification record",
+    "orchestrator": "2 calls per dispatch decision (query + decision record)",
+    "executor_agents": "2 calls per executed task (validate + ingest)",
+    "verifier_agent": "2 calls per verification record (validate + ingest)",
+    "queried_roles_estimate_total": 80
+  },
+  "totals_this_phase": {
+    "events_ingested": 14,
+    "verifications_ingested": 14,
+    "queries_executed": 16,
+    "decisions_recorded": 12,
+    "tasks_recorded": 22
+  }
+}

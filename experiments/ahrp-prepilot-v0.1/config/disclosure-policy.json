@@ -1,0 +1,8 @@
+{
+  "default_scope": "PUBLIC",
+  "failure_events_scope": "PUBLIC",
+  "verification_records_scope": "FEDERATED",
+  "policy_version": "0.1",
+  "resolver_type": "SyntheticPolicyResolver",
+  "allowed_references": ["pilot-policy-001", "pilot-policy-002"]
+}

@@ -1,0 +1,184 @@
+AHRP v0.1 CONTROLLED INTERNAL PREPILOT - QUERY OUTPUT
+CONTROLLED_INTERNAL_PREPILOT=true SYNTHETIC_ONLY=true
+
+== q-013 (query_events) - candidate history check before high-risk CODING dispatch
+   params: {"identity_ref": "coder-beta", "agent_version": "1.0.0", "task_type": "CODING", "require_independent_verification": true}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=6
+     - evt-prepilot-001 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-003 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-005 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-007 CODING/RETRY -> FAILURE category=ENVIRONMENT_ERROR verification=VERIFIED independent=True
+     - evt-prepilot-009 CODING/EXECUTE -> TIMEOUT category=RESOURCE_UNAVAILABLE verification=VERIFIED independent=True
+     - evt-prepilot-012 CODING/EXECUTE -> CANCELLED category=DEPENDENCY_FAILURE verification=VERIFIED independent=True
+
+== q-015 (query_events) - candidate history check before external API integration task
+   params: {"identity_ref": "external-epsilon", "agent_version": "1.0.0", "task_type": "CODING", "require_independent_verification": true}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=2
+     - evt-prepilot-010 CODING/EXECUTE -> FAILURE category=POLICY_RESTRICTION verification=VERIFIED independent=True
+     - evt-prepilot-014 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-016 (summary) - cold-start history check for upgraded coder version
+   params: {"identity_ref": "coder-beta", "agent_version": "1.1.0"}
+   ok=True null_semantics=NO_RECORD mode=summary withheld_count=0
+   by_version={}
+
+== q-018 (summary) - candidate history check for RESEARCH dispatch
+   params: {"identity_ref": "researcher-gamma", "agent_version": "1.0.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   by_version={"1.0.0": {"total_events": 2, "verified_events": 2, "independently_verified_events": 2, "self_verified_events": 0, "partially_verified_events": 0, "not_assessed_events": 0, "conflicted_events": 0, "events_by_task_type": {"RESEARCH": 2}, "events_by_result_status": {"SUCCESS": 2}}}
+
+== q-020 (query_events) - candidate history check with known environment failure history
+   params: {"identity_ref": "coder-beta", "agent_version": "1.0.0", "task_type": "CODING", "require_independent_verification": true}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=6
+     - evt-prepilot-001 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-003 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-005 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-007 CODING/RETRY -> FAILURE category=ENVIRONMENT_ERROR verification=VERIFIED independent=True
+     - evt-prepilot-009 CODING/EXECUTE -> TIMEOUT category=RESOURCE_UNAVAILABLE verification=VERIFIED independent=True
+     - evt-prepilot-012 CODING/EXECUTE -> CANCELLED category=DEPENDENCY_FAILURE verification=VERIFIED independent=True
+
+== q-022 (summary) - history check for an unknown agent reference
+   params: {"identity_ref": "ghost-agent-zeta", "agent_version": "1.0.0"}
+   ok=True null_semantics=NO_RECORD mode=summary withheld_count=0
+
+== q-023 (summary) - simulated outage negative case for Rule E
+   params: {"identity_ref": "verifier-delta", "agent_version": "1.0.0"}
+   ok=False code=Q_INTERNAL_ERROR message=simulated: AHRP query endpoint unreachable (synthetic outage)
+
+final consistency summary coder-beta@1.0.0: {"total_events": 8, "verified_events": 7, "independently_verified_events": 7, "self_verified_events": 1, "partially_verified_events": 0, "not_assessed_events": 0, "conflicted_events": 0, "events_by_task_type": {"CODING": 8}, "events_by_result_status": {"SUCCESS": 3, "FAILURE": 3, "TIMEOUT": 1, "CANCELLED": 1}}
+
+AHRP v0.1 CONTROLLED INTERNAL PREPILOT PHASE 2 - QUERY OUTPUT
+CONTROLLED_INTERNAL_PREPILOT=true CONTROLLED_INTERNAL_TASK=true
+
+== q-p2-wh-summary (summary) - WITHHELD E2E probe 1: summary must not leak withheld detail
+   params: {"identity_ref": "external-epsilon", "agent_version": "1.0.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=1
+   by_version={"1.0.0": {"total_events": 3, "verified_events": 2, "independently_verified_events": 2, "self_verified_events": 1, "partially_verified_events": 0, "not_assessed_events": 0, "conflicted_events": 0, "events_by_task_type": {"CODING": 3}, "events_by_result_status": {"SUCCESS": 2, "FAILURE": 1}}}
+
+== q-p2-cs2 (summary) - cold-start re-verification case 2: researcher-gamma@1.1.0 queried BEFORE its first event exists
+   params: {"identity_ref": "researcher-gamma", "agent_version": "1.1.0"}
+   ok=True null_semantics=NO_RECORD mode=summary withheld_count=0
+   by_version={}
+
+== q-p2-iso110 (query_events) - version isolation: researcher-gamma version=1.1.0 must NOT include the 3 historical v1.0.0 events
+   params: {"identity_ref": "researcher-gamma", "agent_version": "1.1.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=1
+     - evt-prepilot-p2-gamma110 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-iso100 (query_events) - version isolation: researcher-gamma version=1.0.0 must still return the original 3 events
+   params: {"identity_ref": "researcher-gamma", "agent_version": "1.0.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=5
+     - evt-prepilot-004 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-r3 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-r4 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-008 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-019 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-isosubject (summary) - version isolation: subject-level summary (no version filter) must show version grouping
+   params: {"identity_ref": "researcher-gamma"}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   by_version={"1.0.0": {"total_events": 5, "verified_events": 5, "independently_verified_events": 5, "self_verified_events": 0, "partially_verified_events": 0, "not_assessed_events": 0, "conflicted_events": 0, "events_by_task_type": {"RESEARCH": 5}, "events_by_result_status": {"SUCCESS": 5}}, "1.1.0": {"total_events": 1, "verified_events": 1, "independently_verified_events": 1, "self_verified_events": 0, "partially_verified_events": 0, "not_assessed_events": 0, "conflicted_events": 0, "events_by_task_type": {"RESEARCH": 1}, "events_by_result_status": {"SUCCESS": 1}}}
+
+== q-p2-cs1 (summary) - cold-start re-verification case 1: worker-nu@1.0.0 has no records at all
+   params: {"identity_ref": "worker-nu", "agent_version": "1.0.0"}
+   ok=True null_semantics=NO_RECORD mode=summary withheld_count=0
+
+== q-p2-01 (query_events) - shadow: candidate history check before high-risk CODING dispatch (Rule A territory)
+   params: {"identity_ref": "coder-beta", "agent_version": "1.0.0", "task_type": "CODING", "require_independent_verification": true}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=9
+     - evt-prepilot-001 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-003 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-r5 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-r6 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-005 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-007 CODING/RETRY -> FAILURE category=ENVIRONMENT_ERROR verification=VERIFIED independent=True
+     - evt-prepilot-009 CODING/EXECUTE -> TIMEOUT category=RESOURCE_UNAVAILABLE verification=VERIFIED independent=True
+     - evt-prepilot-012 CODING/EXECUTE -> CANCELLED category=DEPENDENCY_FAILURE verification=VERIFIED independent=True
+     - evt-prepilot-021 CODING/RETRY -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-02 (query_events) - shadow: external API integration task (Rule B territory)
+   params: {"identity_ref": "external-epsilon", "agent_version": "1.0.0", "task_type": "CODING", "require_independent_verification": true}
+   ok=True null_semantics=NONE mode=summary withheld_count=1
+   event_count=3
+     - evt-prepilot-p2-restricted CODING/EXECUTE -> FAILURE category=POLICY_RESTRICTION verification=RESTRICTED independent=True
+     - evt-prepilot-010 CODING/EXECUTE -> FAILURE category=POLICY_RESTRICTION verification=VERIFIED independent=True
+     - evt-prepilot-014 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-03 (query_events) - shadow: low-risk retry path with known ENVIRONMENT_ERROR history (Rule C territory)
+   params: {"identity_ref": "coder-beta", "agent_version": "1.0.0", "task_type": "CODING", "require_independent_verification": true}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=9
+     - evt-prepilot-001 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-003 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-r5 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-r6 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-005 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-007 CODING/RETRY -> FAILURE category=ENVIRONMENT_ERROR verification=VERIFIED independent=True
+     - evt-prepilot-009 CODING/EXECUTE -> TIMEOUT category=RESOURCE_UNAVAILABLE verification=VERIFIED independent=True
+     - evt-prepilot-012 CODING/EXECUTE -> CANCELLED category=DEPENDENCY_FAILURE verification=VERIFIED independent=True
+     - evt-prepilot-021 CODING/RETRY -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-04 (summary) - shadow: cold start for never-seen coder-beta@2.0.0
+   params: {"identity_ref": "coder-beta", "agent_version": "2.0.0"}
+   ok=True null_semantics=NO_RECORD mode=summary withheld_count=0
+   by_version={}
+
+== q-p2-05 (query_events) - shadow: RESEARCH dispatch for researcher-gamma@1.0.0
+   params: {"identity_ref": "researcher-gamma", "agent_version": "1.0.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=5
+     - evt-prepilot-004 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-r3 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-r4 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-008 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-019 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-06 (summary) - shadow: simulated outage negative case for Rule E
+   params: {"identity_ref": "external-epsilon", "agent_version": "1.0.0"}
+   ok=False code=Q_INTERNAL_ERROR message=simulated: AHRP query endpoint unreachable (synthetic outage)
+
+== q-p2-07 (query_events) - shadow: VERIFICATION dispatch for verifier-delta@1.0.0
+   params: {"identity_ref": "verifier-delta", "agent_version": "1.0.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=4
+     - evt-prepilot-r1 VERIFICATION/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-r2 VERIFICATION/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-011 VERIFICATION/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=False
+     - evt-prepilot-024 VERIFICATION/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-08 (query_events) - shadow: ANALYSIS task for researcher-gamma@1.1.0 after its first event exists
+   params: {"identity_ref": "researcher-gamma", "agent_version": "1.1.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=1
+     - evt-prepilot-p2-gamma110 RESEARCH/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-09 (query_events) - shadow: DATA_PROCESSING task for coder-beta@1.0.0 (ENVIRONMENT_ERROR history triggers Rule C adjustments)
+   params: {"identity_ref": "coder-beta", "agent_version": "1.0.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=0
+   event_count=10
+     - evt-prepilot-001 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-002 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=False
+     - evt-prepilot-003 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-r5 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-r6 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+     - evt-prepilot-005 CODING/EXECUTE -> FAILURE category=CAPABILITY_LIMIT verification=VERIFIED independent=True
+     - evt-prepilot-007 CODING/RETRY -> FAILURE category=ENVIRONMENT_ERROR verification=VERIFIED independent=True
+     - evt-prepilot-009 CODING/EXECUTE -> TIMEOUT category=RESOURCE_UNAVAILABLE verification=VERIFIED independent=True
+     - evt-prepilot-012 CODING/EXECUTE -> CANCELLED category=DEPENDENCY_FAILURE verification=VERIFIED independent=True
+     - evt-prepilot-021 CODING/RETRY -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
+== q-p2-10 (query_events) - shadow: DATA_PROCESSING task for external-epsilon@1.0.0 (POLICY_RESTRICTION history is CODING-scoped, no Rule B match)
+   params: {"identity_ref": "external-epsilon", "agent_version": "1.0.0"}
+   ok=True null_semantics=NONE mode=summary withheld_count=1
+   event_count=4
+     - evt-prepilot-p2-restricted CODING/EXECUTE -> FAILURE category=POLICY_RESTRICTION verification=RESTRICTED independent=True
+     - evt-prepilot-006 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=False
+     - evt-prepilot-010 CODING/EXECUTE -> FAILURE category=POLICY_RESTRICTION verification=VERIFIED independent=True
+     - evt-prepilot-014 CODING/EXECUTE -> SUCCESS category=NOT_APPLICABLE verification=VERIFIED independent=True
+
