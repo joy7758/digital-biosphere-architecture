@@ -1,0 +1,105 @@
+{
+  "ahrp_tree_hash": "4d9dd8a00e5605204c2d9583525af2a296ece2e0",
+  "counts": {
+    "AHRP_QUERY_COUNT": 12,
+    "AHRP_QUERY_COUNT_NOTE": "AHRP_QUERY_COUNT is produced by the configured AHRP-assisted execution path. It is not evidence that an autonomous agent voluntarily chose to query AHRP.",
+    "DECISION_CHANGED_TASKS": [
+      "t-202",
+      "t-204",
+      "t-206"
+    ],
+    "HISTORY_USED_REASONS": {
+      "t-201": "POSITIVE_HISTORY",
+      "t-202": "CAPABILITY_LIMIT_HISTORY",
+      "t-203": "POSITIVE_HISTORY",
+      "t-204": "POLICY_RESTRICTION_HISTORY",
+      "t-205": "POSITIVE_HISTORY",
+      "t-206": "CAPABILITY_LIMIT_HISTORY",
+      "t-207": "POSITIVE_HISTORY",
+      "t-208": "NO_RECORD",
+      "t-209": "POSITIVE_HISTORY",
+      "t-210": "QUERY_ERROR"
+    },
+    "PROGRAMMATIC_DECISION_CHANGED_COUNT": 3,
+    "PROGRAMMATIC_DECISION_CHANGED_NOTE": "PROGRAMMATIC_ROUTING_CHANGE_OBSERVATION only; not an adoption signal, not an agent demand signal.",
+    "RESOLVABLE_HISTORY_REFERENCE_COUNT": 16,
+    "TASK_COUNT": 20,
+    "tasks_ahrp_assisted": 10,
+    "tasks_no_ahrp": 10
+  },
+  "execution_outcomes_observational_only": {
+    "ahrp_assisted": {
+      "NOT_EXECUTED": 3,
+      "SUCCESS": 7
+    },
+    "no_ahrp": {
+      "FAILURE": 4,
+      "SUCCESS": 6
+    },
+    "note": "Recorded for transparency. This trial does NOT claim any performance improvement; task mix is designed to trigger history consumption, not to measure success rates."
+  },
+  "objectives": {
+    "question": "Can a programmatic orchestrator integrate the frozen AHRP v0.1 query interface and bind returned history to auditable delegation decisions?"
+  },
+  "query_cost": {
+    "calls_total": 12,
+    "latency_ms_per_query": [
+      0.293,
+      0.0367,
+      0.0194,
+      0.03,
+      0.0178,
+      0.029,
+      0.0233,
+      0.0631,
+      0.0082,
+      0.0308,
+      0.0443,
+      0.0024
+    ],
+    "tokens_estimated_per_query": [
+      291,
+      398,
+      292,
+      399,
+      294,
+      402,
+      398,
+      76,
+      76,
+      76,
+      402,
+      52
+    ]
+  },
+  "supported_findings": {
+    "AHRP_QUERY_INTERFACE_INTEGRATED": true,
+    "HISTORY_BOUND_TO_DECISION_RECORD": true,
+    "PROGRAMMATIC_DECISION_CHANGED_BY_HISTORY": true,
+    "QUERY_FAILURE_FAIL_CLOSED": true
+  },
+  "trial_id": "ahrp-internal-orchestrator-integration-v0.1",
+  "truth_boundaries": {
+    "AHRP_PRODUCTION_READY": false,
+    "AHRP_STANDARD_PUBLISHED": false,
+    "AHRP_V0_1_MODIFIED": false,
+    "AUTONOMOUS_TOOL_SELECTION": false,
+    "INTEGRATION_MECHANISM_DEMONSTRATED": true,
+    "INTERNAL_EXECUTABLE_INTEGRATION_TRIAL": true,
+    "MODEL_BASED_ORCHESTRATOR": false,
+    "PROGRAMMATIC_ORCHESTRATOR_USED_AHRP": true,
+    "REAL_AGENT_ADOPTION_VALIDATED": false,
+    "REAL_EXTERNAL_AGENT": false,
+    "REAL_HUMAN_ORCHESTRATOR": false,
+    "REAL_INDEPENDENT_VERIFICATION": false,
+    "SUCCESS_RATE_IMPROVEMENT_PROVEN": false,
+    "TRIAL_RESULT": "INCONCLUSIVE",
+    "VOLUNTARY_AHRP_QUERY_VALIDATED": false
+  },
+  "unsupported_claims": {
+    "AGENT_VOLUNTARILY_ADOPTED_AHRP": false,
+    "REAL_AGENT_DEMAND_VALIDATED": false,
+    "REAL_WORLD_ADOPTION_VALIDATED": false,
+    "note": "These claims cannot be made by this trial."
+  }
+}

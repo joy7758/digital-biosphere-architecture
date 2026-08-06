@@ -1,0 +1,48 @@
+{
+  "after_query_decision": {
+    "decision": "DELEGATE",
+    "selected_agent": "did:example:worker-beta",
+    "selection_reason": "TYPE_ROUTING: research -> did:example:worker-beta (static capability match, no history consulted)"
+  },
+  "ahrp_query": [
+    {
+      "events_returned": 2,
+      "latency_ms": 0.0194,
+      "null_semantics": "NONE",
+      "ok": true,
+      "params": {
+        "agent_version": "1.0.0",
+        "identity_ref": "did:example:worker-beta",
+        "task_type": "RESEARCH"
+      },
+      "tokens_estimated": 292
+    }
+  ],
+  "before_query_decision": {
+    "decision": "DELEGATE",
+    "selected_agent": "did:example:worker-beta",
+    "selection_reason": "TYPE_ROUTING: research -> did:example:worker-beta (static capability match, no history consulted)"
+  },
+  "decision_changed": false,
+  "history_used": [
+    {
+      "agent_ref": "did:example:worker-beta",
+      "event_id": "evt-seed-beta-ok-001",
+      "reason": "POSITIVE_HISTORY"
+    }
+  ],
+  "mode": "AHRP_ASSISTED_MODE",
+  "occurred_at": "2026-08-07T02:03:00Z",
+  "orchestrator_agent_id": "did:example:orchestrator-core",
+  "orchestrator_agent_version": "1.0.0",
+  "query_count": 1,
+  "result": {
+    "artifact_paths": [
+      "artifacts/t-203/research-note.md"
+    ],
+    "failure_category": null,
+    "reason": "research note produced from local material",
+    "status": "SUCCESS"
+  },
+  "task_id": "t-203"
+}

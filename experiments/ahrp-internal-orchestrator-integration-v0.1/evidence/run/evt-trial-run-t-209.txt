@@ -1,0 +1,7 @@
+trial: ahrp-internal-orchestrator-integration-v0.1
+task_id: t-209
+selected_agent: did:example:worker-gamma
+result_status: SUCCESS
+failure_category: None
+reason: review performed, findings recorded
+artifacts: artifacts/t-209/review-findings.md

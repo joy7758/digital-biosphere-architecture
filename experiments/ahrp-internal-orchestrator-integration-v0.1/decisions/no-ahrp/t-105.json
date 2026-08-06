@@ -1,0 +1,20 @@
+{
+  "candidate_agents": [
+    "did:example:worker-gamma"
+  ],
+  "mode": "NO_AHRP_MODE",
+  "occurred_at": "2026-08-07T01:05:00Z",
+  "orchestrator_agent_id": "did:example:orchestrator-core",
+  "orchestrator_agent_version": "1.0.0",
+  "result": {
+    "artifact_paths": [
+      "artifacts/t-105/review-findings.md"
+    ],
+    "failure_category": null,
+    "reason": "review performed, findings recorded",
+    "status": "SUCCESS"
+  },
+  "selected_agent": "did:example:worker-gamma",
+  "selection_reason": "TYPE_ROUTING: review -> did:example:worker-gamma (static capability match, no history consulted)",
+  "task_id": "t-105"
+}

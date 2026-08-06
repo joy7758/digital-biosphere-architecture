@@ -1,0 +1,20 @@
+{
+  "candidate_agents": [
+    "did:example:worker-alpha"
+  ],
+  "mode": "NO_AHRP_MODE",
+  "occurred_at": "2026-08-07T01:10:00Z",
+  "orchestrator_agent_id": "did:example:orchestrator-core",
+  "orchestrator_agent_version": "1.0.0",
+  "result": {
+    "artifact_paths": [
+      "dependency-resolution-attempt.log"
+    ],
+    "failure_category": "CAPABILITY_LIMIT",
+    "reason": "dependency resolution outside declared boundary",
+    "status": "FAILURE"
+  },
+  "selected_agent": "did:example:worker-alpha",
+  "selection_reason": "TYPE_ROUTING: coding -> did:example:worker-alpha (static capability match, no history consulted)",
+  "task_id": "t-110"
+}

@@ -1,0 +1,1 @@
+Seed record: worker-gamma attempted a review task requiring a security audit. Security auditing is outside its declared boundary, so the task failed.

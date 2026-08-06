@@ -1,0 +1,32 @@
+{
+  "action_type": "EXECUTE",
+  "agent_reference": {
+    "identity_ref": "did:example:worker-alpha",
+    "identity_source": "DBOS"
+  },
+  "agent_version": "1.0.0",
+  "disclosure": {
+    "declared_by": "ahrp-internal-orchestrator-integration-v0.1",
+    "disclosure_scope": "PUBLIC"
+  },
+  "event_id": "evt-trial-run-t-207",
+  "evidence_references": [
+    {
+      "availability_status": "AVAILABLE",
+      "hash": "sha256:fb49dbc5918ab5163b3ddb694eeff8faddbb43e41d6baa023c4cbea1188cd4c8",
+      "reference_id": "ev-trial-run-t-207",
+      "source": "TITMAS_EVIDENCE",
+      "version": "1.0"
+    }
+  ],
+  "occurred_at": "2026-08-07T02:07:00Z",
+  "result_status": "SUCCESS",
+  "schema_version": "0.1.0",
+  "task_type": "CODING",
+  "verification_references": [
+    {
+      "verification_id": "ver-trial-run-t-207",
+      "verifier_name": "integration-trial-post-run-verifier"
+    }
+  ]
+}

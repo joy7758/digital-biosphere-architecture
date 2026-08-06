@@ -1,0 +1,1 @@
+Seed record: worker-beta attempted a research task requiring live external sources. Sandbox policy forbids external source access, so the task failed under a policy restriction.

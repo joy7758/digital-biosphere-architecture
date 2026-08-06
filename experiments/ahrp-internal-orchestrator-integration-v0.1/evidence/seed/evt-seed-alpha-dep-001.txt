@@ -1,0 +1,1 @@
+Seed record: worker-alpha attempted a coding task requiring third-party dependency resolution. The worker has no package-index access (declared boundary), so the dependency could not be resolved and the task failed.

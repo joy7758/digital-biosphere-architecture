@@ -1,0 +1,21 @@
+{
+  "candidate_agents": [
+    "did:example:worker-alpha"
+  ],
+  "mode": "NO_AHRP_MODE",
+  "occurred_at": "2026-08-07T01:01:00Z",
+  "orchestrator_agent_id": "did:example:orchestrator-core",
+  "orchestrator_agent_version": "1.0.0",
+  "result": {
+    "artifact_paths": [
+      "artifacts/t-101/module.py"
+    ],
+    "artifact_sha256": "f8e7c7859036fcb0e58065935c1fe1a72e80ad243378035dc19e8cf968395d0d",
+    "failure_category": null,
+    "reason": "module written, parsed and compiled",
+    "status": "SUCCESS"
+  },
+  "selected_agent": "did:example:worker-alpha",
+  "selection_reason": "TYPE_ROUTING: coding -> did:example:worker-alpha (static capability match, no history consulted)",
+  "task_id": "t-101"
+}
