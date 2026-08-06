@@ -12,6 +12,10 @@ on:
   push:
     branches:
       - experiment/ahrp-internal-orchestrator-integration-v0.1
+  # Manual trigger so the gate can be run even if automatic events are
+  # blocked (e.g. private-repo Actions billing quota). Dispatch always
+  # checks the branch HEAD; it never merges and never marks the PR ready.
+  workflow_dispatch:
 
 jobs:
   integration-trial:
