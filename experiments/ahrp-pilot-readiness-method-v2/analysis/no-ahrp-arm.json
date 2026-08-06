@@ -1,0 +1,26 @@
+{
+  "arm": "No-AHRP",
+  "tasks": 16,
+  "SUCCESS": 9,
+  "FAILURE": 4,
+  "TIMEOUT": 2,
+  "CANCELLED": 1,
+  "dispositions": {
+    "DISPATCH": 16,
+    "LOW_RISK_EXPLORATION": 0,
+    "BLOCK": 0,
+    "MANUAL_REVIEW": 0
+  },
+  "avg_decision_time": {
+    "avg_ms": 0.001078,
+    "p50_ms": 0.000855,
+    "p95_ms": 0.001968
+  },
+  "human_overrides": 0,
+  "human_overrides_note": "controlled run: no human intervention occurred; counted honestly as zero",
+  "routing_policy_conformance": {
+    "repeat_selection_of_known_failure_boundary_agent": 5,
+    "interpretation": "ROUTING_POLICY_CONFORMANCE_OBSERVATION",
+    "note": "This metric is mechanically related to the configured veto policy. It is not independent evidence of improved real-world outcomes."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "capability_match": {
+    "agent_key": "did:example:worker-alpha@1.0.0",
+    "declared_capability": {
+      "level": 1,
+      "max_input_mb": 128
+    },
+    "required_level": 2,
+    "task_type": "VERIFICATION"
+  },
+  "deciding_rule": "RULE_CAPABILITY_MISSING",
+  "environment": {
+    "environment_id": "controlled-env-method-v2"
+  },
+  "failure_category": "CAPABILITY_LIMIT",
+  "finished_at": "2026-08-06T15:50:42.094318+00:00",
+  "result": "FAILURE",
+  "selected_agent": "did:example:worker-alpha",
+  "started_at": "2026-08-06T15:50:42.094316+00:00",
+  "task_id": "task-m2-025",
+  "task_requirements": {
+    "input_size_mb": 200,
+    "min_capability_level": 2,
+    "required_services": [],
+    "requires_policy_compliance": false
+  }
+}

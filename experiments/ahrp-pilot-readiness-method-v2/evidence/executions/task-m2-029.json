@@ -1,0 +1,29 @@
+{
+  "capability_match": {
+    "agent_key": "did:example:worker-alpha@1.0.0",
+    "declared_capability": {
+      "level": 1,
+      "max_input_mb": 128
+    },
+    "required_level": 1,
+    "task_type": "ORCHESTRATION"
+  },
+  "deciding_rule": "RULE_SERVICE_UNAVAILABLE",
+  "environment": {
+    "environment_id": "controlled-env-method-v2"
+  },
+  "failure_category": "DEPENDENCY_FAILURE",
+  "finished_at": "2026-08-06T15:50:42.095759+00:00",
+  "result": "CANCELLED",
+  "selected_agent": "did:example:worker-alpha",
+  "started_at": "2026-08-06T15:50:42.095755+00:00",
+  "task_id": "task-m2-029",
+  "task_requirements": {
+    "input_size_mb": 60,
+    "min_capability_level": 1,
+    "required_services": [
+      "ORCHESTRATION_SCHEDULER"
+    ],
+    "requires_policy_compliance": false
+  }
+}

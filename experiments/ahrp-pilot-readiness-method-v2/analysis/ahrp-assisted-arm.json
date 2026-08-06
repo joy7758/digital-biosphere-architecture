@@ -1,0 +1,41 @@
+{
+  "arm": "AHRP-assisted",
+  "tasks": 8,
+  "SUCCESS": 2,
+  "FAILURE": 6,
+  "TIMEOUT": 0,
+  "CANCELLED": 0,
+  "dispositions": {
+    "DISPATCH": 6,
+    "LOW_RISK_EXPLORATION": 2,
+    "BLOCK": 6,
+    "MANUAL_REVIEW": 2
+  },
+  "avg_decision_time": {
+    "avg_ms": 0.265794,
+    "p50_ms": 0.250042,
+    "p95_ms": 0.481083
+  },
+  "human_overrides": 0,
+  "human_overrides_note": "controlled run: no human intervention occurred; counted honestly as zero",
+  "routing_policy_conformance": {
+    "repeat_selection_of_known_failure_boundary_agent": 0,
+    "interpretation": "ROUTING_POLICY_CONFORMANCE_OBSERVATION",
+    "note": "This metric is mechanically related to the configured veto policy. It is not independent evidence of improved real-world outcomes."
+  },
+  "query_count": 52,
+  "summary_query_count": 16,
+  "summary_list_query_count": 36,
+  "detail_query_count": 0,
+  "no_record_count": 13,
+  "withheld_count": 8,
+  "disclosure_denial_count": 8,
+  "query_error_count": 3,
+  "decision_change_count": 13,
+  "supporting_event_reference_count": 10,
+  "query_char_count": 37958,
+  "token_estimate": 9505,
+  "token_estimation_method": "ceil(chars/4) heuristic, documented",
+  "latency_p50_ms": 0.009583,
+  "latency_p95_ms": 0.022075
+}

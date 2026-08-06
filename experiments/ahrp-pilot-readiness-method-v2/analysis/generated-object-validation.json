@@ -1,0 +1,17 @@
+{
+  "events_checked": 24,
+  "verifications_checked": 24,
+  "schema_failures": [],
+  "binding_failures": [],
+  "recomputation_problems": [],
+  "capability_matrix_sha256": "8c2b5c39735522a72e7dfcfdbfd68394c3088a914a421a433fbc45c0ec780f1f",
+  "capability_matrix_commitment": "8c2b5c39735522a72e7dfcfdbfd68394c3088a914a421a433fbc45c0ec780f1f",
+  "verifier_name": "method-v2-post-run-verifier",
+  "verifier_class": "SYSTEM_BENCHMARK",
+  "truth_boundary": {
+    "REAL_INDEPENDENT_VERIFICATION": false,
+    "SYNTHETIC_SYSTEM_VERIFICATION": true,
+    "POST_RUN_RECOMPUTATION_VERIFIED": true
+  },
+  "status": "PASS"
+}

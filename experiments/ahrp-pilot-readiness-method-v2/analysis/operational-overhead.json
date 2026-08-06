@@ -1,0 +1,10 @@
+{
+  "source": "recomputed from raw data/queries.jsonl",
+  "query_count": 52,
+  "latency_p50_ms": 0.009583,
+  "latency_p95_ms": 0.022075,
+  "query_char_count": 37958,
+  "token_estimate": 9505,
+  "avg_decision_time_no_ahrp_ms": 0.001078,
+  "avg_decision_time_ahrp_ms": 0.265794
+}

@@ -1,0 +1,13 @@
+{
+  "evidence_id": "ev-seed-gamma-coding-001",
+  "synthetic": true,
+  "subject": {
+    "agent": "did:example:worker-gamma",
+    "agent_version": "1.0.0",
+    "task_type": "CODING"
+  },
+  "occurrence": "Synthetic pre-experiment fixture: worker-gamma completed a small CODING task with an independent verification. Exists so the fail-closed policy has at least one KNOWN (disclosed, independently verified, non-vetoed) candidate for CODING screening.",
+  "observed_failure_category": null,
+  "captured_at": "2026-07-08T10:05:00Z",
+  "captured_by": "method-v2-seed-generator"
+}

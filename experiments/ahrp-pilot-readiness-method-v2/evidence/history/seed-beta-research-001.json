@@ -1,0 +1,9 @@
+{
+  "evidence_id": "ev-seed-beta-research-001",
+  "synthetic": true,
+  "subject": {"agent": "did:example:worker-beta", "agent_version": "1.0.0", "task_type": "RESEARCH"},
+  "occurrence": "Synthetic pre-experiment fixture: worker-beta attempted a level-2 RESEARCH investigation beyond its declared capability level; controlled harness recorded FAILURE.",
+  "observed_failure_category": "CAPABILITY_LIMIT",
+  "captured_at": "2026-07-04T08:45:00Z",
+  "captured_by": "method-v2-seed-generator"
+}

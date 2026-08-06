@@ -1,0 +1,102 @@
+name: AHRP PR13 Integrity
+
+# CI runs checks only. It never merges, never marks the PR ready, and never
+# touches the frozen AHRP/ tree.
+on:
+  pull_request:
+  push:
+    branches:
+      - fix/ahrp-pr12-cleanroom-redevelopment
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Whitespace sanity check (fail-closed gate)
+        run: |
+          # Fail-closed gate: any whitespace error introduced by this PR
+          # fails the workflow. No bypass: no '|| true', no
+          # continue-on-error, no 'set +e', no 'exit 0'.
+          # Exclusions (pathspec magic ':!'): three restored governance
+          # assets that are byte-for-byte copies of pre-PR12 history
+          # (commit 8e7afce). They were restored, not introduced, by
+          # this PR and must not be reformatted.
+          git diff --check origin/main...HEAD -- \
+            ':!回收站/REPO_RECYCLE_MANIFEST.csv' \
+            ':!回收站/RECYCLE_BIN_MANIFEST.md' \
+            ':!experiments/ahrp-prepilot-v0.1/evidence/query-output.txt'
+
+      - name: AHRP tree is frozen (byte-identical to base commit)
+        run: |
+          BASE=06126fffaaf3072b91ed211fa88ba9d202025003
+          git diff --quiet "$BASE" HEAD -- AHRP
+          BASE_TREE=$(git rev-parse "$BASE:AHRP")
+          HEAD_TREE=$(git rev-parse "HEAD:AHRP")
+          echo "BASE_AHRP_TREE=$BASE_TREE"
+          echo "HEAD_AHRP_TREE=$HEAD_TREE"
+          test "$BASE_TREE" = "$HEAD_TREE"
+
+      - name: AHRP v0.1 test suite (208 tests)
+        run: |
+          cd AHRP
+          python -m unittest discover -s tests 2>&1 | tee ahrp-tests.txt
+          grep -E "^Ran 208 tests" ahrp-tests.txt
+          grep -E "^OK" ahrp-tests.txt
+
+      - name: AHRP demo
+        run: python AHRP/demo/run_demo.py
+
+      - name: method-v2 experiment run (fail-closed dispatch)
+        working-directory: experiments/ahrp-pilot-readiness-method-v2
+        run: python run_experiment.py
+
+      - name: method-v2 post-run system verifier (SYSTEM_BENCHMARK)
+        working-directory: experiments/ahrp-pilot-readiness-method-v2
+        run: python verify_run_records.py
+
+      - name: method-v2 generated-object validation must be PASS
+        working-directory: experiments/ahrp-pilot-readiness-method-v2
+        run: |
+          python - <<'PY'
+          import json
+          report = json.load(open("analysis/generated-object-validation.json"))
+          print(json.dumps(report, indent=2))
+          assert report["status"] == "PASS", "generated-object validation FAIL"
+          PY
+
+      - name: method-v2 shadow protocol validator
+        working-directory: experiments/ahrp-pilot-readiness-method-v2
+        run: python validate_shadow_protocol.py
+
+      - name: method-v2 evidence reference verifier
+        working-directory: experiments/ahrp-pilot-readiness-method-v2
+        run: python verify_evidence_references.py
+
+      - name: method-v2 trust-boundary + regression tests (>=35)
+        working-directory: experiments/ahrp-pilot-readiness-method-v2
+        run: |
+          python -m unittest discover -s tests 2>&1 | tee method-v2-tests.txt
+          grep -E "^Ran (3[5-9]|[4-9][0-9]) tests" method-v2-tests.txt
+          grep -E "^OK" method-v2-tests.txt
+
+      - name: Build evidence package
+        working-directory: experiments/ahrp-pilot-readiness-method-v2
+        run: python build_evidence_package.py
+
+      - name: Verify evidence package from clean unpack
+        working-directory: experiments/ahrp-pilot-readiness-method-v2
+        run: python verify_evidence_package.py
+
+      - name: Report (no merge, no ready-for-review)
+        run: |
+          echo "CI finished. This workflow never merges or marks PRs ready."

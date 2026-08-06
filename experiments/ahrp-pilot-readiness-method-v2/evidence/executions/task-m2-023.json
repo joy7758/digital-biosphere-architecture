@@ -1,0 +1,27 @@
+{
+  "capability_match": {
+    "agent_key": "did:example:worker-beta@1.0.0",
+    "declared_capability": {
+      "level": 3,
+      "max_input_mb": 1024
+    },
+    "required_level": 2,
+    "task_type": "ANALYSIS"
+  },
+  "deciding_rule": "RULE_PASS",
+  "environment": {
+    "environment_id": "controlled-env-method-v2"
+  },
+  "failure_category": "NOT_APPLICABLE",
+  "finished_at": "2026-08-06T15:50:42.093761+00:00",
+  "result": "SUCCESS",
+  "selected_agent": "did:example:worker-beta",
+  "started_at": "2026-08-06T15:50:42.093759+00:00",
+  "task_id": "task-m2-023",
+  "task_requirements": {
+    "input_size_mb": 400,
+    "min_capability_level": 2,
+    "required_services": [],
+    "requires_policy_compliance": false
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "capability_match": {
+    "agent_key": "did:example:worker-gamma@1.0.0",
+    "declared_capability": {
+      "level": 1,
+      "max_input_mb": 512
+    },
+    "required_level": 2,
+    "task_type": "DATA_PROCESSING"
+  },
+  "deciding_rule": "RULE_CAPABILITY_MISSING",
+  "environment": {
+    "environment_id": "controlled-env-method-v2"
+  },
+  "failure_category": "CAPABILITY_LIMIT",
+  "finished_at": "2026-08-06T15:50:42.087953+00:00",
+  "result": "FAILURE",
+  "selected_agent": "did:example:worker-gamma",
+  "started_at": "2026-08-06T15:50:42.087950+00:00",
+  "task_id": "task-m2-003",
+  "task_requirements": {
+    "input_size_mb": 1500,
+    "min_capability_level": 2,
+    "required_services": [],
+    "requires_policy_compliance": false
+  }
+}

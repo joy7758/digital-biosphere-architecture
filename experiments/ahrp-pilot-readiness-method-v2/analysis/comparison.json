@@ -1,0 +1,212 @@
+{
+  "task_flow": {
+    "submitted_tasks": 32,
+    "dispatched_tasks": 22,
+    "low_risk_exploration_tasks": 2,
+    "blocked_tasks": 6,
+    "manual_review_tasks": 2,
+    "executed_tasks": 24,
+    "experience_event_count": 24,
+    "verification_record_count": 24,
+    "non_dispatched_record_count": 8,
+    "note": "dispatched + low_risk_exploration == executed; blocked and manual-review tasks were never executed and have no execution evidence, experience event, or verification record"
+  },
+  "no_ahrp": {
+    "arm": "No-AHRP",
+    "tasks": 16,
+    "SUCCESS": 9,
+    "FAILURE": 4,
+    "TIMEOUT": 2,
+    "CANCELLED": 1,
+    "dispositions": {
+      "DISPATCH": 16,
+      "LOW_RISK_EXPLORATION": 0,
+      "BLOCK": 0,
+      "MANUAL_REVIEW": 0
+    },
+    "avg_decision_time": {
+      "avg_ms": 0.001078,
+      "p50_ms": 0.000855,
+      "p95_ms": 0.001968
+    },
+    "human_overrides": 0,
+    "human_overrides_note": "controlled run: no human intervention occurred; counted honestly as zero",
+    "routing_policy_conformance": {
+      "repeat_selection_of_known_failure_boundary_agent": 5,
+      "interpretation": "ROUTING_POLICY_CONFORMANCE_OBSERVATION",
+      "note": "This metric is mechanically related to the configured veto policy. It is not independent evidence of improved real-world outcomes."
+    }
+  },
+  "ahrp_assisted": {
+    "arm": "AHRP-assisted",
+    "tasks": 8,
+    "SUCCESS": 2,
+    "FAILURE": 6,
+    "TIMEOUT": 0,
+    "CANCELLED": 0,
+    "dispositions": {
+      "DISPATCH": 6,
+      "LOW_RISK_EXPLORATION": 2,
+      "BLOCK": 6,
+      "MANUAL_REVIEW": 2
+    },
+    "avg_decision_time": {
+      "avg_ms": 0.265794,
+      "p50_ms": 0.250042,
+      "p95_ms": 0.481083
+    },
+    "human_overrides": 0,
+    "human_overrides_note": "controlled run: no human intervention occurred; counted honestly as zero",
+    "routing_policy_conformance": {
+      "repeat_selection_of_known_failure_boundary_agent": 0,
+      "interpretation": "ROUTING_POLICY_CONFORMANCE_OBSERVATION",
+      "note": "This metric is mechanically related to the configured veto policy. It is not independent evidence of improved real-world outcomes."
+    },
+    "query_count": 52,
+    "summary_query_count": 16,
+    "summary_list_query_count": 36,
+    "detail_query_count": 0,
+    "no_record_count": 13,
+    "withheld_count": 8,
+    "disclosure_denial_count": 8,
+    "query_error_count": 3,
+    "decision_change_count": 13,
+    "supporting_event_reference_count": 10,
+    "query_char_count": 37958,
+    "token_estimate": 9505,
+    "token_estimation_method": "ceil(chars/4) heuristic, documented",
+    "latency_p50_ms": 0.009583,
+    "latency_p95_ms": 0.022075
+  },
+  "design_note": "Both arms use the SAME deterministic worker for any task they execute; only the decision procedure differs. The AHRP arm additionally applies fail-closed dispatch semantics (BLOCK / MANUAL_REVIEW / LOW_RISK_EXPLORATION), so the two arms intentionally execute different task subsets.",
+  "allowed_claims": [
+    "AHRP_HISTORY_WAS_USED",
+    "AHRP_ASSOCIATED_WITH_DIFFERENT_DECISION"
+  ],
+  "forbidden_claims_blocked": [
+    "AHRP_PROVED_TO_IMPROVE_SUCCESS_RATE",
+    "FAILURE_PREVENTED"
+  ],
+  "decision_change_detail": [
+    {
+      "task_id": "task-m2-002",
+      "disposition": "DISPATCH",
+      "reason": "KNOWN_NON_VETOED_ALTERNATIVE_AFTER_INITIAL_WITHHELD",
+      "supporting_event_references": [
+        "evt-seed-gamma-coding-001"
+      ],
+      "execution_result": "FAILURE"
+    },
+    {
+      "task_id": "task-m2-004",
+      "disposition": "BLOCK",
+      "reason": "RULE_B_POLICY_RESTRICTION_BLOCK:NO_KNOWN_ALTERNATIVE",
+      "supporting_event_references": [
+        "evt-seed-beta-analysis-001"
+      ],
+      "execution_result": "NOT_EXECUTED"
+    },
+    {
+      "task_id": "task-m2-006",
+      "disposition": "MANUAL_REVIEW",
+      "reason": "MANUAL_REVIEW_REQUIRED:NO_RECORD:UNKNOWN:NO_AUTO_EXECUTION_WITHOUT_HUMAN_APPROVAL",
+      "supporting_event_references": [],
+      "execution_result": "NOT_EXECUTED"
+    },
+    {
+      "task_id": "task-m2-008",
+      "disposition": "DISPATCH",
+      "reason": "KNOWN_NON_VETOED_ALTERNATIVE_AFTER_INITIAL_NO_RECORD",
+      "supporting_event_references": [
+        "evt-seed-gamma-dp-001"
+      ],
+      "execution_result": "FAILURE"
+    },
+    {
+      "task_id": "task-m2-010",
+      "disposition": "DISPATCH",
+      "reason": "RULE_A_CAPABILITY_LIMIT_VETO:KNOWN_NON_VETOED_ALTERNATIVE",
+      "supporting_event_references": [
+        "evt-seed-alpha-coding-001",
+        "evt-seed-alpha-coding-002",
+        "evt-seed-gamma-coding-001"
+      ],
+      "execution_result": "FAILURE"
+    },
+    {
+      "task_id": "task-m2-014",
+      "disposition": "BLOCK",
+      "reason": "BLOCK:WITHHELD:UNKNOWN:SANDBOX_FLAGS_INCOMPLETE",
+      "supporting_event_references": [],
+      "execution_result": "NOT_EXECUTED"
+    },
+    {
+      "task_id": "task-m2-018",
+      "disposition": "BLOCK",
+      "reason": "BLOCK:NO_RECORD:UNKNOWN",
+      "supporting_event_references": [],
+      "execution_result": "NOT_EXECUTED"
+    },
+    {
+      "task_id": "task-m2-020",
+      "disposition": "DISPATCH",
+      "reason": "RULE_A_CAPABILITY_LIMIT_VETO:KNOWN_NON_VETOED_ALTERNATIVE",
+      "supporting_event_references": [
+        "evt-seed-alpha-coding-001",
+        "evt-seed-alpha-coding-002",
+        "evt-seed-gamma-coding-001"
+      ],
+      "execution_result": "FAILURE"
+    },
+    {
+      "task_id": "task-m2-022",
+      "disposition": "BLOCK",
+      "reason": "BLOCK:NO_RECORD:UNKNOWN",
+      "supporting_event_references": [],
+      "execution_result": "NOT_EXECUTED"
+    },
+    {
+      "task_id": "task-m2-024",
+      "disposition": "MANUAL_REVIEW",
+      "reason": "MANUAL_REVIEW_REQUIRED:NO_RECORD:UNKNOWN:NO_AUTO_EXECUTION_WITHOUT_HUMAN_APPROVAL",
+      "supporting_event_references": [],
+      "execution_result": "NOT_EXECUTED"
+    },
+    {
+      "task_id": "task-m2-026",
+      "disposition": "DISPATCH",
+      "reason": "KNOWN_NON_VETOED_ALTERNATIVE_AFTER_INITIAL_WITHHELD",
+      "supporting_event_references": [
+        "evt-seed-gamma-dp-001"
+      ],
+      "execution_result": "FAILURE"
+    },
+    {
+      "task_id": "task-m2-028",
+      "disposition": "BLOCK",
+      "reason": "BLOCK:NO_RECORD:UNKNOWN:SANDBOX_FLAGS_INCOMPLETE",
+      "supporting_event_references": [],
+      "execution_result": "NOT_EXECUTED"
+    },
+    {
+      "task_id": "task-m2-032",
+      "disposition": "BLOCK",
+      "reason": "BLOCK:QUERY_ERROR:Q_INVALID_ENUM",
+      "supporting_event_references": [],
+      "execution_result": "NOT_EXECUTED"
+    }
+  ],
+  "experiment_result": "INCONCLUSIVE",
+  "truth_boundary": {
+    "CONTROLLED_INTERNAL_EXPERIMENT": true,
+    "SYNTHETIC_AGENT_ROSTER": true,
+    "REAL_EXTERNAL_AGENT": false,
+    "REAL_WORLD_ADOPTION_VALIDATED": false,
+    "AHRP_PRODUCTION_READY": false,
+    "AHRP_STANDARD_PUBLISHED": false,
+    "NETWORK_SERVICE_RECOMMENDATION": "DEFER",
+    "REAL_INDEPENDENT_VERIFICATION": false,
+    "SYNTHETIC_SYSTEM_VERIFICATION": true,
+    "POST_RUN_RECOMPUTATION_VERIFIED": true
+  }
+}

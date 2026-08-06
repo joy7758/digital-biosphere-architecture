@@ -1,0 +1,27 @@
+{
+  "capability_match": {
+    "agent_key": "did:example:worker-alpha@1.0.0",
+    "declared_capability": {
+      "level": 2,
+      "max_input_mb": 512
+    },
+    "required_level": 1,
+    "task_type": "CODING"
+  },
+  "deciding_rule": "RULE_PASS",
+  "environment": {
+    "environment_id": "controlled-env-method-v2"
+  },
+  "failure_category": "NOT_APPLICABLE",
+  "finished_at": "2026-08-06T15:50:42.094902+00:00",
+  "result": "SUCCESS",
+  "selected_agent": "did:example:worker-alpha",
+  "started_at": "2026-08-06T15:50:42.094899+00:00",
+  "task_id": "task-m2-027",
+  "task_requirements": {
+    "input_size_mb": 150,
+    "min_capability_level": 1,
+    "required_services": [],
+    "requires_policy_compliance": false
+  }
+}

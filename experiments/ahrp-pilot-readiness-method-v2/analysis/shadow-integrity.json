@@ -1,0 +1,9 @@
+{
+  "note": "Shadow protocol integrity is validated by validate_shadow_protocol.py against the raw JSONL; this analysis does not re-assert it.",
+  "validator": "validate_shadow_protocol.py",
+  "input": [
+    "data/pre-query-decisions.jsonl",
+    "data/post-query-decisions.jsonl",
+    "data/queries.jsonl"
+  ]
+}
