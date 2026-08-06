@@ -22,7 +22,21 @@ New truth-boundary coverage (7):
     test_query_count_is_described_as_configured_behavior
     test_programmatic_integration_claim_is_allowed
 
-Total: 15 tests.
+Fail-closed query-error coverage (6):
+    test_query_error_routes_to_manual_review
+    test_query_error_selected_agent_is_none
+    test_query_error_does_not_execute_worker
+    test_query_error_has_no_execution_artifact
+    test_query_error_has_no_experience_event
+    test_query_error_has_no_verification_record
+
+History/observation semantic coverage (4):
+    test_history_used_requires_real_event_id
+    test_no_record_is_query_observation_not_history
+    test_query_error_is_query_observation_not_history
+    test_history_change_count_excludes_query_error
+
+Total: 25 tests.
 """
 
 import json
@@ -95,9 +109,12 @@ class IntegrationTrialTest(unittest.TestCase):
                 self.assertIn("tokens_estimated", query)
 
     def test_decision_change_requires_history_reference(self):
-        """No programmatic routing change may exist without a concrete
-        history reference."""
-        changed = [r for r in self.assisted.values() if r["decision_changed"]]
+        """No history-driven programmatic routing change may exist without
+        a concrete history reference. Query-error safety overrides are
+        excluded: they change the decision without any returned history."""
+        changed = [r for r in self.assisted.values()
+                   if r["decision_changed"]
+                   and not r.get("query_error_safety_override")]
         self.assertGreater(len(changed), 0)
         for record in changed:
             refs = [e for e in record["history_used"] if e["event_id"]]
@@ -123,15 +140,18 @@ class IntegrationTrialTest(unittest.TestCase):
                                  f"{rec['task_id']} changed on NO_RECORD")
 
     def test_query_failure_fail_closed(self):
-        """A query error envelope keeps the before-query decision (fail-closed)."""
+        """A query error envelope blocks automatic delegation entirely
+        (fail closed): MANUAL_REVIEW, no selected agent, nothing executed."""
         record = self.assisted["t-210"]
         self.assertTrue(record["ahrp_query"][0]["ok"] is False)
         self.assertTrue(record["ahrp_query"][0]["error_code"].startswith("Q_"))
         self.assertIn("fail_closed", record)
-        self.assertFalse(record["decision_changed"])
-        self.assertEqual(
-            record["before_query_decision"]["selected_agent"],
-            record["after_query_decision"]["selected_agent"])
+        self.assertTrue(record["query_error_safety_override"])
+        self.assertTrue(record["decision_changed"])
+        self.assertEqual(record["before_query_decision"]["decision"], "DELEGATE")
+        self.assertEqual(record["after_query_decision"]["decision"], "MANUAL_REVIEW")
+        self.assertIsNone(record["after_query_decision"]["selected_agent"])
+        self.assertEqual(record["result"]["status"], "NOT_EXECUTED")
 
     def test_history_reference_resolves(self):
         """Every referenced history event resolves in the AHRP store."""
@@ -247,8 +267,11 @@ class IntegrationTrialTest(unittest.TestCase):
         note = self.summary["counts"]["AHRP_QUERY_COUNT_NOTE"]
         self.assertIn("configured AHRP-assisted execution path", note)
         self.assertIn("not evidence", note)
-        change_note = self.summary["counts"]["PROGRAMMATIC_DECISION_CHANGED_NOTE"]
+        change_note = self.summary["counts"][
+            "PROGRAMMATIC_HISTORY_DECISION_CHANGED_NOTE"]
         self.assertIn("PROGRAMMATIC_ROUTING_CHANGE_OBSERVATION", change_note)
+        override_note = self.summary["counts"]["QUERY_ERROR_SAFETY_OVERRIDE_NOTE"]
+        self.assertIn("NOT a history-driven decision change", override_note)
 
     def test_programmatic_integration_claim_is_allowed(self):
         truth = self.summary["truth_boundaries"]
@@ -259,6 +282,89 @@ class IntegrationTrialTest(unittest.TestCase):
         self.assertTrue(supported["AHRP_QUERY_INTERFACE_INTEGRATED"])
         self.assertTrue(supported["HISTORY_BOUND_TO_DECISION_RECORD"])
         self.assertTrue(supported["QUERY_FAILURE_FAIL_CLOSED"])
+
+    # --------------------------------------- fail-closed query-error tests
+    def test_query_error_routes_to_manual_review(self):
+        record = self.assisted["t-210"]
+        self.assertEqual(record["after_query_decision"]["decision"],
+                         "MANUAL_REVIEW")
+        self.assertIn("AHRP_QUERY_ERROR",
+                      record["after_query_decision"]["selection_reason"])
+
+    def test_query_error_selected_agent_is_none(self):
+        record = self.assisted["t-210"]
+        self.assertIsNone(record["after_query_decision"]["selected_agent"])
+
+    def test_query_error_does_not_execute_worker(self):
+        record = self.assisted["t-210"]
+        self.assertEqual(record["result"]["status"], "NOT_EXECUTED")
+        self.assertNotEqual(record["result"]["status"], "SUCCESS")
+        self.assertNotEqual(record["result"]["status"], "FAILURE")
+
+    def test_query_error_has_no_execution_artifact(self):
+        record = self.assisted["t-210"]
+        self.assertEqual(record["result"]["artifact_paths"], [])
+        artifact_dir = self.out_root / "evidence" / "artifacts" / "t-210"
+        if artifact_dir.exists():
+            self.assertEqual(list(artifact_dir.iterdir()), [])
+
+    def test_query_error_has_no_experience_event(self):
+        event_path = self.out_root / "events" / "evt-trial-run-t-210.json"
+        self.assertFalse(event_path.exists())
+
+    def test_query_error_has_no_verification_record(self):
+        ver_path = self.out_root / "events" / "ver-trial-run-t-210.json"
+        self.assertFalse(ver_path.exists())
+
+    # ------------------------------------- history/observation semantic tests
+    def test_history_used_requires_real_event_id(self):
+        """history_used may only contain references to actual Experience
+        Events; event_id must never be null."""
+        for record in self.assisted.values():
+            for entry in record["history_used"]:
+                self.assertIsNotNone(
+                    entry["event_id"],
+                    f"{record['task_id']}: null event_id in history_used")
+
+    def test_no_record_is_query_observation_not_history(self):
+        """Queries that returned no event surface as query_observations,
+        never as history_used entries."""
+        observed = 0
+        for record in self.assisted.values():
+            for query in record["ahrp_query"]:
+                if query.get("ok") and query.get("events_returned") == 0:
+                    observed += 1
+            reasons = {e.get("reason") for e in record["history_used"]}
+            self.assertNotIn("NO_RECORD", reasons,
+                             f"{record['task_id']}: NO_RECORD in history_used")
+        observations = [o for r in self.assisted.values()
+                        for o in r["query_observations"]
+                        if o["outcome"] == "NO_RECORD"]
+        self.assertGreater(len(observations), 0)
+
+    def test_query_error_is_query_observation_not_history(self):
+        record = self.assisted["t-210"]
+        self.assertEqual(record["history_used"], [])
+        observations = record["query_observations"]
+        self.assertGreater(len(observations), 0)
+        error_obs = [o for o in observations if o["outcome"] == "QUERY_ERROR"]
+        self.assertGreater(len(error_obs), 0)
+        self.assertTrue(error_obs[0]["error_code"].startswith("Q_"))
+
+    def test_history_change_count_excludes_query_error(self):
+        counts = self.summary["counts"]
+        history_tasks = counts["PROGRAMMATIC_HISTORY_DECISION_CHANGED_TASKS"]
+        override_tasks = counts["QUERY_ERROR_SAFETY_OVERRIDE_TASKS"]
+        self.assertEqual(counts["PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT"],
+                         len(history_tasks))
+        self.assertEqual(counts["QUERY_ERROR_SAFETY_OVERRIDE_COUNT"],
+                         len(override_tasks))
+        self.assertEqual(counts["TOTAL_POST_QUERY_DECISION_CHANGED_COUNT"],
+                         len(history_tasks) + len(override_tasks))
+        self.assertNotIn("t-210", history_tasks)
+        self.assertIn("t-210", override_tasks)
+        self.assertTrue(self.summary["supported_findings"][
+            "PROGRAMMATIC_DECISION_CHANGED_BY_HISTORY"])
 
 
 if __name__ == "__main__":

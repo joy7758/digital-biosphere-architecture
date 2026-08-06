@@ -25,8 +25,11 @@ Decision policy (documented, deterministic):
        requirement of that task type  -> CAPABILITY_LIMIT_HISTORY
      * POLICY_RESTRICTION failure + task carries the policy-risk
        requirement of that task type   -> POLICY_RESTRICTION_HISTORY
-4. On any query error envelope (Q_*), the orchestrator FAILS CLOSED: it
-   keeps the before-query decision and performs no further queries.
+4. On any query error envelope (Q_*), the orchestrator FAILS CLOSED:
+   automatic delegation is BLOCKED, the task is routed to MANUAL_REVIEW
+   (selected_agent=None), the worker is never called, and no further
+   queries are performed. Keeping the before-query delegation would be
+   fail-open and is prohibited.
 5. NO_RECORD never produces a decision change.
 6. If every candidate is vetoed, the decision becomes MANUAL_REVIEW.
 
@@ -150,6 +153,7 @@ class OrchestratorAgent:
         candidates = CANDIDATES_BY_TYPE[task["task_type"]]
 
         queries: List[Dict[str, Any]] = []
+        query_observations: List[Dict[str, Any]] = []
         history_used: List[Dict[str, Any]] = []
         vetoed: List[str] = []
         all_no_record = True
@@ -177,18 +181,32 @@ class OrchestratorAgent:
                 "tokens_estimated": tokens_est,
             }
             if not entry["ok"]:
-                entry["error_code"] = envelope["error"]["code"]
+                error_code = envelope["error"]["code"]
+                entry["error_code"] = error_code
                 entry["events_returned"] = 0
                 queries.append(entry)
-                history_used.append({
-                    "event_id": None,
+                query_observations.append({
                     "agent_ref": candidate,
-                    "reason": "QUERY_ERROR",
+                    "outcome": "QUERY_ERROR",
+                    "error_code": error_code,
                 })
-                # FAIL CLOSED: keep before-query decision, stop querying
+                # FAIL CLOSED (PR#13 frozen semantics): history is
+                # unavailable, so automatic delegation is blocked entirely.
+                # The worker is never called; no artifact, no Experience
+                # Event, no Verification Record is produced.
+                after = {
+                    "decision": "MANUAL_REVIEW",
+                    "selected_agent": None,
+                    "selection_reason": (
+                        f"AHRP_QUERY_ERROR:{error_code}; "
+                        "history unavailable, automatic delegation blocked"
+                    ),
+                }
                 return self._finalize(
-                    task, before, before, queries, history_used,
-                    fail_closed_reason=entry["error_code"])
+                    task, before, after, queries, history_used,
+                    query_observations,
+                    fail_closed_reason=error_code,
+                    query_error_safety_override=True)
 
             semantics = envelope.get("null_semantics")
             events = envelope["result"]["events"] if envelope["result"] else []
@@ -199,10 +217,12 @@ class OrchestratorAgent:
             if semantics != "NO_RECORD":
                 all_no_record = False
             if not events:
-                history_used.append({
-                    "event_id": None,
+                # NO_RECORD / WITHHELD are NOT history: no Experience Event
+                # was returned. They are query observations, and they never
+                # enter history_used.
+                query_observations.append({
                     "agent_ref": candidate,
-                    "reason": "NO_RECORD",
+                    "outcome": semantics or "NONE",
                 })
                 continue
             if self._classify(task, events, candidate, history_used):
@@ -232,11 +252,14 @@ class OrchestratorAgent:
                         f"history; delegate to {selected}"
                     ),
                 }
-        return self._finalize(task, before, after, queries, history_used)
+        return self._finalize(task, before, after, queries, history_used,
+                              query_observations)
 
     def _finalize(self, task: dict, before: Dict[str, Any], after: Dict[str, Any],
                   queries: List[dict], history_used: List[dict],
-                  fail_closed_reason: Optional[str] = None) -> Dict[str, Any]:
+                  query_observations: List[dict],
+                  fail_closed_reason: Optional[str] = None,
+                  query_error_safety_override: bool = False) -> Dict[str, Any]:
         changed = (after["decision"] != before["decision"]
                    or after["selected_agent"] != before["selected_agent"])
         record = {
@@ -246,6 +269,7 @@ class OrchestratorAgent:
             "orchestrator_agent_version": self.agent_version,
             "before_query_decision": before,
             "ahrp_query": queries,
+            "query_observations": query_observations,
             "history_used": history_used,
             "after_query_decision": after,
             "decision_changed": changed,
@@ -253,4 +277,6 @@ class OrchestratorAgent:
         }
         if fail_closed_reason is not None:
             record["fail_closed"] = fail_closed_reason
+        if query_error_safety_override:
+            record["query_error_safety_override"] = True
         return record

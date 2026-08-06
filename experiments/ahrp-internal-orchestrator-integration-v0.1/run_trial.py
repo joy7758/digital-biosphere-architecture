@@ -29,6 +29,7 @@ depend only on task requirements and their declared boundary.
 
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -312,8 +313,8 @@ def run_phase_b(tasks: list, orchestrator: OrchestratorAgent, workers: dict,
 
 # --------------------------------------------------------------------------
 # analysis
-REASON_PRIORITY = ["QUERY_ERROR", "CAPABILITY_LIMIT_HISTORY",
-                   "POLICY_RESTRICTION_HISTORY", "POSITIVE_HISTORY", "NO_RECORD"]
+REASON_PRIORITY = ["CAPABILITY_LIMIT_HISTORY",
+                   "POLICY_RESTRICTION_HISTORY", "POSITIVE_HISTORY"]
 
 
 def dominant_reason(history_used: list) -> str:
@@ -327,6 +328,19 @@ def dominant_reason(history_used: list) -> str:
 def analyze(phase_a: list, phase_b: list, ahrp_tree_hash: str) -> dict:
     query_count = sum(r["query_count"] for r in phase_b)
     changed = [r for r in phase_b if r["decision_changed"]]
+    history_changed = [
+        r for r in changed if not r.get("query_error_safety_override")]
+    safety_override = [
+        r for r in phase_b if r.get("query_error_safety_override")]
+    # QUERY_FAILURE_FAIL_CLOSED is only claimable when every query-error
+    # safety override actually blocked execution: no worker call, no
+    # artifact, no Experience Event, no Verification Record.
+    fail_closed_verified = bool(safety_override) and all(
+        r["after_query_decision"]["decision"] == "MANUAL_REVIEW"
+        and r["after_query_decision"]["selected_agent"] is None
+        and r["result"]["status"] == "NOT_EXECUTED"
+        and not r["result"]["artifact_paths"]
+        for r in safety_override)
     history_refs = [
         entry for r in phase_b for entry in r["history_used"]
         if entry["event_id"] is not None
@@ -350,11 +364,24 @@ def analyze(phase_a: list, phase_b: list, ahrp_tree_hash: str) -> dict:
                 "execution path. It is not evidence that an autonomous agent "
                 "voluntarily chose to query AHRP."
             ),
-            "PROGRAMMATIC_DECISION_CHANGED_COUNT": len(changed),
-            "PROGRAMMATIC_DECISION_CHANGED_NOTE": (
-                "PROGRAMMATIC_ROUTING_CHANGE_OBSERVATION only; not an "
-                "adoption signal, not an agent demand signal."
+            "PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT": len(history_changed),
+            "PROGRAMMATIC_HISTORY_DECISION_CHANGED_NOTE": (
+                "PROGRAMMATIC_ROUTING_CHANGE_OBSERVATION only; supported "
+                "exclusively by tasks whose decision changed after real "
+                "history events were returned. Not an adoption signal, not "
+                "an agent demand signal."
             ),
+            "PROGRAMMATIC_HISTORY_DECISION_CHANGED_TASKS": [
+                r["task_id"] for r in history_changed],
+            "QUERY_ERROR_SAFETY_OVERRIDE_COUNT": len(safety_override),
+            "QUERY_ERROR_SAFETY_OVERRIDE_TASKS": [
+                r["task_id"] for r in safety_override],
+            "QUERY_ERROR_SAFETY_OVERRIDE_NOTE": (
+                "Query-error safety override blocks automatic delegation "
+                "(fail closed). It is NOT a history-driven decision change "
+                "because no history event was returned."
+            ),
+            "TOTAL_POST_QUERY_DECISION_CHANGED_COUNT": len(changed),
             "DECISION_CHANGED_TASKS": [r["task_id"] for r in changed],
             "RESOLVABLE_HISTORY_REFERENCE_COUNT": len(history_refs),
             "HISTORY_USED_REASONS": {
@@ -380,9 +407,8 @@ def analyze(phase_a: list, phase_b: list, ahrp_tree_hash: str) -> dict:
         "supported_findings": {
             "AHRP_QUERY_INTERFACE_INTEGRATED": True,
             "HISTORY_BOUND_TO_DECISION_RECORD": True,
-            "PROGRAMMATIC_DECISION_CHANGED_BY_HISTORY": len(changed) > 0,
-            "QUERY_FAILURE_FAIL_CLOSED": any(
-                "fail_closed" in r for r in phase_b),
+            "PROGRAMMATIC_DECISION_CHANGED_BY_HISTORY": len(history_changed) > 0,
+            "QUERY_FAILURE_FAIL_CLOSED": fail_closed_verified,
         },
         "unsupported_claims": {
             "note": "These claims cannot be made by this trial.",
@@ -405,7 +431,7 @@ def analyze(phase_a: list, phase_b: list, ahrp_tree_hash: str) -> dict:
             "REAL_INDEPENDENT_VERIFICATION": False,
             "AHRP_V0_1_MODIFIED": False,
             "INTEGRATION_MECHANISM_DEMONSTRATED": (query_count > 0
-                                                   and len(changed) > 0),
+                                                   and len(history_changed) > 0),
             "TRIAL_RESULT": "INCONCLUSIVE",
         },
         "ahrp_tree_hash": ahrp_tree_hash,
@@ -427,6 +453,17 @@ def ahrp_tree_hash() -> str:
 # entry point
 def run_all(out_root: Path = None) -> dict:
     out_root = Path(out_root) if out_root else EXP_ROOT
+    # Deterministic regeneration: remove stale run outputs so a record
+    # blocked by fail-closed policy can never survive a previous run.
+    # analysis/ only loses summary.json; hand-written analysis files stay.
+    for stale in ("decisions", "events",
+                  "evidence/run", "evidence/artifacts"):
+        stale_path = out_root / stale
+        if stale_path.is_dir():
+            shutil.rmtree(stale_path)
+    stale_summary = out_root / "analysis" / "summary.json"
+    if stale_summary.is_file():
+        stale_summary.unlink()
     config = load_config()
     roster = config["roster"]
     versions = agent_versions(roster)
@@ -453,9 +490,14 @@ def run_all(out_root: Path = None) -> dict:
     print(f"tasks: {counts['TASK_COUNT']} "
           f"(no-ahrp={counts['tasks_no_ahrp']}, ahrp={counts['tasks_ahrp_assisted']})")
     print(f"AHRP_QUERY_COUNT: {counts['AHRP_QUERY_COUNT']}")
-    print(f"PROGRAMMATIC_DECISION_CHANGED_COUNT: "
-          f"{counts['PROGRAMMATIC_DECISION_CHANGED_COUNT']} "
-          f"{counts['DECISION_CHANGED_TASKS']}")
+    print(f"PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT: "
+          f"{counts['PROGRAMMATIC_HISTORY_DECISION_CHANGED_COUNT']} "
+          f"{counts['PROGRAMMATIC_HISTORY_DECISION_CHANGED_TASKS']}")
+    print(f"QUERY_ERROR_SAFETY_OVERRIDE_COUNT: "
+          f"{counts['QUERY_ERROR_SAFETY_OVERRIDE_COUNT']} "
+          f"{counts['QUERY_ERROR_SAFETY_OVERRIDE_TASKS']}")
+    print(f"TOTAL_POST_QUERY_DECISION_CHANGED_COUNT: "
+          f"{counts['TOTAL_POST_QUERY_DECISION_CHANGED_COUNT']}")
     print(f"RESOLVABLE_HISTORY_REFERENCE_COUNT: "
           f"{counts['RESOLVABLE_HISTORY_REFERENCE_COUNT']}")
     print(f"TRIAL_RESULT: {summary['truth_boundaries']['TRIAL_RESULT']}")
