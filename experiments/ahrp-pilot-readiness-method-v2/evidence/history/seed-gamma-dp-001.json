@@ -1,0 +1,13 @@
+{
+  "evidence_id": "ev-seed-gamma-dp-001",
+  "synthetic": true,
+  "subject": {
+    "agent": "did:example:worker-gamma",
+    "agent_version": "1.0.0",
+    "task_type": "DATA_PROCESSING"
+  },
+  "occurrence": "Synthetic pre-experiment fixture: worker-gamma completed a small DATA_PROCESSING task with an independent verification. Exists so the fail-closed policy has at least one KNOWN candidate for DATA_PROCESSING screening.",
+  "observed_failure_category": null,
+  "captured_at": "2026-07-09T10:05:00Z",
+  "captured_by": "method-v2-seed-generator"
+}

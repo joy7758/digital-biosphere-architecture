@@ -111,16 +111,41 @@ def validate(pre_records: List[Dict[str, Any]],
             break
         seen = record["monotonic_sequence"]
 
-    # 6. supporting references must exist in the held history
+    # 6. supporting references and disposition consistency
+    valid_dispositions = {"DISPATCH", "LOW_RISK_EXPLORATION", "BLOCK",
+                          "MANUAL_REVIEW"}
     for task_id, post in post_by_task.items():
+        pre = pre_by_task.get(task_id)
+        disposition = post.get("disposition")
+        if disposition not in valid_dispositions:
+            problems.append(f"unknown disposition {disposition!r} "
+                            f"({task_id})")
+        after_agent = post.get("selected_agent_after_query")
+        if disposition in ("BLOCK", "MANUAL_REVIEW") and \
+                after_agent is not None:
+            problems.append(
+                f"{disposition} record must not name an agent ({task_id})")
+        if pre is not None:
+            # decision_changed must be recomputable from the two selections;
+            # tampering with the flag alone is therefore detected.
+            expected_changed = after_agent != \
+                pre.get("selected_agent_before_query")
+            if post.get("decision_changed") != expected_changed:
+                problems.append(
+                    f"decision_changed inconsistent with selections "
+                    f"({task_id})")
         for event_id in post.get("supporting_event_references", []):
             if event_id not in known_event_ids:
                 problems.append(
                     f"supporting event {event_id} not held ({task_id})")
-        if post.get("decision_changed") and \
+        # Switching to another AGENT requires evidence; a fail-closed BLOCK
+        # or MANUAL_REVIEW is supported by the query statuses themselves and
+        # legitimately carries no event references.
+        if post.get("decision_changed") and after_agent is not None and \
                 not post.get("supporting_event_references"):
             problems.append(
-                f"decision changed without supporting evidence {task_id}")
+                f"decision changed to another agent without supporting "
+                f"evidence {task_id}")
 
     return problems
 

@@ -6,6 +6,11 @@ summary as input; every number below is recomputed from raw records.
 Allowed claims:      AHRP_HISTORY_WAS_USED,
                      AHRP_ASSOCIATED_WITH_DIFFERENT_DECISION
 Forbidden claims:    AHRP_PROVED_TO_IMPROVE_SUCCESS_RATE, FAILURE_PREVENTED
+
+The repeat-selection metric is reported strictly as a
+ROUTING_POLICY_CONFORMANCE_OBSERVATION. It is mechanically related to the
+configured veto policy. It is not independent evidence of improved
+real-world outcomes.
 """
 
 import json
@@ -19,6 +24,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CONFIG = os.path.join(HERE, "config")
 DATA = os.path.join(HERE, "data")
 ANALYSIS = os.path.join(HERE, "analysis")
+
+ROUTING_METRIC_NOTE = (
+    "This metric is mechanically related to the configured veto policy. "
+    "It is not independent evidence of improved real-world outcomes.")
 
 
 def percentile(sorted_values: List[float], pct: float) -> float:
@@ -70,6 +79,11 @@ def arm_status_counts(records: List[Dict[str, Any]]) -> Dict[str, Any]:
     return counts
 
 
+def load_optional(name: str) -> List[Dict[str, Any]]:
+    path = os.path.join(DATA, name)
+    return history_loader.load_jsonl(path) if os.path.isfile(path) else []
+
+
 def main() -> None:
     tasks = {t["task_id"]: t for t in history_loader.load_jsonl(
         os.path.join(CONFIG, "tasks.jsonl"))}
@@ -80,19 +94,28 @@ def main() -> None:
     queries = history_loader.load_jsonl(os.path.join(DATA, "queries.jsonl"))
     post_records = history_loader.load_jsonl(
         os.path.join(DATA, "post-query-decisions.jsonl"))
+    nondispatched = load_optional("non-dispatched-tasks.jsonl")
+    final_events = load_optional("experience-events.jsonl")
+    verifications = load_optional("verification-records.jsonl")
 
     boundary = seed_failure_map()
     exec_by_task = {e["task_id"]: e for e in executions}
-    alloc_by_task = {a["task_id"]: a for a in allocations}
 
-    def boundary_repeat_count(arm_allocations: List[Dict[str, Any]]) -> int:
+    def routing_conformance(arm_allocations: List[Dict[str, Any]]
+                           ) -> Dict[str, Any]:
         repeats = 0
         for allocation in arm_allocations:
+            if allocation["final_agent"] is None:
+                continue  # blocked / manual review: nothing was selected
             task = tasks[allocation["task_id"]]
             known = boundary.get(allocation["final_agent"], set())
             if task["task_type"] in known:
                 repeats += 1
-        return repeats
+        return {
+            "repeat_selection_of_known_failure_boundary_agent": repeats,
+            "interpretation": "ROUTING_POLICY_CONFORMANCE_OBSERVATION",
+            "note": ROUTING_METRIC_NOTE,
+        }
 
     def decision_time_stats(arm_allocations: List[Dict[str, Any]]
                             ) -> Dict[str, float]:
@@ -105,18 +128,31 @@ def main() -> None:
 
     no_ahrp_alloc = [a for a in allocations if a["arm"] == "No-AHRP"]
     ahrp_alloc = [a for a in allocations if a["arm"] == "AHRP-assisted"]
-    no_ahrp_exec = [exec_by_task[a["task_id"]] for a in no_ahrp_alloc]
-    ahrp_exec = [exec_by_task[a["task_id"]] for a in ahrp_alloc]
+    no_ahrp_exec = [exec_by_task[a["task_id"]] for a in no_ahrp_alloc
+                    if a["task_id"] in exec_by_task]
+    ahrp_exec = [exec_by_task[a["task_id"]] for a in ahrp_alloc
+                 if a["task_id"] in exec_by_task]
+
+    def disposition_counts(arm_allocations: List[Dict[str, Any]]
+                           ) -> Dict[str, int]:
+        counts = {"DISPATCH": 0, "LOW_RISK_EXPLORATION": 0, "BLOCK": 0,
+                  "MANUAL_REVIEW": 0}
+        for allocation in arm_allocations:
+            counts[allocation["disposition"]] += 1
+        return counts
+
+    no_ahrp_dispositions = disposition_counts(no_ahrp_alloc)
+    ahrp_dispositions = disposition_counts(ahrp_alloc)
 
     no_ahrp_arm = {
         "arm": "No-AHRP",
         **arm_status_counts(no_ahrp_exec),
+        "dispositions": no_ahrp_dispositions,
         "avg_decision_time": decision_time_stats(no_ahrp_alloc),
         "human_overrides": 0,
         "human_overrides_note": "controlled run: no human intervention "
                                 "occurred; counted honestly as zero",
-        "repeat_selection_of_known_failure_boundary_agent":
-            boundary_repeat_count(no_ahrp_alloc),
+        "routing_policy_conformance": routing_conformance(no_ahrp_alloc),
     }
 
     ahrp_statuses = arm_status_counts(ahrp_exec)
@@ -127,12 +163,12 @@ def main() -> None:
     ahrp_arm = {
         "arm": "AHRP-assisted",
         **ahrp_statuses,
+        "dispositions": ahrp_dispositions,
         "avg_decision_time": decision_time_stats(ahrp_alloc),
         "human_overrides": 0,
         "human_overrides_note": "controlled run: no human intervention "
                                 "occurred; counted honestly as zero",
-        "repeat_selection_of_known_failure_boundary_agent":
-            boundary_repeat_count(ahrp_alloc),
+        "routing_policy_conformance": routing_conformance(ahrp_alloc),
         "query_count": len(queries),
         "summary_query_count":
             sum(1 for q in queries if q["query_mode"] == "Summary"),
@@ -161,11 +197,41 @@ def main() -> None:
         "latency_p95_ms": round(percentile(latencies, 95), 6),
     }
 
+    # Task flow accounting: submitted vs dispatched vs non-dispatched.
+    # Blocked / manual-review tasks are NOT disguised as FAILURE/CANCELLED.
+    task_flow = {
+        "submitted_tasks": len(allocations),
+        "dispatched_tasks":
+            sum(1 for a in allocations
+                if a["disposition"] == "DISPATCH"),
+        "low_risk_exploration_tasks":
+            sum(1 for a in allocations
+                if a["disposition"] == "LOW_RISK_EXPLORATION"),
+        "blocked_tasks":
+            sum(1 for a in allocations if a["disposition"] == "BLOCK"),
+        "manual_review_tasks":
+            sum(1 for a in allocations
+                if a["disposition"] == "MANUAL_REVIEW"),
+        "executed_tasks": len(executions),
+        "experience_event_count": len(final_events),
+        "verification_record_count": len(verifications),
+        "non_dispatched_record_count": len(nondispatched),
+        "note": "dispatched + low_risk_exploration == executed; blocked "
+                "and manual-review tasks were never executed and have no "
+                "execution evidence, experience event, or verification "
+                "record",
+    }
+
     comparison = {
+        "task_flow": task_flow,
         "no_ahrp": no_ahrp_arm,
         "ahrp_assisted": ahrp_arm,
-        "design_note": "Both arms execute the SAME deterministic worker on "
-                       "the SAME tasks; only the decision procedure differs.",
+        "design_note": "Both arms use the SAME deterministic worker for any "
+                       "task they execute; only the decision procedure "
+                       "differs. The AHRP arm additionally applies "
+                       "fail-closed dispatch semantics (BLOCK / "
+                       "MANUAL_REVIEW / LOW_RISK_EXPLORATION), so the two "
+                       "arms intentionally execute different task subsets.",
         "allowed_claims": [],
         "forbidden_claims_blocked": [
             "AHRP_PROVED_TO_IMPROVE_SUCCESS_RATE", "FAILURE_PREVENTED"],
@@ -178,22 +244,21 @@ def main() -> None:
 
     changed_tasks = []
     for post in decision_changes:
-        execution = exec_by_task[post["task_id"]]
+        execution = exec_by_task.get(post["task_id"])
         changed_tasks.append({
             "task_id": post["task_id"],
+            "disposition": post.get("disposition"),
             "reason": post["selection_reason_after_query"],
             "supporting_event_references":
                 post["supporting_event_references"],
-            "execution_result": execution["result_status"],
+            "execution_result": execution["result_status"]
+            if execution else "NOT_EXECUTED",
         })
     comparison["decision_change_detail"] = changed_tasks
 
-    # EXPERIMENT_RESULT gate: with 30 synthetic tasks the verdict defaults to
-    # INCONCLUSIVE unless strictly stronger evidence exists. It does not.
-    sample_is_synthetic_30 = (
-        no_ahrp_arm["tasks"] + ahrp_arm["tasks"] == 30)
-    experiment_result = "INCONCLUSIVE" if sample_is_synthetic_30 \
-        else "INCONCLUSIVE"
+    # EXPERIMENT_RESULT gate: synthetic controlled sample, no external
+    # validation. The verdict stays INCONCLUSIVE regardless of arm deltas.
+    experiment_result = "INCONCLUSIVE"
     comparison["experiment_result"] = experiment_result
     comparison["truth_boundary"] = {
         "CONTROLLED_INTERNAL_EXPERIMENT": True,
@@ -203,6 +268,9 @@ def main() -> None:
         "AHRP_PRODUCTION_READY": False,
         "AHRP_STANDARD_PUBLISHED": False,
         "NETWORK_SERVICE_RECOMMENDATION": "DEFER",
+        "REAL_INDEPENDENT_VERIFICATION": False,
+        "SYNTHETIC_SYSTEM_VERIFICATION": True,
+        "POST_RUN_RECOMPUTATION_VERIFIED": True,
     }
 
     shadow_integrity_note = (
@@ -222,34 +290,25 @@ def main() -> None:
     }
 
     os.makedirs(ANALYSIS, exist_ok=True)
-    with open(os.path.join(ANALYSIS, "no-ahrp-arm.json"), "w",
-              encoding="utf-8") as handle:
-        json.dump(no_ahrp_arm, handle, indent=2)
-        handle.write("\n")
-    with open(os.path.join(ANALYSIS, "ahrp-assisted-arm.json"), "w",
-              encoding="utf-8") as handle:
-        json.dump(ahrp_arm, handle, indent=2)
-        handle.write("\n")
-    with open(os.path.join(ANALYSIS, "comparison.json"), "w",
-              encoding="utf-8") as handle:
-        json.dump(comparison, handle, indent=2)
-        handle.write("\n")
-    with open(os.path.join(ANALYSIS, "shadow-integrity.json"), "w",
-              encoding="utf-8") as handle:
-        json.dump({"note": shadow_integrity_note,
-                   "validator": "validate_shadow_protocol.py",
-                   "input": ["data/pre-query-decisions.jsonl",
-                             "data/post-query-decisions.jsonl",
-                             "data/queries.jsonl"]},
-                  handle, indent=2)
-        handle.write("\n")
-    with open(os.path.join(ANALYSIS, "operational-overhead.json"), "w",
-              encoding="utf-8") as handle:
-        json.dump(operational_overhead, handle, indent=2)
-        handle.write("\n")
+    for name, payload in (
+            ("no-ahrp-arm.json", no_ahrp_arm),
+            ("ahrp-assisted-arm.json", ahrp_arm),
+            ("comparison.json", comparison),
+            ("shadow-integrity.json",
+             {"note": shadow_integrity_note,
+              "validator": "validate_shadow_protocol.py",
+              "input": ["data/pre-query-decisions.jsonl",
+                        "data/post-query-decisions.jsonl",
+                        "data/queries.jsonl"]}),
+            ("operational-overhead.json", operational_overhead)):
+        with open(os.path.join(ANALYSIS, name), "w",
+                  encoding="utf-8") as handle:
+            json.dump(payload, handle, indent=2)
+            handle.write("\n")
 
     print(json.dumps({"status": "ANALYSIS_COMPLETE",
                       "experiment_result": experiment_result,
+                      "task_flow": task_flow,
                       "no_ahrp": no_ahrp_arm,
                       "ahrp_assisted": ahrp_arm}, indent=2))
 

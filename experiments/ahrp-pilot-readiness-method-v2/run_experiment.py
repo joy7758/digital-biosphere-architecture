@@ -1,4 +1,4 @@
-"""method-v2 pilot-readiness experiment runner.
+"""method-v2 pilot-readiness experiment runner (fail-closed dispatch).
 
 Clean-room replacement for the invalidated PR #12 experiment. Hard rules:
 
@@ -7,9 +7,23 @@ Clean-room replacement for the invalidated PR #12 experiment. Hard rules:
 * execution results come from ``worker.execute_task`` (deterministic);
 * every HistoryStore answer is parsed as an envelope (ok / null_semantics /
   result.events / error) -- never iterated at top level;
-* NO compensating branch that forces a decision change on empty history;
-* every controlled execution produces a real evidence file whose SHA-256 is
-  referenced by the resulting Experience Event.
+* NO compensating branch that forces a decision change on empty history.
+
+Dispatch semantics (AHRP-assisted arm only), fixed in the protocol:
+
+* ``NO_RECORD`` means UNKNOWN / COLD_START. Never CLEAN, SAFE or TRUSTED.
+* ``WITHHELD`` means RECORD_EXISTS_BUT_NOT_DISCLOSED. Never permission to
+  proceed.
+* ``QUERY_ERROR`` is unknown. Fail closed.
+* An alternative candidate is dispatchable ONLY when its own query status
+  is OK and no veto evidence exists (KNOWN_NON_VETOED_ALTERNATIVE).
+* A HIGH-risk task with no known dispatchable candidate is BLOCKed and the
+  worker is never invoked; a MEDIUM-risk task becomes MANUAL_REVIEW and is
+  never auto-executed; a LOW-risk task may cold-start-explore only with all
+  four sandbox flags set.
+* The runner never emits verification records. It writes UNVERIFIED
+  experience events only; verification is a separate post-run step
+  (``verify_run_records.py``).
 
 Run:  python3 run_experiment.py   (from any working directory)
 """
@@ -18,6 +32,7 @@ import hashlib
 import json
 import os
 import time
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -32,6 +47,20 @@ EVIDENCE = os.path.join(HERE, "evidence")
 AGENT_VERSION = "1.0.0"
 FORBIDDEN_TASK_FIELDS = ("expected_outcome", "forced_result", "desired_result")
 FAILURE_CLASS = ("FAILURE", "TIMEOUT", "CANCELLED")
+DISPOSITIONS = ("DISPATCH", "LOW_RISK_EXPLORATION", "BLOCK", "MANUAL_REVIEW")
+EXPLORATION_FLAGS = ("cold_start_candidate", "reversible", "sandboxed",
+                     "limited_permissions")
+UNKNOWN_STATUSES = ("NO_RECORD", "WITHHELD", "QUERY_ERROR")
+
+
+@dataclass(frozen=True)
+class DispatchDecision:
+    """One dispatch disposition. Experiment-layer object; NOT part of the
+    AHRP v0.1 schema."""
+    disposition: str
+    selected_agent: Optional[str]
+    reason: str
+    supporting_event_references: List[str] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------- utilities
@@ -91,10 +120,11 @@ def check_capability_commitment() -> str:
 def load_tasks() -> List[Dict[str, Any]]:
     tasks = history_loader.load_jsonl(os.path.join(CONFIG, "tasks.jsonl"))
     for task in tasks:
-        for field in FORBIDDEN_TASK_FIELDS:
-            if field in task:
+        for field_name in FORBIDDEN_TASK_FIELDS:
+            if field_name in task:
                 raise SystemExit(
-                    f"FORBIDDEN_TASK_FIELD task={task['task_id']} field={field}")
+                    f"FORBIDDEN_TASK_FIELD task={task['task_id']} "
+                    f"field={field_name}")
     tasks.sort(key=lambda t: t["sequence"])
     return tasks
 
@@ -140,30 +170,6 @@ def veto_events_for(events: List[Dict[str, Any]], task: Dict[str, Any]
     return [], ""
 
 
-def select_alternative(store, task: Dict[str, Any], initial: str,
-                       query_log: List[Dict[str, Any]], seq_counter: List[int]
-                       ) -> Tuple[Optional[str], List[str], str]:
-    """First candidate (in declared order) without veto evidence.
-
-    WITHHELD / QUERY_ERROR answers for an alternative are unknown, therefore
-    not selectable (fail-closed). No fallback forcing: if nobody is clean the
-    caller keeps the initial selection.
-    """
-    for candidate in task["candidate_agents"]:
-        if candidate == initial:
-            continue
-        outcome, record = timed_query(
-            store, candidate, task, seq_counter, reason="alternative-screen")
-        query_log.append(record)
-        if outcome.status == "NO_RECORD":
-            return candidate, [], "ALTERNATIVE_NO_RECORD_CLEAN"
-        if outcome.status == "OK":
-            supporting, rule = veto_events_for(outcome.events, task)
-            if not rule:
-                return candidate, [], "ALTERNATIVE_NO_VETO_EVIDENCE"
-    return None, [], "NO_CLEAN_ALTERNATIVE"
-
-
 # ------------------------------------------------------------------ queries
 def timed_query(store, identity_ref: str, task: Dict[str, Any],
                 seq_counter: List[int], reason: str
@@ -175,7 +181,6 @@ def timed_query(store, identity_ref: str, task: Dict[str, Any],
     started = time.perf_counter()
     envelope = store.query_events(**params)
     latency_ms = (time.perf_counter() - started) * 1000.0
-    outcome = history_loader.QueryOutcome("OK", [], 0, "")
     if not envelope.get("ok", False):
         outcome = history_loader.QueryOutcome(
             "QUERY_ERROR", [],
@@ -253,33 +258,102 @@ def timed_summary(store, identity_ref: str, task: Dict[str, Any],
     })
 
 
-# ------------------------------------------------------------- ahrp decision
+# ---------------------------------------------------- fail-closed dispatch
+def unknown_fallback(task: Dict[str, Any], status: str,
+                     detail: str) -> DispatchDecision:
+    """Disposition for an UNKNOWN initial-agent answer, by risk level.
+
+    NO_RECORD / WITHHELD / QUERY_ERROR are never dispatchable states.
+    """
+    risk = task["risk_level"]
+    if risk == "LOW":
+        if all(task.get(flag) is True for flag in EXPLORATION_FLAGS):
+            return DispatchDecision(
+                "LOW_RISK_EXPLORATION", naive_initial_agent(task),
+                f"LOW_RISK_EXPLORATION:{status}:{detail}:"
+                "SANDBOX_FLAGS_COMPLETE", [])
+        return DispatchDecision(
+            "BLOCK", None,
+            f"BLOCK:{status}:{detail}:SANDBOX_FLAGS_INCOMPLETE", [])
+    if risk == "MEDIUM":
+        return DispatchDecision(
+            "MANUAL_REVIEW", None,
+            f"MANUAL_REVIEW_REQUIRED:{status}:{detail}:"
+            "NO_AUTO_EXECUTION_WITHOUT_HUMAN_APPROVAL", [])
+    return DispatchDecision("BLOCK", None, f"BLOCK:{status}:{detail}", [])
+
+
+def screen_alternatives(store, task: Dict[str, Any], excluded: str,
+                        query_log: List[Dict[str, Any]], seq_counter: List[int]
+                        ) -> Tuple[Optional[str], List[str]]:
+    """First candidate (declared order) whose query status is OK and which
+    carries no veto evidence (KNOWN_NON_VETOED_ALTERNATIVE).
+
+    NO_RECORD, WITHHELD and QUERY_ERROR answers are UNKNOWN and therefore
+    never selectable. Returns (agent_or_None, disclosed_event_ids).
+    """
+    for candidate in task["candidate_agents"]:
+        if candidate == excluded:
+            continue
+        outcome, record = timed_query(
+            store, candidate, task, seq_counter,
+            reason="alternative-screen-fail-closed")
+        query_log.append(record)
+        if outcome.status != "OK":
+            continue  # unknown: NO_RECORD / WITHHELD / QUERY_ERROR
+        supporting, rule = veto_events_for(outcome.events, task)
+        if rule:
+            continue  # known-vetoed: not dispatchable
+        return candidate, [e["event_id"] for e in outcome.events]
+    return None, []
+
+
 def ahrp_decision(store, task: Dict[str, Any], initial: str,
                   query_log: List[Dict[str, Any]], seq_counter: List[int]
-                  ) -> Tuple[str, str, List[str]]:
-    """Decision support strictly from disclosed, independently verified
-    history. Returns (final_agent, reason, supporting_event_ids)."""
+                  ) -> DispatchDecision:
+    """Fail-closed decision support strictly from disclosed, independently
+    verified history."""
     timed_summary(store, initial, task, seq_counter, query_log)
     outcome, record = timed_query(store, initial, task, seq_counter,
                                   reason="initial-agent-screen")
     query_log.append(record)
 
-    if outcome.status == "QUERY_ERROR":
-        return initial, f"QUERY_ERROR_FAIL_CLOSED:{outcome.error_code}", []
-    if outcome.status == "WITHHELD":
-        return initial, "WITHHELD_CONSERVATIVE", []
-    if outcome.status == "NO_RECORD":
-        return initial, "COLD_START_NO_RECORD_CONSERVATIVE", []
+    if outcome.status in UNKNOWN_STATUSES:
+        detail = outcome.error_code \
+            if outcome.status == "QUERY_ERROR" else "UNKNOWN"
+        # HIGH / MEDIUM unknown answers trigger candidate screening first:
+        # a KNOWN, disclosed, non-vetoed alternative may still be dispatched.
+        if task["risk_level"] in ("HIGH", "MEDIUM"):
+            alternative, disclosed = screen_alternatives(
+                store, task, initial, query_log, seq_counter)
+            if alternative is not None:
+                return DispatchDecision(
+                    "DISPATCH", alternative,
+                    f"KNOWN_NON_VETOED_ALTERNATIVE_AFTER_INITIAL_"
+                    f"{outcome.status}", disclosed)
+        return unknown_fallback(task, outcome.status, detail)
 
     supporting, rule = veto_events_for(outcome.events, task)
     if not rule:
-        return initial, "NO_VETO_EVIDENCE_IN_HISTORY", []
+        return DispatchDecision("DISPATCH", initial,
+                                "NO_VETO_EVIDENCE_IN_HISTORY", [])
 
-    alternative, alt_refs, alt_reason = select_alternative(
+    alternative, disclosed = screen_alternatives(
         store, task, initial, query_log, seq_counter)
-    if alternative is None:
-        return initial, f"{rule}_BUT_{alt_reason}", supporting
-    return alternative, f"{rule}:{alt_reason}", supporting
+    if alternative is not None:
+        return DispatchDecision(
+            "DISPATCH", alternative,
+            f"{rule}:KNOWN_NON_VETOED_ALTERNATIVE", supporting + disclosed)
+    if task["risk_level"] == "MEDIUM":
+        return DispatchDecision(
+            "MANUAL_REVIEW", None,
+            f"{rule}:NO_KNOWN_ALTERNATIVE:MANUAL_REVIEW_REQUIRED:"
+            "NO_AUTO_EXECUTION_WITHOUT_HUMAN_APPROVAL", supporting)
+    # HIGH and LOW: a known-vetoed initial agent with no known alternative
+    # is never dispatchable, regardless of sandbox flags (veto is KNOWN bad
+    # history, not cold start).
+    return DispatchDecision("BLOCK", None,
+                            f"{rule}:NO_KNOWN_ALTERNATIVE", supporting)
 
 
 # --------------------------------------------------------------- execution
@@ -340,11 +414,19 @@ def main() -> None:
 
     for name in ("allocations.jsonl", "pre-query-decisions.jsonl",
                  "queries.jsonl", "post-query-decisions.jsonl",
-                 "controlled-executions.jsonl", "experience-events.jsonl",
-                 "verification-records.jsonl"):
+                 "controlled-executions.jsonl",
+                 "experience-events-unverified.jsonl",
+                 "experience-events.jsonl", "verification-records.jsonl",
+                 "non-dispatched-tasks.jsonl"):
         path = os.path.join(DATA, name)
         if os.path.exists(path):
             os.remove(path)
+    # Stale execution evidence from earlier runs must never survive: a task
+    # that is now BLOCKed must leave no evidence file behind.
+    executions_dir = os.path.join(EVIDENCE, "executions")
+    for name in os.listdir(executions_dir):
+        if name.startswith("task-") and name.endswith(".json"):
+            os.remove(os.path.join(executions_dir, name))
 
     allocations = FsyncedJsonlWriter(os.path.join(DATA, "allocations.jsonl"))
     pre_writer = FsyncedJsonlWriter(os.path.join(DATA,
@@ -354,14 +436,16 @@ def main() -> None:
                                                   "post-query-decisions.jsonl"))
     exec_writer = FsyncedJsonlWriter(os.path.join(DATA,
                                                   "controlled-executions.jsonl"))
-    event_writer = FsyncedJsonlWriter(os.path.join(DATA,
-                                                   "experience-events.jsonl"))
-    verification_writer = FsyncedJsonlWriter(
-        os.path.join(DATA, "verification-records.jsonl"))
+    event_writer = FsyncedJsonlWriter(
+        os.path.join(DATA, "experience-events-unverified.jsonl"))
+    nondispatched_writer = FsyncedJsonlWriter(
+        os.path.join(DATA, "non-dispatched-tasks.jsonl"))
 
     query_log: List[Dict[str, Any]] = []
     seq_counter = [0]          # query ids
     shadow_seq = [0]           # shadow protocol monotonic sequence
+    worker_invocations = 0
+    disposition_counts = {d: 0 for d in DISPOSITIONS}
     run_started = utc_now_iso()
 
     for task in tasks:
@@ -370,9 +454,11 @@ def main() -> None:
         decision_start = time.perf_counter()
 
         if arm == "No-AHRP":
-            final_agent = initial
-            decision_reason = "NAIVE_SELECTION_NO_HISTORY_CONSULTED"
-            supporting: List[str] = []
+            # Baseline arm: naive selection, no history consulted, always
+            # dispatched (this asymmetry IS the comparison).
+            decision = DispatchDecision(
+                "DISPATCH", initial, "NAIVE_SELECTION_NO_HISTORY_CONSULTED",
+                [])
         else:
             # Two-phase shadow protocol: commit the pre-query decision to
             # durable storage BEFORE any history query happens.
@@ -390,8 +476,8 @@ def main() -> None:
             pre_writer.write(pre_record)
 
             query_start = utc_now_iso()
-            final_agent, decision_reason, supporting = ahrp_decision(
-                store, task, initial, query_log, seq_counter)
+            decision = ahrp_decision(store, task, initial, query_log,
+                                     seq_counter)
             query_end = utc_now_iso()
             for record in query_log:
                 if "persisted" not in record:
@@ -409,10 +495,12 @@ def main() -> None:
                     r["query_id"] for r in query_log
                     if r.get("pre_query_record_hash") ==
                     pre_record["record_hash"]],
-                "selected_agent_after_query": final_agent,
-                "selection_reason_after_query": decision_reason,
-                "decision_changed": final_agent != initial,
-                "supporting_event_references": supporting,
+                "disposition": decision.disposition,
+                "selected_agent_after_query": decision.selected_agent,
+                "selection_reason_after_query": decision.reason,
+                "decision_changed": decision.selected_agent != initial,
+                "supporting_event_references":
+                    decision.supporting_event_references,
                 "query_window": {"started_at": query_start,
                                  "ended_at": query_end},
                 "recorded_at": utc_now_iso(),
@@ -422,14 +510,17 @@ def main() -> None:
             post_writer.write(post_record)
 
         decision_ms = (time.perf_counter() - decision_start) * 1000.0
+        disposition_counts[decision.disposition] += 1
         allocations.write({
             "task_id": task["task_id"],
             "sequence": task["sequence"],
             "arm": arm,
+            "risk_level": task["risk_level"],
             "initial_agent": initial,
-            "final_agent": final_agent,
-            "decision_changed": final_agent != initial,
-            "decision_reason": decision_reason,
+            "final_agent": decision.selected_agent,
+            "disposition": decision.disposition,
+            "decision_changed": decision.selected_agent != initial,
+            "decision_reason": decision.reason,
             "decision_time_ms": round(decision_ms, 6),
             "allocation_basis":
                 "SEQUENCE_ODD_NO_AHRP" if arm == "No-AHRP"
@@ -437,22 +528,41 @@ def main() -> None:
             "recorded_at": utc_now_iso(),
         })
 
+        if decision.disposition in ("BLOCK", "MANUAL_REVIEW"):
+            # Not dispatched: no worker invocation, no execution evidence,
+            # no experience event, no verification record.
+            nondispatched_writer.write({
+                "task_id": task["task_id"],
+                "arm": arm,
+                "risk_level": task["risk_level"],
+                "disposition": decision.disposition,
+                "reason": decision.reason,
+                "candidate_agents": task["candidate_agents"],
+                "query_ids": [r["query_id"] for r in query_log
+                              if r["task_id"] == task["task_id"]],
+                "recorded_at": utc_now_iso(),
+            })
+            continue
+
         started_at = utc_now_iso()
         execution, evidence_hash = run_controlled_execution(
-            task, final_agent, matrix, started_at)
+            task, decision.selected_agent, matrix, started_at)
+        worker_invocations += 1
         execution["arm"] = arm
-        execution["decision_reason"] = decision_reason
+        execution["disposition"] = decision.disposition
+        execution["decision_reason"] = decision.reason
         exec_writer.write(execution)
 
-        # Experience Event for this controlled execution, referencing the
-        # REAL evidence file hash (never a placeholder).
-        event_id = f"evt-run-{task['task_id']}"
-        verification_id = f"ver-run-{task['task_id']}"
+        # UNVERIFIED Experience Event for this controlled execution,
+        # referencing the REAL evidence file hash (never a placeholder).
+        # The runner never emits verification records and never claims a
+        # VERIFIED status; verification happens post-run in
+        # verify_run_records.py.
         event = {
             "schema_version": "0.1.0",
-            "event_id": event_id,
+            "event_id": f"evt-run-{task['task_id']}",
             "agent_reference": {"identity_source": "DBOS",
-                                "identity_ref": final_agent},
+                                "identity_ref": decision.selected_agent},
             "agent_version": AGENT_VERSION,
             "task_type": task["task_type"],
             "action_type": "EXECUTE",
@@ -466,10 +576,7 @@ def main() -> None:
                 "hash": f"sha256:{evidence_hash}",
                 "availability_status": "AVAILABLE",
             }],
-            "verification_references": [{
-                "verification_id": verification_id,
-                "verifier_name": "verifier-method-v2-harness",
-            }],
+            "verification_references": [],
             "disclosure": {"disclosure_scope": "PUBLIC",
                            "declared_by": "method-v2-runner"},
         }
@@ -477,52 +584,18 @@ def main() -> None:
             event["failure_category"] = execution["failure_category"]
         event_writer.write(event)
 
-        verification = {
-            "schema_version": "0.1.0",
-            "verification_id": verification_id,
-            "verifier": {"verifier_name": "verifier-method-v2-harness",
-                         "verifier_class": "INDEPENDENT_AGENT"},
-            "verification_type": "EVENT_CONFIRMATION",
-            "verification_status": "VERIFIED",
-            "verified_at": utc_now_iso(),
-            "scope": {"subject_event_id": event_id,
-                      "subject_type": "EXPERIENCE_EVENT",
-                      "agent_ref": final_agent,
-                      "agent_version": AGENT_VERSION,
-                      "covered_aspect": "FULL_EVENT"},
-            "self_verification": False,
-            "authorization_effect": "NONE",
-        }
-        verification_writer.write(verification)
-
     for writer in (allocations, pre_writer, query_writer, post_writer,
-                   exec_writer, event_writer, verification_writer):
+                   exec_writer, event_writer, nondispatched_writer):
         writer.close()
-
-    # Evidence hash manifest over config + data + evidence (excluding the
-    # manifest itself). Real bytes only; no placeholders.
-    manifest_lines = []
-    for root, _dirs, files in sorted(os.walk(HERE)):
-        if "__pycache__" in root:
-            continue
-        for name in sorted(files):
-            path = os.path.join(root, name)
-            rel = os.path.relpath(path, HERE)
-            if rel.startswith(("analysis", "AHRP_PILOT_READINESS",
-                               "README.md", "EXPERIMENT_PROTOCOL.md")):
-                continue
-            if name in ("file-hashes.sha256",) or rel.endswith(".pyc"):
-                continue
-            manifest_lines.append(f"{file_sha256(path)}  {rel}")
-    with open(os.path.join(EVIDENCE, "file-hashes.sha256"), "w",
-              encoding="utf-8") as handle:
-        handle.write("\n".join(manifest_lines) + "\n")
 
     print(json.dumps({
         "status": "RUN_COMPLETE",
         "capability_matrix_sha256": matrix_hash,
         "tasks": len(tasks),
         "queries": len(query_log),
+        "worker_invocations": worker_invocations,
+        "dispositions": disposition_counts,
+        "verification_records_written_by_runner": 0,
         "run_started": run_started,
         "run_finished": utc_now_iso(),
     }, indent=2))
