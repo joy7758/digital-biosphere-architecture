@@ -1,0 +1,18 @@
+{
+  "candidate_agents": [
+    "did:example:worker-beta"
+  ],
+  "mode": "NO_AHRP_MODE",
+  "occurred_at": "2026-08-07T01:04:00Z",
+  "orchestrator_agent_id": "did:example:orchestrator-core",
+  "orchestrator_agent_version": "1.0.0",
+  "result": {
+    "artifact_paths": [],
+    "failure_category": "POLICY_RESTRICTION",
+    "reason": "policy forbids live external source access",
+    "status": "FAILURE"
+  },
+  "selected_agent": "did:example:worker-beta",
+  "selection_reason": "TYPE_ROUTING: research -> did:example:worker-beta (static capability match, no history consulted)",
+  "task_id": "t-104"
+}

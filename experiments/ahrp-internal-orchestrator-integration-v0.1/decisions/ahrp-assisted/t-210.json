@@ -1,0 +1,49 @@
+{
+  "after_query_decision": {
+    "decision": "MANUAL_REVIEW",
+    "selected_agent": null,
+    "selection_reason": "AHRP_QUERY_ERROR:Q_INVALID_REFERENCE; history unavailable, automatic delegation blocked"
+  },
+  "ahrp_query": [
+    {
+      "error_code": "Q_INVALID_REFERENCE",
+      "events_returned": 0,
+      "latency_ms": 0.0025,
+      "ok": false,
+      "params": {
+        "agent_version": "1.0.0",
+        "identity_ref": "<invalid:list>",
+        "task_type": "CODING"
+      },
+      "tokens_estimated": 52
+    }
+  ],
+  "before_query_decision": {
+    "decision": "DELEGATE",
+    "selected_agent": "did:example:worker-alpha",
+    "selection_reason": "TYPE_ROUTING: coding -> did:example:worker-alpha (static capability match, no history consulted)"
+  },
+  "decision_changed": true,
+  "fail_closed": "Q_INVALID_REFERENCE",
+  "history_used": [],
+  "mode": "AHRP_ASSISTED_MODE",
+  "occurred_at": "2026-08-07T02:10:00Z",
+  "orchestrator_agent_id": "did:example:orchestrator-core",
+  "orchestrator_agent_version": "1.0.0",
+  "query_count": 1,
+  "query_error_safety_override": true,
+  "query_observations": [
+    {
+      "agent_ref": "did:example:worker-alpha",
+      "error_code": "Q_INVALID_REFERENCE",
+      "outcome": "QUERY_ERROR"
+    }
+  ],
+  "result": {
+    "artifact_paths": [],
+    "failure_category": null,
+    "reason": "routed to human manual review by orchestrator policy",
+    "status": "NOT_EXECUTED"
+  },
+  "task_id": "t-210"
+}

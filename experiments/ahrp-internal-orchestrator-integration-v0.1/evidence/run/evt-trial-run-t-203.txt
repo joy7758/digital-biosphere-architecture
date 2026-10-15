@@ -1,0 +1,7 @@
+trial: ahrp-internal-orchestrator-integration-v0.1
+task_id: t-203
+selected_agent: did:example:worker-beta
+result_status: SUCCESS
+failure_category: None
+reason: research note produced from local material
+artifacts: artifacts/t-203/research-note.md

@@ -1,0 +1,54 @@
+{
+  "after_query_decision": {
+    "decision": "DELEGATE",
+    "selected_agent": "did:example:worker-gamma",
+    "selection_reason": "TYPE_ROUTING: review -> did:example:worker-gamma (static capability match, no history consulted)"
+  },
+  "ahrp_query": [
+    {
+      "events_returned": 3,
+      "latency_ms": 0.0432,
+      "null_semantics": "NONE",
+      "ok": true,
+      "params": {
+        "agent_version": "1.0.0",
+        "identity_ref": "did:example:worker-gamma",
+        "task_type": "VERIFICATION"
+      },
+      "tokens_estimated": 402
+    }
+  ],
+  "before_query_decision": {
+    "decision": "DELEGATE",
+    "selected_agent": "did:example:worker-gamma",
+    "selection_reason": "TYPE_ROUTING: review -> did:example:worker-gamma (static capability match, no history consulted)"
+  },
+  "decision_changed": false,
+  "history_used": [
+    {
+      "agent_ref": "did:example:worker-gamma",
+      "event_id": "evt-seed-gamma-ok-001",
+      "reason": "POSITIVE_HISTORY"
+    },
+    {
+      "agent_ref": "did:example:worker-gamma",
+      "event_id": "evt-trial-run-t-205",
+      "reason": "POSITIVE_HISTORY"
+    }
+  ],
+  "mode": "AHRP_ASSISTED_MODE",
+  "occurred_at": "2026-08-07T02:09:00Z",
+  "orchestrator_agent_id": "did:example:orchestrator-core",
+  "orchestrator_agent_version": "1.0.0",
+  "query_count": 1,
+  "query_observations": [],
+  "result": {
+    "artifact_paths": [
+      "artifacts/t-209/review-findings.md"
+    ],
+    "failure_category": null,
+    "reason": "review performed, findings recorded",
+    "status": "SUCCESS"
+  },
+  "task_id": "t-209"
+}

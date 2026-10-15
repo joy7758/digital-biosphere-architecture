@@ -1,0 +1,33 @@
+{
+  "roster_version": "0.1.0",
+  "agents": [
+    {
+      "agent_id": "did:example:orchestrator-core",
+      "agent_version": "1.0.0",
+      "role": "ORCHESTRATOR",
+      "capabilities": ["task_analysis", "agent_selection", "history_consumption"],
+      "boundary": "Never executes tasks itself; only selects workers and records the delegation rationale."
+    },
+    {
+      "agent_id": "did:example:worker-alpha",
+      "agent_version": "1.0.0",
+      "role": "CODING",
+      "capabilities": ["code_writing", "unit_test_writing"],
+      "boundary": "Cannot perform dependency resolution (no package-index access); coding tasks that require dependency resolution are outside its declared boundary."
+    },
+    {
+      "agent_id": "did:example:worker-beta",
+      "agent_version": "1.0.0",
+      "role": "RESEARCH",
+      "capabilities": ["literature_scan", "evidence_note_writing"],
+      "boundary": "Policy forbids live external source access; research tasks that require external sources are outside its declared boundary."
+    },
+    {
+      "agent_id": "did:example:worker-gamma",
+      "agent_version": "1.0.0",
+      "role": "REVIEW",
+      "capabilities": ["code_review", "spec_review"],
+      "boundary": "Cannot perform security audits; review tasks that require a security review are outside its declared boundary."
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+task_id: t-102
+step: resolve third-party dependency
+outcome: BLOCKED - no package-index access (declared boundary)

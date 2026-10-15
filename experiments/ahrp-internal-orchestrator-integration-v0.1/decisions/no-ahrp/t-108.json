@@ -1,0 +1,20 @@
+{
+  "candidate_agents": [
+    "did:example:worker-beta"
+  ],
+  "mode": "NO_AHRP_MODE",
+  "occurred_at": "2026-08-07T01:08:00Z",
+  "orchestrator_agent_id": "did:example:orchestrator-core",
+  "orchestrator_agent_version": "1.0.0",
+  "result": {
+    "artifact_paths": [
+      "artifacts/t-108/research-note.md"
+    ],
+    "failure_category": null,
+    "reason": "research note produced from local material",
+    "status": "SUCCESS"
+  },
+  "selected_agent": "did:example:worker-beta",
+  "selection_reason": "TYPE_ROUTING: research -> did:example:worker-beta (static capability match, no history consulted)",
+  "task_id": "t-108"
+}

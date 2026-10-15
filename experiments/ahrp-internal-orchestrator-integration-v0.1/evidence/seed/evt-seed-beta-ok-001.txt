@@ -1,0 +1,1 @@
+Seed record: worker-beta completed a research task using only locally available documents and produced a structured note.

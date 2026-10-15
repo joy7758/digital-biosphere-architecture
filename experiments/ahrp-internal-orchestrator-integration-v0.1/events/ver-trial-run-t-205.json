@@ -1,0 +1,20 @@
+{
+  "authorization_effect": "NONE",
+  "schema_version": "0.1.0",
+  "scope": {
+    "agent_ref": "did:example:worker-gamma",
+    "agent_version": "1.0.0",
+    "covered_aspect": "FULL_EVENT",
+    "subject_event_id": "evt-trial-run-t-205",
+    "subject_type": "EXPERIENCE_EVENT"
+  },
+  "self_verification": false,
+  "verification_id": "ver-trial-run-t-205",
+  "verification_status": "VERIFIED",
+  "verification_type": "EVENT_CONFIRMATION",
+  "verified_at": "2026-08-07T02:05:00Z",
+  "verifier": {
+    "verifier_class": "SYSTEM_BENCHMARK",
+    "verifier_name": "integration-trial-post-run-verifier"
+  }
+}

@@ -1,0 +1,122 @@
+name: AHRP Internal Integration Trial
+
+# CI for the AHRP internal orchestrator integration trial (PR #14).
+# CI runs checks only. It never merges, never marks the PR ready, and never
+# touches the frozen AHRP/ tree or the frozen method-v2 experiment.
+on:
+  pull_request:
+    paths:
+      - "experiments/ahrp-internal-orchestrator-integration-v0.1/**"
+      - "experiments/ahrp-external-agent-adoption-trial-v0.1/**"
+      - ".github/workflows/ahrp-internal-integration-trial.yml"
+  push:
+    branches:
+      - experiment/ahrp-internal-orchestrator-integration-v0.1
+  # Manual trigger so the gate can be run even if automatic events are
+  # blocked (e.g. private-repo Actions billing quota). Dispatch always
+  # checks the branch HEAD; it never merges and never marks the PR ready.
+  workflow_dispatch:
+
+jobs:
+  integration-trial:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: "1. Whitespace sanity check (fail-closed gate)"
+        run: |
+          # Fail-closed gate: any whitespace error introduced by this branch
+          # fails the workflow. No bypass: no '|| true', no
+          # continue-on-error, no 'set +e', no 'exit 0'.
+          git fetch origin main --depth=1000
+          git diff --check origin/main...HEAD
+
+      - name: "2. AHRP 208 tests (unmodified Validator/Query Engine)"
+        run: |
+          cd AHRP
+          OUT=$(python3 -m unittest discover -s tests 2>&1)
+          echo "$OUT" | tail -5
+          echo "$OUT" | grep -q "Ran 208 tests"
+          echo "$OUT" | grep -q "^OK"
+
+      - name: "3. AHRP tree freeze"
+        run: |
+          git fetch origin main --depth=1000
+          git diff --quiet origin/main -- AHRP
+
+      - name: "4. method-v2 tree freeze"
+        run: |
+          git diff --quiet origin/main \
+            -- experiments/ahrp-pilot-readiness-method-v2
+
+      - name: "5. Seed generation (deterministic)"
+        run: |
+          cd experiments/ahrp-internal-orchestrator-integration-v0.1
+          python3 config/generate_seed_history.py
+
+      - name: "6. Full two-phase trial run"
+        run: |
+          cd experiments/ahrp-internal-orchestrator-integration-v0.1
+          python3 run_trial.py
+
+      - name: "7. Post-run verification"
+        run: |
+          cd experiments/ahrp-internal-orchestrator-integration-v0.1
+          python3 verify_trial.py
+
+      - name: "8. Integration trial tests (>= 25)"
+        run: |
+          cd experiments/ahrp-internal-orchestrator-integration-v0.1
+          OUT=$(python3 -m unittest discover -s tests 2>&1)
+          echo "$OUT" | tail -5
+          echo "$OUT" | grep -q "Ran 25 tests"
+          echo "$OUT" | grep -q "^OK"
+
+      - name: "9. Truth-boundary full-text scan"
+        run: |
+          cd experiments/ahrp-internal-orchestrator-integration-v0.1
+          # No unqualified real-agent claim may appear outside tests/.
+          if grep -riE \
+            "REAL_AGENT_TRIAL=true|REAL_AGENT_USED_AHRP=true|PHASE1_OBJECTIVE_MET|real agent adoption validated" \
+            --exclude-dir=tests --exclude-dir=__pycache__ .; then
+            echo "unqualified real-agent claim found"
+            exit 1
+          fi
+          # Fail-closed claim must not survive as fail-open behavior:
+          # every query-error safety override record must be NOT_EXECUTED.
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("decisions/ahrp-assisted")
+          overrides = 0
+          for path in sorted(root.glob("*.json")):
+              record = json.loads(path.read_text(encoding="utf-8"))
+              if record.get("query_error_safety_override"):
+                  overrides += 1
+                  after = record["after_query_decision"]
+                  result = record["result"]
+                  assert after["decision"] == "MANUAL_REVIEW", path
+                  assert after["selected_agent"] is None, path
+                  assert result["status"] == "NOT_EXECUTED", path
+                  assert result["artifact_paths"] == [], path
+          assert overrides >= 1, "no query-error safety override recorded"
+          print(f"fail-closed scan: {overrides} override(s) blocked execution")
+          PY
+
+      - name: "10. DESIGN_ONLY truth check"
+        run: |
+          D=experiments/ahrp-external-agent-adoption-trial-v0.1/DESIGN_ONLY.md
+          test -f "$D"
+          grep -q "DESIGN_ONLY=true" "$D"
+          grep -q "TRIAL_EXECUTED=false" "$D"
+          grep -q "MODEL_BASED_AGENT_USED_AHRP=false" "$D"
+          grep -q "AUTONOMOUS_AHRP_TOOL_SELECTION=false" "$D"
+          grep -q "VOLUNTARY_AHRP_QUERY_COUNT=0" "$D"

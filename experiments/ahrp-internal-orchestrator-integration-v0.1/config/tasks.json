@@ -1,0 +1,166 @@
+{
+  "task_set_version": "0.1.0",
+  "tasks": [
+    {
+      "task_id": "t-101",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "coding",
+      "title": "Implement integer range validator",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Write a Python function validate_range(value, lo, hi) that raises ValueError outside [lo, hi]."
+    },
+    {
+      "task_id": "t-102",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "coding",
+      "title": "Add YAML config loader with new third-party parser",
+      "requirements": {"requires_dependency_resolution": true, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Introduce and resolve a new third-party YAML parsing dependency, then load config.yaml with it."
+    },
+    {
+      "task_id": "t-103",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "research",
+      "title": "Summarize local whitepaper section 3",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Produce a structured research note summarizing the locally available whitepaper section 3."
+    },
+    {
+      "task_id": "t-104",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "research",
+      "title": "Collect live standards-body announcements",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": true, "requires_security_review": false},
+      "prompt": "Fetch and summarize this week's live announcements from external standards bodies."
+    },
+    {
+      "task_id": "t-105",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "review",
+      "title": "Review naming consistency of module docs",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Review the provided module documentation for naming consistency and produce findings."
+    },
+    {
+      "task_id": "t-106",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "review",
+      "title": "Security review of authentication module",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": true},
+      "prompt": "Perform a security audit of the authentication module and report vulnerabilities."
+    },
+    {
+      "task_id": "t-107",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "coding",
+      "title": "Implement checksum helper",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Write a Python function sha256_file(path) returning the hex digest of a file."
+    },
+    {
+      "task_id": "t-108",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "research",
+      "title": "Compare two local terminology documents",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Compare the two locally available terminology documents and list conflicts."
+    },
+    {
+      "task_id": "t-109",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "review",
+      "title": "Review JSON schema field naming",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Review the JSON schema for field-naming consistency and produce findings."
+    },
+    {
+      "task_id": "t-110",
+      "phase": "NO_AHRP_MODE",
+      "task_type": "coding",
+      "title": "Upgrade logging dependency to new major version",
+      "requirements": {"requires_dependency_resolution": true, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Resolve and upgrade the logging dependency to the next major version, then adapt call sites."
+    },
+    {
+      "task_id": "t-201",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "coding",
+      "title": "Implement retry budget counter",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Write a Python class RetryBudget with acquire() and exhausted() methods."
+    },
+    {
+      "task_id": "t-202",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "coding",
+      "title": "Introduce new test-runner dependency",
+      "requirements": {"requires_dependency_resolution": true, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Resolve a new third-party test-runner dependency and wire it into the build script."
+    },
+    {
+      "task_id": "t-203",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "research",
+      "title": "Summarize local governance whitepaper",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Produce a structured research note summarizing the locally available governance whitepaper."
+    },
+    {
+      "task_id": "t-204",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "research",
+      "title": "Track live ecosystem adoption announcements",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": true, "requires_security_review": false},
+      "prompt": "Fetch live external ecosystem adoption announcements and summarize them."
+    },
+    {
+      "task_id": "t-205",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "review",
+      "title": "Review protocol document section numbering",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Review the protocol document for section-numbering consistency and produce findings."
+    },
+    {
+      "task_id": "t-206",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "review",
+      "title": "Security review of disclosure policy module",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": true},
+      "prompt": "Perform a security audit of the disclosure policy module and report vulnerabilities."
+    },
+    {
+      "task_id": "t-207",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "coding",
+      "title": "Implement deterministic ID generator",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Write a Python function deterministic_id(prefix, payload) returning a stable sha256-based id."
+    },
+    {
+      "task_id": "t-208",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "data_processing",
+      "title": "Normalize CSV column casing",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Normalize the column names of the provided CSV payload to snake_case."
+    },
+    {
+      "task_id": "t-209",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "review",
+      "title": "Review evidence manifest completeness",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "prompt": "Review the evidence manifest for completeness against the listed artifacts."
+    },
+    {
+      "task_id": "t-210",
+      "phase": "AHRP_ASSISTED_MODE",
+      "task_type": "coding",
+      "title": "Implement hash-chain anchor helper (controlled query-error injection)",
+      "requirements": {"requires_dependency_resolution": false, "requires_external_sources": false, "requires_security_review": false},
+      "inject_query_error": true,
+      "prompt": "Write a Python function anchor_chain(prev, payload) returning a chained sha256 anchor. This task carries a controlled query-error injection flag for fail-closed testing."
+    }
+  ]
+}

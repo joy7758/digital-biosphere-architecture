@@ -1,0 +1,7 @@
+trial: ahrp-internal-orchestrator-integration-v0.1
+task_id: t-208
+selected_agent: did:example:worker-alpha
+result_status: SUCCESS
+failure_category: None
+reason: column names normalized to snake_case
+artifacts: artifacts/t-208/normalized.csv
