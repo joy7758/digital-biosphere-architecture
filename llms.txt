@@ -1,3 +1,10 @@
+# Historical Reference Notice
+- status: HISTORICAL_REFERENCE_ARCHIVE (non-canonical, read-only)
+- active_public_index: https://dcell.net/titmas-public-index.json
+- dcell_portal_card: https://dcell.net/#project-titmas
+- case_study_repo: https://github.com/joy7758/ai-delivery-auditor
+- receipt_validator_repo: https://github.com/joy7758/agent-receipt-validator-mcp
+
 # Execution Evidence Bridge
 
 > 中文：Execution Evidence Bridge 是一条可运行的 AI Agent 执行证据链：MVK 证明 AI 做过什么，Agent Evidence 把证明打包并验证，Verifiable Agent Demo 给审阅者和 agent 一条最短的跨栈复核路径。
@@ -14,7 +21,7 @@
 
 ## Repository roles
 
-- digital-biosphere-architecture: architecture hub and canonical cross-repo map
+- digital-biosphere-architecture: HISTORICAL ARCHIVE ONLY (read-only reference; current public index at https://dcell.net/titmas-public-index.json)
 - fdo-kernel-mvk: execution integrity proof
 - agent-evidence: evidence packaging, verification, receipts, signed exports, review packs
 - verifiable-agent-demo: shortest guided verification walkthrough

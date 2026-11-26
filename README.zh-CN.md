@@ -1,16 +1,24 @@
+> **历史参考档案（Historical Reference Archive · 只读非现行主入口）**
+> 依据现行决定 **ADR-042（TITMAS 商业智能体基础设施）**，本归档仓库仅保留作为**早期历史架构参考**，不再作为当前规范总入口；内部规格副本（`digital-biosphere-architecture-specification`、`digital-biosphere-os`）均为私有仓库。
+>
+> **当前公开核验与资料入口（与 `https://dcell.net/titmas-public-index.json` 同源）：**
+> - 官网展示卡片与公开索引：https://dcell.net/#project-titmas · https://dcell.net/titmas-public-index.json
+> - 查看案例（说明与合成复核案例）：https://github.com/joy7758/ai-delivery-auditor
+> - 本地校验回执（公开本地回执校验工具）：https://github.com/joy7758/agent-receipt-validator-mcp
+
 <!-- language-switch:start -->
 [English](./README.md) | [中文](./README.zh-CN.md)
 <!-- language-switch:end -->
 
 # 数字生物圈架构
 
-这个仓库是 Digital Biosphere 生态的规范架构总入口。
+本归档仓库保留 Digital Biosphere 早期架构探索与演化记录（仅供历史参考，不再作为现行规范总入口）。
 
 它解释了日益自治的 AI 系统如何落在五个规范层之中：角色层、交互层、治理层、执行完整性层和审计证据层。需要系统视角、仓库边界或跨仓导航时，应先从这里进入。
 
 ## 本仓库是什么
 
-- Digital Biosphere 的规范架构总入口
+- 早期 Digital Biosphere 架构与证据路径的历史参考档案
 - 用来解释仓库角色、层边界和跨仓导航的解释性入口
 - 不是具体的证据 package
 - 不是 walkthrough demo

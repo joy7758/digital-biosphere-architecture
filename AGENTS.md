@@ -2,7 +2,7 @@
 
 ## Repository role
 
-This repository is the architecture hub for the Digital Biosphere Architecture.
+HISTORICAL ARCHIVE ONLY: This repository is a read-only historical architecture reference, NOT the active canonical entry. For current TITMAS public links see https://dcell.net/titmas-public-index.json.
 
 It maps the Execution Evidence Bridge across:
 

@@ -1,4 +1,10 @@
-> **Moved:** this repository has been merged into [joy7758/digital-biosphere-os](https://github.com/joy7758/digital-biosphere-os/tree/main/digital-biosphere-architecture) with full history. This repo is archived and read-only.
+> **Historical Reference Archive (Non-Canonical · Read-Only)**
+> Per current architecture decision **ADR-042 (`TITMAS Commercial Agent Infrastructure`)**, this archived repository is retained strictly as a **historical architecture reference archive** and is **no longer the active canonical hub**. Internal specification mirrors (`digital-biosphere-architecture-specification`, `digital-biosphere-os`) are private.
+>
+> **Current Public Entrypoints (Same Allowlist as `https://dcell.net/titmas-public-index.json`):**
+> - DCell Platform Card & Public JSON Index: https://dcell.net/#project-titmas · https://dcell.net/titmas-public-index.json
+> - Case Study (查看案例): https://github.com/joy7758/ai-delivery-auditor
+> - Local Receipt Validator (本地校验回执): https://github.com/joy7758/agent-receipt-validator-mcp
 
 <!-- language-switch:start -->
 [English](./README.md) | [中文](./README.zh-CN.md)
@@ -10,7 +16,7 @@
 
 # Digital Biosphere Architecture
 
-This repository is the canonical architecture hub for the Digital Biosphere Architecture.
+This archived repository preserves the historical Digital Biosphere Architecture exploration map (non-canonical reference only).
 
 Use it for the system view, repository boundaries, and cross-repo navigation. It is the architecture entry, not the implementation entry.
 
